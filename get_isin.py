@@ -22,7 +22,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.0.0'
+VERSION = '1.1.0'
 SESSION = Session()
 HEADERS = {
     'User-Agent': 'Mozilla/5.{a} (Macintosh; Intel Mac OS X 10_15_{a}) '.format(a=randint(1, 100)) +
@@ -35,23 +35,15 @@ def clean_data(raw_data, json_load=True):
     """
     Returns cleaned data
     """
-    cleaned_data = raw_data.\
+    # Remove html
+    cleaned_data = re.sub('<[a-zA-Z0-9\.\\\/\"\'=\ ]+>', '', raw_data)
+    cleaned_data = cleaned_data.\
                       replace(';', '').\
                       replace('\\n', '').\
                       replace('\\t', '').\
                       replace('\n', '').\
                       replace('\t', '').\
                       replace('&euro', '').\
-                      replace('<strong>', '').\
-                      replace('<strong class=\\"vert\\">', '').\
-                      replace('<strong class=\\"rouge\\">', '').\
-                      replace('<\\/strong>', '').\
-                      replace('<span class=\\"vert\\">', '').\
-                      replace('<span class=\\"rouge\\">', '').\
-                      replace('<\\/span>', '').\
-                      replace('<div class=\\"vert\\">', '').\
-                      replace('<div class=\\"rouge\\">', '').\
-                      replace('<\\/div>', '').\
                       replace('\xa0', '')
     if json_load:
         cleaned_data = json.loads(cleaned_data)
@@ -64,9 +56,9 @@ def decode_rot(encoded_str):
     enc = getencoder('rot-13')
     return enc(encoded_str)[0]
 
-def print_autocomplete(input_str):
+def autocomplete(input_str):
     """
-    Returns a list of result matching the input string
+    Returns a list of probable results
     """
     url = decode_rot('uggcf://vairfgve.yrfrpubf.se') + \
           decode_rot('/nhgbpbzcyrgr/nhgbpbzcyrgr.cuc?') + \
@@ -75,8 +67,7 @@ def print_autocomplete(input_str):
     if req.ok:
         result = list()
         if not 'valeurs' in clean_data(req.text)['results']:
-            print('No results...')
-            sys.exit(0)
+            return result
         full_result = clean_data(req.text)['results']['valeurs']
         for res in full_result:
             sub_result = dict()
@@ -88,7 +79,14 @@ def print_autocomplete(input_str):
                     sub_result['place'] = arg.upper()
             sub_result['pays'] = res['pays']
             result.append(sub_result)
-        print(json.dumps(result, sort_keys=True, indent=4, separators=(',', ': ')))
+    return result
+
+def print_autocomplete(input_str):
+    """
+    Returns a list of result matching the input string
+    """
+    result = autocomplete(input_str)
+    print(json.dumps(result, sort_keys=True, indent=4, separators=(',', ': ')))
 
 def main():
     """
