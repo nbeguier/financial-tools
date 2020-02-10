@@ -28,7 +28,7 @@ from get_isin import autocomplete
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-VERSION = '1.1.0'
+VERSION = '1.1.1'
 SESSION = Session()
 HEADERS = {
     'User-Agent': 'Mozilla/5.{a} (Macintosh; Intel Mac OS X 10_15_{a}) '.format(a=randint(1, 100)) +
@@ -74,11 +74,21 @@ def extract_infos_boursiere(data):
     """
     report = dict()
     # keys = ['Dividendes', 'PER', 'Rendement', 'Capitalisation', 'Détachement', 'Prochain rdv']
-    keys = ['Dividendes', 'Rendement', 'Détachement', 'Prochain rdv']
+    keys = ['Dividendes', 'PER', 'Rendement', 'Détachement', 'Prochain rdv']
     splitted_data = clean_data(data.get_text().replace('\n', ' '), json_load=False).split()
     for i, key in enumerate(splitted_data):
         if key == 'Dividendes' and i < len(splitted_data) and splitted_data[i+1] not in keys:
             report[key] = '{} EUR'.format(splitted_data[i+1].replace(',', '.'))
+        elif key == 'PER' and i < len(splitted_data) and splitted_data[i+1] not in keys:
+            report[key] = '{}'.format(splitted_data[i+1].replace(',', '.'))
+            if float(report[key]) <= 10:
+                report[key] += ' (action sous-évaluée)'
+            elif float(report[key]) <= 17:
+                report[key] += ' (ration bon)'
+            elif float(report[key]) <= 25:
+                report[key] += ' (action surévaluée)'
+            else:
+                report[key] += ' (bulle spéculative)'
         elif key == 'Rendement' and i < len(splitted_data) and splitted_data[i+1] not in keys:
             report[key] = '{} %'.format(splitted_data[i+1].replace(',', '.'))
         elif key == 'Détachement' and i < len(splitted_data) and splitted_data[i+1] not in keys:

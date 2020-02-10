@@ -81,6 +81,7 @@ Secteur: SERVICES AUX CONSOMMATEURS / Détaillants et grossistes - Alimentation
 Valorisation: 15,455 EUR
 Variation 1 an: 3,38 %
 || Dividendes: 0.46 EUR
+|| PER: 13.2 (ration bon)
 || Rendement: 2.98 %
 || Détachement: 20/06/19
 || Prochain rdv: 27/02/20
@@ -108,6 +109,7 @@ Secteur: SERVICES AUX CONSOMMATEURS / Détaillants et grossistes - Alimentation
 Valorisation: 15,435 EUR
 Variation 1 an: 3,24 %
 || Dividendes: 0.46 EUR
+|| PER: 13.2 (ration bon)
 || Rendement: 2.98 %
 || Détachement: 20/06/19
 || Prochain rdv: 27/02/20
@@ -125,6 +127,7 @@ Secteur: SERVICES AUX CONSOMMATEURS / Détaillants et grossistes - Alimentation
 Valorisation: 15,455 EUR
 Variation 1 an: 3,38 %
 || Dividendes: 0.46 EUR
+|| PER: 13.2 (ration bon)
 || Rendement: 2.98 %
 || Détachement: 20/06/19
 || Prochain rdv: 27/02/20
