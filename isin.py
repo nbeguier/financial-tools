@@ -9,9 +9,6 @@ Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 
 # Standard library imports
 from argparse import ArgumentParser
-from codecs import getencoder
-import json
-from random import randint
 import re
 import sys
 
@@ -21,52 +18,22 @@ from requests import Session
 import urllib3
 
 # Own library
-from get_isin import autocomplete
+import common
 
 # Debug
 # from pdb import set_trace as st
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-VERSION = '1.1.1'
+VERSION = '1.2.0'
 SESSION = Session()
-HEADERS = {
-    'User-Agent': 'Mozilla/5.{a} (Macintosh; Intel Mac OS X 10_15_{a}) '.format(a=randint(1, 100)) +
-                  'AppleWebKit/537.{} '.format(randint(1, 100)) +
-                  '(KHTML, like Gecko) Chrome/80.{a}.3987.{a} '.format(a=randint(1, 100)) +
-                  'Safari/537.{}'.format(randint(1, 100)),
-}
-
-def clean_data(raw_data, json_load=True):
-    """
-    Returns cleaned data
-    """
-    # Remove html
-    cleaned_data = re.sub('<[a-zA-Z0-9\.\\\/\"\'=\ ]+>', '', raw_data)
-    cleaned_data = cleaned_data.\
-                      replace(';', '').\
-                      replace('\\n', '').\
-                      replace('\\t', '').\
-                      replace('\n', '').\
-                      replace('\t', '').\
-                      replace('&euro', '').\
-                      replace('\xa0', '')
-    if json_load:
-        cleaned_data = json.loads(cleaned_data)
-    return cleaned_data
+HEADERS = common.gen_headers()
 
 def clean_url(raw_url):
     """
     Returns a clean URL from garbage
     """
     return 'https' + raw_url.split(' https')[1].split('#')[0]
-
-def decode_rot(encoded_str):
-    """
-    Returns the ROT-13 of the input string
-    """
-    enc = getencoder('rot-13')
-    return enc(encoded_str)[0]
 
 def extract_infos_boursiere(data):
     """
@@ -75,7 +42,7 @@ def extract_infos_boursiere(data):
     report = dict()
     # keys = ['Dividendes', 'PER', 'Rendement', 'Capitalisation', 'Détachement', 'Prochain rdv']
     keys = ['Dividendes', 'PER', 'Rendement', 'Détachement', 'Prochain rdv']
-    splitted_data = clean_data(data.get_text().replace('\n', ' '), json_load=False).split()
+    splitted_data = common.clean_data(data.get_text().replace('\n', ' '), json_load=False).split()
     for i, key in enumerate(splitted_data):
         if key == 'Dividendes' and i < len(splitted_data) and splitted_data[i+1] not in keys:
             report[key] = '{} EUR'.format(splitted_data[i+1].replace(',', '.'))
@@ -97,27 +64,114 @@ def extract_infos_boursiere(data):
             report['Prochain rdv'] = splitted_data[i+1]
     return report
 
+def compute_extra_dividendes(parameters, infos_boursiere):
+    """
+    Returns extra info about dividendes
+    """
+    report = dict()
+    report['last_rendement'] = 'Unknown'
+    report['last_val'] = 'Unknown'
+    report['latest_val'] = 'Unknown'
+    report['average_val'] = 'Unknown'
+    report['last_detach'] = 'Unknown'
+    report['latest_detach'] = 'Unknown'
+    report['last_year'] = 'Unknown'
+    url = common.decode_rot(
+        'uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg/SQF/uvfgbel.kzy?' +
+        'ragvgl=rpubf&ivrj=NYY&pbqvsvpngvba=VFVA&rkpunatr=KCNE&' +
+        'nqqQnlYnfgCevpr=snyfr&nqwhfgrq=gehr&onfr100=snyfr&' +
+        'frffJvguAbDhbg=snyfr&crevbq=3L&tenahynevgl=&aoFrff=&' +
+        'vafgeGbPzc=haqrsvarq&vaqvpngbeYvfg=&pbzchgrIne=gehr&' +
+        'bhgchg=pfiUvfgb&') + 'code={}'.format(parameters['isin'])
+    req = SESSION.get(url, verify=False)
+    if req.ok and infos_boursiere['Détachement'] != '-':
+        matching_date = infos_boursiere['Détachement'].split('/')
+        latest_matching_date = '20{:02d}/{}/'.format(
+            int(matching_date[2])-1, matching_date[1])
+        matching_date = '20{}/{}/{}'.format(
+            matching_date[2], matching_date[1], matching_date[0])
+        open_value = None
+        latest_open_value = None
+        for line in req.text.split('\n'):
+            date = line.split(';')[0]
+            if date == matching_date:
+                open_value = float(line.split(';')[1])
+            elif latest_matching_date in date:
+                latest_matching_date = date
+                latest_open_value = float(line.split(';')[1])
+        if open_value is not None and latest_open_value is not None:
+            dividendes = float(infos_boursiere['Dividendes'].split()[0])
+            average_val = (open_value+latest_open_value)/2
+            rendement = 100 * dividendes / average_val
+            report['last_rendement'] = round(rendement, 2)
+            report['last_val'] = round(open_value, 2)
+            report['latest_val'] = round(latest_open_value, 2)
+            report['average_val'] = round(average_val, 2)
+            report['last_detach'] = matching_date
+            report['latest_detach'] = latest_matching_date
+            report['last_year'] = latest_matching_date.split('/')[0]
+    return report
+
+def parse_profit(soup, report):
+    """
+    Parse the html output and returns an approximation of the profit development
+    """
+    profit = 0
+    for raw_data in soup.find_all('tr', 'c-table__row'):
+        data = common.clean_data(raw_data.get_text(), json_load=False).split()
+        if re.sub('[0-9].*$', '', data[0]).upper() in report['cours']['cotation']['name'].upper():
+            profit = 100 * (float(data[-2]) / float(data[-4]) - 1)
+    return profit
+
+def compute_extra_benefices(report):
+    """
+    Get necessary informations and returns an approximation of the profit development
+    """
+    profit = 0
+    url_1 = common.decode_rot(
+        'uggcf://jjj.obhefbenzn.pbz/obhefr/npgvbaf/cnyznerf/qvivqraqrf/cntr-1?' +
+        'znexrg=1eCPNP&inevngvba=6')
+    url_2 = common.decode_rot(
+        'uggcf://jjj.obhefbenzn.pbz/obhefr/npgvbaf/cnyznerf/qvivqraqrf/cntr-2?' +
+        'znexrg=1eCPNP&inevngvba=6')
+    req = SESSION.get(url_1)
+    if req.ok:
+        profit += parse_profit(BeautifulSoup(req.text, 'html.parser'), report)
+    req = SESSION.get(url_2)
+    if req.ok:
+        profit += parse_profit(BeautifulSoup(req.text, 'html.parser'), report)
+    return round(profit, 2)
+
+def compute_extra_peg(profit, report):
+    """
+    Returns an approximation of the PEG
+    """
+    per = float(report['infos_boursiere']['PER'].split()[0])
+    if profit == 0:
+        return 0
+    return round(per/profit, 1)
+
 def get_report(parameters):
     """
     Returns a report of all metadata from the input ISIN
     """
     report = dict()
-    url = decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg') + \
-          decode_rot('/fgernzvat/pbhef/trgPbhef?') + \
+    url = common.decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg') + \
+          common.decode_rot('/fgernzvat/pbhef/trgPbhef?') + \
           'code={}&place={}&codif=ISIN'.format(parameters['isin'], parameters['place'])
     req = SESSION.get(url, verify=False)
     report['cours'] = None
     if req.ok:
-        report['cours'] = clean_data(req.text)
+        report['cours'] = common.clean_data(req.text)
 
-    url = decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg') + \
-          decode_rot('/fgernzvat/pbhef/oybpf/trgUrnqreSvpur?') + \
+    url = common.decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg') + \
+          common.decode_rot('/fgernzvat/pbhef/oybpf/trgUrnqreSvpur?') + \
           'code={}&place={}&codif=ISIN'.format(parameters['isin'], parameters['place'])
     req = SESSION.get(url, verify=False)
     header_fiche = None
     report['url'] = None
     if req.ok:
-        header_fiche = clean_data(req.text)
+        header_fiche = common.clean_data(req.text)
         report['url'] = clean_url(header_fiche['headerFiche']['tweetHeaderFiche'])
 
     if report['url'] is not None:
@@ -129,58 +183,25 @@ def get_report(parameters):
                     report['infos_boursiere'] = extract_infos_boursiere(tab)
             sector = soup.find('a', id='sectorLink')
             if sector is not None:
-                report['sector'] = clean_data(sector.get_text(),
-                                              json_load=False)
+                report['sector'] = common.clean_data(
+                    sector.get_text(),
+                    json_load=False)
             sub_sector = soup.find('a', id='subSectorLink')
             if sub_sector is not None:
-                report['sub_sector'] = clean_data(sub_sector.get_text(),
-                                                  json_load=False)
+                report['sub_sector'] = common.clean_data(
+                    sub_sector.get_text(),
+                    json_load=False)
 
     report['extra'] = dict()
-    if parameters['extra']['dividendes']:
-        report['extra']['dividendes'] = dict()
-        report['extra']['dividendes']['last_rendement'] = 'Unknown'
-        report['extra']['dividendes']['last_val'] = 'Unknown'
-        report['extra']['dividendes']['latest_val'] = 'Unknown'
-        report['extra']['dividendes']['average_val'] = 'Unknown'
-        report['extra']['dividendes']['last_detach'] = 'Unknown'
-        report['extra']['dividendes']['latest_detach'] = 'Unknown'
-        report['extra']['dividendes']['last_year'] = 'Unknown'
-        url = decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg/SQF/uvfgbel.kzy?' +
-                         'ragvgl=rpubf&ivrj=NYY&pbqvsvpngvba=VFVA&rkpunatr=KCNE&' +
-                         'nqqQnlYnfgCevpr=snyfr&nqwhfgrq=gehr&onfr100=snyfr&' +
-                         'frffJvguAbDhbg=snyfr&crevbq=3L&tenahynevgl=&aoFrff=&' +
-                         'vafgeGbPzc=haqrsvarq&vaqvpngbeYvfg=&pbzchgrIne=gehr&' +
-                         'bhgchg=pfiUvfgb&') + \
-              'code={}'.format(parameters['isin'])
-        req = SESSION.get(url, verify=False)
-        if req.ok and 'infos_boursiere' in report and \
-            report['infos_boursiere']['Détachement'] != '-':
-            matching_date = report['infos_boursiere']['Détachement'].split('/')
-            latest_matching_date = '20{:02d}/{}/'.format(
-                int(matching_date[2])-1, matching_date[1])
-            matching_date = '20{}/{}/{}'.format(
-                matching_date[2], matching_date[1], matching_date[0])
-            open_value = None
-            latest_open_value = None
-            for line in req.text.split('\n'):
-                date = line.split(';')[0]
-                if date == matching_date:
-                    open_value = float(line.split(';')[1])
-                elif latest_matching_date in date:
-                    latest_matching_date = date
-                    latest_open_value = float(line.split(';')[1])
-            if open_value is not None and latest_open_value is not None:
-                dividendes = float(report['infos_boursiere']['Dividendes'].split()[0])
-                average_val = (open_value+latest_open_value)/2
-                rendement = 100 * dividendes / average_val
-                report['extra']['dividendes']['last_rendement'] = round(rendement, 2)
-                report['extra']['dividendes']['last_val'] = round(open_value, 2)
-                report['extra']['dividendes']['latest_val'] = round(latest_open_value, 2)
-                report['extra']['dividendes']['average_val'] = round(average_val, 2)
-                report['extra']['dividendes']['last_detach'] = matching_date
-                report['extra']['dividendes']['latest_detach'] = latest_matching_date
-                report['extra']['dividendes']['last_year'] = latest_matching_date.split('/')[0]
+    if parameters['extra']['dividendes'] and 'infos_boursiere' in report:
+        report['extra']['dividendes'] = compute_extra_dividendes(
+            parameters, report['infos_boursiere'])
+
+    if parameters['extra']['bénéfices'] or parameters['extra']['peg']:
+        report['extra']['bénéfices'] = compute_extra_benefices(report)
+
+    if parameters['extra']['peg']:
+        report['extra']['peg'] = compute_extra_peg(report['extra']['bénéfices'], report)
 
     return report
 
@@ -212,6 +233,10 @@ def print_report(parameters, report):
         print('>> [{}] Valorisation: {} EUR'.format(
             report['extra']['dividendes']['latest_detach'],
             report['extra']['dividendes']['latest_val']))
+    if parameters['extra']['bénéfices']:
+        print('>> Evolution bénéfices: {} %'.format(report['extra']['bénéfices']))
+    if parameters['extra']['peg']:
+        print('>> PEG: {}'.format(report['extra']['peg']))
     print('==============')
     if report['url'] is not None:
         print('Les Echos: {}'.format(report['url']))
@@ -243,15 +268,26 @@ if __name__ == '__main__':
         help="Recherche l'ISIN le plus probable")
     PARSER.add_argument('--extra-dividendes', action='store_true',\
         help="Affiche plus d'informations sur les dividendes (=False)", default=False)
+    PARSER.add_argument('--extra-peg', action='store_true',\
+        help="Affiche la valeur théorique du PEG (=False)", default=False)
+    PARSER.add_argument('--extra-profit', action='store_true',\
+        help="Affiche la valeur théorique de l'évolution des bénéfices (=False)", default=False)
+    PARSER.add_argument('--extras', action='store_true',\
+        help="Affiche toutes les informations supplémentaires (=False)", default=False)
     ARGS = PARSER.parse_args()
 
     PARAMS = dict()
     PARAMS['isin'] = ARGS.isin
     PARAMS['place'] = ARGS.place
     PARAMS['extra'] = dict()
-    PARAMS['extra']['dividendes'] = ARGS.extra_dividendes
-    if ARGS.search is not None:
-        RESULT = autocomplete(ARGS.search)
+    PARAMS['extra']['dividendes'] = ARGS.extra_dividendes or ARGS.extras
+    PARAMS['extra']['bénéfices'] = ARGS.extra_profit or ARGS.extra_peg or ARGS.extras
+    PARAMS['extra']['peg'] = ARGS.extra_peg or ARGS.extras
+    if not ARGS.isin and not ARGS.search:
+        PARSER.print_help()
+        sys.exit(1)
+    elif ARGS.search is not None:
+        RESULT = common.autocomplete(ARGS.search)
         if not RESULT:
             print('No result for this name')
             sys.exit(1)

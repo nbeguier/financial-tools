@@ -59,7 +59,7 @@ This function returns all metadata related to the input ISIN. You could also spe
 
 ```
 usage: isin.py [-h] [--version] [-i ISIN] [-p PLACE] [-s SEARCH]
-               [--extra-dividendes]
+               [--extra-dividendes] [--extra-peg] [--extra-profit] [--extras]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -70,6 +70,11 @@ optional arguments:
   -s SEARCH, --search SEARCH
                         Recherche l'ISIN le plus probable
   --extra-dividendes    Affiche plus d'informations sur les dividendes
+                        (=False)
+  --extra-peg           Affiche la valeur théorique du PEG (=False)
+  --extra-profit        Affiche la valeur théorique de l'évolution des
+                        bénéfices (=False)
+  --extras              Affiche toutes les informations supplémentaires
                         (=False)
 ```
 
@@ -138,6 +143,30 @@ Variation 1 an: 3,38 %
 ==============
 Les Echos: https://investir.lesechos.fr/cours/action-carrefour,xpar,ca,fr0000120172,isin.html
 Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120172
+Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
+==============
+
+
+$ ./isin.py --extras -s "air liquide"
+ISIN: FR0000120073
+Nom: AIR LIQUIDE
+Secteur: MATERIAUX DE BASE / Chimie de base
+Valorisation: 137,250 EUR
+Variation 1 an: 8,76 %
+|| Dividendes: 2.95 EUR
+|| PER: 25.1 (bulle spéculative)
+|| Rendement: 2.15 %
+|| Détachement: 20/05/19
+|| Prochain rdv: 11/02/20
+>> [2018] Rendement: 2.9 %
+>> [2018] Valorisation: 101.73 EUR
+>> [2019/05/20] Valorisation: 105.23 EUR
+>> [2018/05/02] Valorisation: 98.23 EUR
+>> Evolution bénéfices: 7.64 %
+>> PEG: 3.3
+==============
+Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
+Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
 Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
 ==============
 ```
