@@ -25,7 +25,7 @@ import common
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-VERSION = '1.2.0'
+VERSION = '1.2.1'
 SESSION = Session()
 HEADERS = common.gen_headers()
 
@@ -76,6 +76,8 @@ def compute_extra_dividendes(parameters, infos_boursiere):
     report['last_detach'] = 'Unknown'
     report['latest_detach'] = 'Unknown'
     report['last_year'] = 'Unknown'
+    if 'Détachement' not in infos_boursiere:
+        return report
     url = common.decode_rot(
         'uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg/SQF/uvfgbel.kzy?' +
         'ragvgl=rpubf&ivrj=NYY&pbqvsvpngvba=VFVA&rkpunatr=KCNE&' +
@@ -142,11 +144,13 @@ def compute_extra_benefices(report):
         profit += parse_profit(BeautifulSoup(req.text, 'html.parser'), report)
     return round(profit, 2)
 
-def compute_extra_peg(profit, report):
+def compute_extra_peg(profit, infos_boursiere):
     """
     Returns an approximation of the PEG
     """
-    per = float(report['infos_boursiere']['PER'].split()[0])
+    if not 'PER' in infos_boursiere:
+        return 0
+    per = float(infos_boursiere['PER'].split()[0])
     if profit == 0:
         return 0
     return round(per/profit, 1)
@@ -174,6 +178,7 @@ def get_report(parameters):
         header_fiche = common.clean_data(req.text)
         report['url'] = clean_url(header_fiche['headerFiche']['tweetHeaderFiche'])
 
+    report['infos_boursiere'] = dict()
     if report['url'] is not None:
         req = SESSION.get(report['url'])
         if req.ok:
@@ -193,7 +198,7 @@ def get_report(parameters):
                     json_load=False)
 
     report['extra'] = dict()
-    if parameters['extra']['dividendes'] and 'infos_boursiere' in report:
+    if parameters['extra']['dividendes']:
         report['extra']['dividendes'] = compute_extra_dividendes(
             parameters, report['infos_boursiere'])
 
@@ -201,7 +206,8 @@ def get_report(parameters):
         report['extra']['bénéfices'] = compute_extra_benefices(report)
 
     if parameters['extra']['peg']:
-        report['extra']['peg'] = compute_extra_peg(report['extra']['bénéfices'], report)
+        report['extra']['peg'] = compute_extra_peg(
+            report['extra']['bénéfices'], report['infos_boursiere'])
 
     return report
 
