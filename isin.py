@@ -25,9 +25,11 @@ import common
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-VERSION = '1.2.1'
+VERSION = '1.2.2'
 SESSION = Session()
 HEADERS = common.gen_headers()
+# INFOS_BOURSIERE = ['Dividendes', 'PER', 'Rendement', 'Capitalisation', 'Détachement', 'Prochain rdv']
+INFOS_BOURSIERE = ['Dividendes', 'PER', 'Rendement', 'Détachement', 'Prochain rdv']
 
 def clean_url(raw_url):
     """
@@ -35,32 +37,45 @@ def clean_url(raw_url):
     """
     return 'https' + raw_url.split(' https')[1].split('#')[0]
 
+def per_analysis(per):
+    """
+    Retuns the analysis of the PER value
+    """
+    result = 'bulle spéculative'
+    if float(per) <= 10:
+        result = 'action sous-évaluée'
+    elif float(per) <= 17:
+        result = 'ration bon'
+    elif float(per) <= 25:
+        result = 'action surévaluée'
+    return result
+
 def extract_infos_boursiere(data):
     """
     Extracts dictionnary from list
     """
     report = dict()
-    # keys = ['Dividendes', 'PER', 'Rendement', 'Capitalisation', 'Détachement', 'Prochain rdv']
-    keys = ['Dividendes', 'PER', 'Rendement', 'Détachement', 'Prochain rdv']
     splitted_data = common.clean_data(data.get_text().replace('\n', ' '), json_load=False).split()
     for i, key in enumerate(splitted_data):
-        if key == 'Dividendes' and i < len(splitted_data) and splitted_data[i+1] not in keys:
-            report[key] = '{} EUR'.format(splitted_data[i+1].replace(',', '.'))
-        elif key == 'PER' and i < len(splitted_data) and splitted_data[i+1] not in keys:
-            report[key] = '{}'.format(splitted_data[i+1].replace(',', '.'))
-            if float(report[key]) <= 10:
-                report[key] += ' (action sous-évaluée)'
-            elif float(report[key]) <= 17:
-                report[key] += ' (ration bon)'
-            elif float(report[key]) <= 25:
-                report[key] += ' (action surévaluée)'
-            else:
-                report[key] += ' (bulle spéculative)'
-        elif key == 'Rendement' and i < len(splitted_data) and splitted_data[i+1] not in keys:
-            report[key] = '{} %'.format(splitted_data[i+1].replace(',', '.'))
-        elif key == 'Détachement' and i < len(splitted_data) and splitted_data[i+1] not in keys:
+        if key == 'Dividendes' \
+            and i < len(splitted_data) \
+            and splitted_data[i+1] not in INFOS_BOURSIERE:
+            report[key] = splitted_data[i+1].replace(',', '.')
+        elif key == 'PER' \
+            and i < len(splitted_data) \
+            and splitted_data[i+1] not in INFOS_BOURSIERE:
+            report[key] = splitted_data[i+1].replace(',', '.')
+        elif key == 'Rendement' \
+            and i < len(splitted_data) \
+            and splitted_data[i+1] not in INFOS_BOURSIERE:
+            report[key] = splitted_data[i+1].replace(',', '.')
+        elif key == 'Détachement' \
+            and i < len(splitted_data) \
+            and splitted_data[i+1] not in INFOS_BOURSIERE:
             report[key] = splitted_data[i+1]
-        elif key == 'rdv' and i < len(splitted_data) and splitted_data[i+1] not in keys:
+        elif key == 'rdv' \
+            and i < len(splitted_data) \
+            and splitted_data[i+1] not in INFOS_BOURSIERE:
             report['Prochain rdv'] = splitted_data[i+1]
     return report
 
@@ -151,7 +166,7 @@ def compute_extra_peg(profit, infos_boursiere):
     if not 'PER' in infos_boursiere:
         return 0
     per = float(infos_boursiere['PER'].split()[0])
-    if profit == 0:
+    if profit <= 0:
         return 0
     return round(per/profit, 1)
 
@@ -211,47 +226,79 @@ def get_report(parameters):
 
     return report
 
-def print_report(parameters, report):
+def simplify_report(report, parameters):
+    """
+    Returns a simplified version of the report
+    """
+    simple_report = dict()
+    simple_report['isin'] = report['isin']
+    simple_report['url'] = report['url']
+
+    if report['cours'] is not None:
+        simple_report['nom'] = report['cours']['cotation']['name']
+    if 'sector' in report and 'sub_sector' in report:
+        simple_report['secteur'] = '{} / {}'.format(report['sector'], report['sub_sector'])
+    if report['cours'] is not None:
+        simple_report['valorisation'] = report['cours']['cotation']['valorisation'].\
+            split()[0].replace(',', '.')
+        simple_report['valorisation_1an'] = report['cours']['cotation']['variationYear'].\
+            replace(',', '.')
+    if 'infos_boursiere' in report:
+        for info in report['infos_boursiere']:
+            simple_report[info] = report['infos_boursiere'][info]
+    if parameters['extra']['dividendes']:
+        simple_report['dividendes'] = report['extra']['dividendes']
+    if parameters['extra']['bénéfices']:
+        simple_report['benefices'] = report['extra']['bénéfices']
+    if parameters['extra']['peg']:
+        simple_report['peg'] = report['extra']['peg']
+    return simple_report
+
+def print_report(report, place='XPAR', display_urls=True):
     """
     Prints the report
     """
     print('ISIN: {}'.format(report['isin']))
-    if report['cours'] is not None:
-        print('Nom: {}'.format(report['cours']['cotation']['name']))
-    if 'sector' in report and 'sub_sector' in report:
-        print('Secteur: {} / {}'.format(report['sector'], report['sub_sector']))
-    if report['cours'] is not None:
-        print('Valorisation: {}EUR'.format(report['cours']['cotation']['valorisation']))
-        print('Variation 1 an: {} %'.format(report['cours']['cotation']['variationYear']))
-    if 'infos_boursiere' in report:
-        for info in report['infos_boursiere']:
-            print('|| {}: {}'.format(info, report['infos_boursiere'][info]))
-    if parameters['extra']['dividendes']:
+    if 'nom' in report:
+        print('Nom: {}'.format(report['nom']))
+    if 'secteur' in report:
+        print('Secteur: {}'.format(report['secteur']))
+    if 'valorisation' in report:
+        print('Valorisation: {} EUR'.format(report['valorisation']))
+        print('Variation 1 an: {} %'.format(report['valorisation_1an']))
+    if 'Dividendes' in report:
+        print('|| Dividendes: {} EUR'.format(report['Dividendes']))
+        print('|| PER: {} ({})'.format(report['PER'], per_analysis(report['PER'])))
+        print('|| Rendement: {} %'.format(report['Rendement']))
+        print('|| Détachement: {}'.format(report['Détachement']))
+        print('|| Prochain rdv: {}'.format(report['Prochain rdv']))
+    if 'dividendes' in report:
         print('>> [{}] Rendement: {} %'.format(
-            report['extra']['dividendes']['last_year'],
-            report['extra']['dividendes']['last_rendement']))
+            report['dividendes']['last_year'],
+            report['dividendes']['last_rendement']))
         print('>> [{}] Valorisation: {} EUR'.format(
-            report['extra']['dividendes']['last_year'],
-            report['extra']['dividendes']['average_val']))
+            report['dividendes']['last_year'],
+            report['dividendes']['average_val']))
         print('>> [{}] Valorisation: {} EUR'.format(
-            report['extra']['dividendes']['last_detach'],
-            report['extra']['dividendes']['last_val']))
+            report['dividendes']['last_detach'],
+            report['dividendes']['last_val']))
         print('>> [{}] Valorisation: {} EUR'.format(
-            report['extra']['dividendes']['latest_detach'],
-            report['extra']['dividendes']['latest_val']))
-    if parameters['extra']['bénéfices']:
-        print('>> Evolution bénéfices: {} %'.format(report['extra']['bénéfices']))
-    if parameters['extra']['peg']:
-        print('>> PEG: {}'.format(report['extra']['peg']))
-    print('==============')
-    if report['url'] is not None:
-        print('Les Echos: {}'.format(report['url']))
-    if parameters['place'] == 'XPAR':
-        print('Recapitulatif dividendes: https://www.bnains.org' +
-              '/archives/action.php?' +
-              'codeISIN={}'.format(report['isin']))
-        print('Palmares CAC40 dividendes: https://www.boursorama.com' +
-              '/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6')
+            report['dividendes']['latest_detach'],
+            report['dividendes']['latest_val']))
+    if 'benefices' in report:
+        print('>> Evolution bénéfices: {} %'.format(report['benefices']))
+    if 'peg' in report:
+        print('>> PEG: {}'.format(report['peg']))
+    if display_urls:
+        print('==============')
+        if report['url'] is not None:
+            print('Les Echos: {}'.format(report['url']))
+        if place == 'XPAR':
+            print('Recapitulatif dividendes: https://www.bnains.org' +
+                  '/archives/action.php?' +
+                  'codeISIN={}'.format(report['isin']))
+            print('Palmares CAC40 dividendes: https://www.boursorama.com' +
+                  '/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6')
     print('==============')
 
 def main(parameters):
@@ -260,7 +307,8 @@ def main(parameters):
     """
     report = get_report(parameters)
     report['isin'] = parameters['isin']
-    print_report(parameters, report)
+    report = simplify_report(report, parameters)
+    print_report(report, place=parameters['place'])
 
 if __name__ == '__main__':
     PARSER = ArgumentParser()
