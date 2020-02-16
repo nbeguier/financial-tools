@@ -12,20 +12,14 @@ import json
 import sys
 
 # Third party library imports
-from requests import Session
-import urllib3
 
 # Own library
-import common
+import lib.common as common
 
 # Debug
 # from pdb import set_trace as st
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-VERSION = '1.2.0'
-SESSION = Session()
-HEADERS = common.gen_headers()
+VERSION = '1.3.0'
 
 def print_autocomplete(input_str):
     """

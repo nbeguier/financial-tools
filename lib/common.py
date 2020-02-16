@@ -18,6 +18,12 @@ from requests import Session
 
 SESSION = Session()
 
+def clean_url(raw_url):
+    """
+    Returns a clean URL from garbage
+    """
+    return 'https' + raw_url.split(' https')[1].split('#')[0]
+
 def gen_headers():
     """
     Returns random User-Agent

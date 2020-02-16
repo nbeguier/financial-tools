@@ -10,18 +10,27 @@ Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 # Standard library imports
 from argparse import ArgumentParser
 import json
+import os.path
 import sys
 
 # Third party library imports
 from datetime import datetime
 
 # Own library
-import isin
+import lib.analysis as analysis
+import lib.display as display
+import lib.reporting as reporting
+try:
+    import settings
+except ImportError:
+    print('You need to specify a settings.py file.')
+    print('$ cp settings.py.sample settings.py')
+    sys.exit(1)
 
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.0.0'
+VERSION = '1.1.0'
 
 ISIN_SAVE = [
     'FR0000045072',
@@ -67,7 +76,14 @@ ISIN_SAVE = [
     'NL0000235190',
 ]
 
-ISIN_COMPARE = ['FR0000121485', 'FR0000120073', 'FR0000120628']
+def get_sign(value):
+    """
+    This function returns the sign of the value
+    """
+    sign = ''
+    if value > 0:
+        sign = '+'
+    return sign
 
 def save_report(output_dir):
     """
@@ -82,9 +98,9 @@ def save_report(output_dir):
 
     for _isin in ISIN_SAVE:
         parameters['isin'] = _isin
-        report = isin.get_report(parameters)
+        report = reporting.get_report(parameters)
         report['isin'] = _isin
-        simple_report = isin.simplify_report(report, parameters)
+        simple_report = reporting.simplify_report(report, parameters)
         if not output_dir:
             print(simple_report)
         else:
@@ -93,28 +109,28 @@ def save_report(output_dir):
                     datetime.now().strftime('%Y_%m_%d')), 'a') as report_file:
                 report_file.write(json.dumps(simple_report)+'\n')
 
-def load_report(input_file, display=True):
+def load_report(input_file, display_report=True):
     """
     Load and display the report
     """
     report = dict()
+    if not os.path.exists(input_file):
+        print('The specified path: {} does not exists...'.format(input_file))
+        sys.exit(1)
     with open(input_file, 'r') as report_file:
         for line in report_file.readlines():
             sub_report = json.loads(line)
             report[sub_report['isin']] = sub_report
-            if display:
-                isin.print_report(sub_report, display_urls=False)
+            if display_report:
+                display.print_report(sub_report, display_urls=False)
     return report
 
 def diff_report(oldest_file, newer_file, isin_compare):
     """
     Compare two report
     """
-    old_reports = load_report(oldest_file, display=False)
-    new_reports = load_report(newer_file, display=False)
-
-    if isin_compare != ISIN_COMPARE:
-        isin_compare = [isin_compare]
+    old_reports = load_report(oldest_file, display_report=False)
+    new_reports = load_report(newer_file, display_report=False)
 
     print('==============')
     for _isin in isin_compare:
@@ -129,40 +145,30 @@ def diff_report(oldest_file, newer_file, isin_compare):
             and old_report['valorisation'] != new_report['valorisation']:
             evo_valorisation = round(100 * (-1 + \
                 float(new_report['valorisation']) / float(old_report['valorisation'])), 2)
-            sign = ''
-            if evo_valorisation >= 0:
-                sign = '+'
-            print('Evolution valorisation: {}{} %'.format(sign, evo_valorisation))
+            print('Evolution valorisation: {}{} %'.format(
+                get_sign(evo_valorisation), evo_valorisation))
             print('Evolution valorisation: {} -> {}'.format(
                 old_report['valorisation'], new_report['valorisation']))
         if 'PER' in new_report \
             and old_report['PER'] != new_report['PER']:
             evo_per = round(float(new_report['PER']) - float(old_report['PER']), 1)
-            sign = ''
-            if evo_per >= 0:
-                sign = '+'
-            print('Evolution PER: {}{}'.format(sign, evo_per))
+            print('Evolution PER: {}{}'.format(get_sign(evo_per), evo_per))
             print('Evolution PER: {} -> {}'.format(old_report['PER'], new_report['PER']))
-            if isin.per_analysis(old_report['PER']) != isin.per_analysis(new_report['PER']):
+            if analysis.per(old_report['PER']) != analysis.per(new_report['PER']):
                 print('Evolution PER: {} -> {}'.format(
-                    isin.per_analysis(old_report['PER']),
-                    isin.per_analysis(new_report['PER'])))
+                    analysis.per(old_report['PER']),
+                    analysis.per(new_report['PER'])))
 
         if 'peg' in new_report \
             and old_report['peg'] != new_report['peg']:
             evo_peg = round(float(new_report['peg']) - float(old_report['peg']), 1)
-            sign = ''
-            if evo_peg >= 0:
-                sign = '+'
-            print('Evolution PEG: {}{}'.format(sign, evo_peg))
+            print('Evolution PEG: {}{}'.format(get_sign(evo_peg), evo_peg))
             print('Evolution PEG: {} -> {}'.format(old_report['peg'], new_report['peg']))
         if 'benefices' in new_report \
             and old_report['benefices'] != new_report['benefices']:
             evo_benef = round(float(new_report['benefices']) - float(old_report['benefices']), 2)
-            sign = ''
-            if evo_benef >= 0:
-                sign = '+'
-            print('Evolution benefices: {}{} points'.format(sign, evo_benef))
+            print('Evolution benefices: {}{} points'.format(
+                get_sign(evo_benef), evo_benef))
             print('Evolution benefices: {} -> {}'.format(
                 old_report['benefices'], new_report['benefices']))
         if 'Prochain rdv' in new_report \
@@ -198,7 +204,7 @@ if __name__ == '__main__':
     DIFF_PARSER.add_argument('newer_file', action='store',\
         help='... this newer file')
     DIFF_PARSER.add_argument('-i', '--isin', action='store',\
-        help='Specific ISIN to compare', default=ISIN_COMPARE)
+        help='Specific ISIN to compare', default='')
 
     ARGS = PARSER.parse_args()
 
@@ -211,6 +217,9 @@ if __name__ == '__main__':
     elif sys.argv[1] == 'load':
         load_report(ARGS.inputfile)
     elif sys.argv[1] == 'diff':
-        diff_report(ARGS.oldest_file, ARGS.newer_file, ARGS.isin)
+        ISIN_COMPARE = settings.ISIN_COMPARE
+        if ARGS.isin:
+            ISIN_COMPARE = [ARGS.isin]
+        diff_report(ARGS.oldest_file, ARGS.newer_file, ISIN_COMPARE)
 
     sys.exit(0)

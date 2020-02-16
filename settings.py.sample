@@ -1,0 +1,5 @@
+"""
+Settings file
+"""
+
+ISIN_COMPARE = ['FR0000121485', 'FR0000120073', 'FR0000120628']

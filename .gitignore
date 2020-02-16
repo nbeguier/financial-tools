@@ -2,3 +2,4 @@
 .DS_Store
 data/
 __pycache__
+settings.py

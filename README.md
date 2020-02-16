@@ -4,6 +4,8 @@
 
 ```
 pip3 install -r requirements.txt
+
+cp settings.py.sample settings.py
 ```
 
 ## Usage
@@ -79,6 +81,7 @@ optional arguments:
 ```
 
 ```
+# Affiche les infos de FR0000120172 (CARREFOUR)
 $ ./isin.py -i FR0000120172
 ISIN: FR0000120172
 Nom: CARREFOUR
@@ -97,6 +100,7 @@ Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/di
 ==============
 
 
+# Affiche les infos de IT0001046553 (CARRARO), XMIL = Borsa Italiana S.P.A.
 $ ./isin.py -i IT0001046553 -p XMIL
 ISIN: IT0001046553
 Nom: CARRARO
@@ -107,6 +111,7 @@ Les Echos: https://investir.lesechos.fr/cours/action-carraro,xmil,carr,it0001046
 ==============
 
 
+# Affiche les infos de l'ISIN XPAR le plus proche (CARREFOUR)
 $ ./isin.py -s carr
 ISIN: FR0000120172
 Nom: CARREFOUR
@@ -125,6 +130,7 @@ Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/di
 ==============
 
 
+# Affiche plus d'informations sur les dividendes de Carrefour
 $ ./isin.py --extra-dividendes -i FR0000120172
 ISIN: FR0000120172
 Nom: CARREFOUR
@@ -147,6 +153,7 @@ Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/di
 ==============
 
 
+# Affiche le maximum d'informations sur l'action d'Air Liquide
 $ ./isin.py --extras -s "air liquide"
 ISIN: FR0000120073
 Nom: AIR LIQUIDE
