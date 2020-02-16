@@ -18,6 +18,7 @@ import urllib3
 # Own library
 # pylint: disable=E0401
 import lib.common as common
+import lib.history as history
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -72,72 +73,13 @@ def parse_profit(soup, report):
             profit = 100 * (float(data[-2]) / float(data[-4]) - 1)
     return profit
 
-def get_history(isin, years=3):
-    """
-    Get 3 years history of this ISIN
-    """
-    url = common.decode_rot(
-        'uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg/SQF/uvfgbel.kzy?' +
-        'ragvgl=rpubf&ivrj=NYY&pbqvsvpngvba=VFVA&rkpunatr=KCNE&' +
-        'nqqQnlYnfgCevpr=snyfr&nqwhfgrq=gehr&onfr100=snyfr&' +
-        'frffJvguAbDhbg=snyfr&crevbq={}L&tenahynevgl=&aoFrff=&'.format(years) +
-        'vafgeGbPzc=haqrsvarq&vaqvpngbeYvfg=&pbzchgrIne=gehr&' +
-        'bhgchg=pfiUvfgb&') + 'code={}'.format(isin)
-    req = SESSION.get(url, verify=False)
-    if req.ok:
-        return req.text.split('\n')
-    return False
-
-def compute_extra_dividendes(parameters, infos_boursiere):
-    """
-    Returns extra info about dividendes
-    """
-    report = dict()
-    report['last_rendement'] = 'Unknown'
-    report['last_val'] = 'Unknown'
-    report['latest_val'] = 'Unknown'
-    report['average_val'] = 'Unknown'
-    report['last_detach'] = 'Unknown'
-    report['latest_detach'] = 'Unknown'
-    report['last_year'] = 'Unknown'
-    if 'Détachement' not in infos_boursiere:
-        return report
-    history = get_history(parameters['isin'])
-    if history and infos_boursiere['Détachement'] != '-':
-        matching_date = infos_boursiere['Détachement'].split('/')
-        latest_matching_date = '20{:02d}/{}/'.format(
-            int(matching_date[2])-1, matching_date[1])
-        matching_date = '20{}/{}/{}'.format(
-            matching_date[2], matching_date[1], matching_date[0])
-        open_value = None
-        latest_open_value = None
-        for line in history:
-            date = line.split(';')[0]
-            if date == matching_date:
-                open_value = float(line.split(';')[1])
-            elif latest_matching_date in date:
-                latest_matching_date = date
-                latest_open_value = float(line.split(';')[1])
-        if open_value is not None and latest_open_value is not None:
-            dividendes = float(infos_boursiere['Dividendes'].split()[0])
-            average_val = (open_value+latest_open_value)/2
-            rendement = 100 * dividendes / average_val
-            report['last_rendement'] = round(rendement, 2)
-            report['last_val'] = round(open_value, 2)
-            report['latest_val'] = round(latest_open_value, 2)
-            report['average_val'] = round(average_val, 2)
-            report['last_detach'] = matching_date
-            report['latest_detach'] = latest_matching_date
-            report['last_year'] = latest_matching_date.split('/')[0]
-    return report
-
-def compute_extra_benefices(report, parameters):
+def compute_benefices(report, parameters):
     """
     Get necessary informations and returns an approximation of the profit development
     """
-    market = '1eCPNP'
-    if parameters['force']:
-        market = '1eCCK5'
+    indice = '1eCPNP'
+    if parameters['indice'] != 'cac40':
+        indice = '1eCCK5'
     profit = 0
     count = 1
     continue_req = True
@@ -145,7 +87,7 @@ def compute_extra_benefices(report, parameters):
         url = common.decode_rot(
             'uggcf://jjj.obhefbenzn.pbz/obhefr/npgvbaf/' +
             'cnyznerf/qvivqraqrf/cntr-{}?'.format(count) +
-            'znexrg={}&inevngvba=6'.format(market))
+            'znexrg={}&inevngvba=6'.format(indice))
         req = SESSION.get(url, allow_redirects=False)
         continue_req = req.ok and req.status_code == 200
         if continue_req:
@@ -154,7 +96,7 @@ def compute_extra_benefices(report, parameters):
         continue_req = continue_req and profit == 0
     return round(profit, 2)
 
-def compute_extra_peg(profit, infos_boursiere):
+def compute_peg(profit, infos_boursiere):
     """
     Returns an approximation of the PEG
     """
@@ -185,12 +127,12 @@ def simplify_report(report, parameters):
     if 'infos_boursiere' in report:
         for info in report['infos_boursiere']:
             simple_report[info] = report['infos_boursiere'][info]
-    if parameters['extra']['dividendes']:
-        simple_report['dividendes'] = report['extra']['dividendes']
-    if parameters['extra']['bénéfices']:
-        simple_report['benefices'] = report['extra']['bénéfices']
-    if parameters['extra']['peg']:
-        simple_report['peg'] = report['extra']['peg']
+    if parameters['history']['dividendes'] and 'dividendes' in report['history']:
+        simple_report['dividendes_history'] = report['history']['dividendes']
+    if parameters['history']['per'] and 'per' in report['history']:
+        simple_report['per_history'] = report['history']['per']
+    if parameters['history']['peg'] and 'peg' in report['history']:
+        simple_report['peg_history'] = report['history']['peg']
     return simple_report
 
 def get_report(parameters):
@@ -198,9 +140,10 @@ def get_report(parameters):
     Returns a report of all metadata from the input ISIN
     """
     report = dict()
+    report['isin'] = parameters['isin']
     url = common.decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg') + \
           common.decode_rot('/fgernzvat/pbhef/trgPbhef?') + \
-          'code={}&place={}&codif=ISIN'.format(parameters['isin'], parameters['place'])
+          'code={}&place={}&codif=ISIN'.format(parameters['isin'], parameters['mic'])
     req = SESSION.get(url, verify=False)
     report['cours'] = None
     if req.ok:
@@ -208,7 +151,7 @@ def get_report(parameters):
 
     url = common.decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg') + \
           common.decode_rot('/fgernzvat/pbhef/oybpf/trgUrnqreSvpur?') + \
-          'code={}&place={}&codif=ISIN'.format(parameters['isin'], parameters['place'])
+          'code={}&place={}&codif=ISIN'.format(parameters['isin'], parameters['mic'])
     req = SESSION.get(url, verify=False)
     header_fiche = None
     report['url'] = None
@@ -234,17 +177,21 @@ def get_report(parameters):
                 report['sub_sector'] = common.clean_data(
                     sub_sector.get_text(),
                     json_load=False)
+            report['infos_boursiere']['PEG'] = compute_peg(
+                compute_benefices(report, parameters),
+                report['infos_boursiere'])
 
-    report['extra'] = dict()
-    if parameters['extra']['dividendes']:
-        report['extra']['dividendes'] = compute_extra_dividendes(
+    report['history'] = dict()
+    if parameters['history']['dividendes']:
+        report['history']['dividendes'] = history.dividendes(
             parameters, report['infos_boursiere'])
 
-    if parameters['extra']['bénéfices'] or parameters['extra']['peg']:
-        report['extra']['bénéfices'] = compute_extra_benefices(report, parameters)
+    if parameters['history']['per']:
+        report['history']['per'] = history.per(
+            parameters, simplify_report(report, parameters))
 
-    if parameters['extra']['peg']:
-        report['extra']['peg'] = compute_extra_peg(
-            report['extra']['bénéfices'], report['infos_boursiere'])
+    if parameters['history']['peg']:
+        report['history']['peg'] = history.peg(
+            parameters, simplify_report(report, parameters), report['infos_boursiere']['PEG'])
 
     return report

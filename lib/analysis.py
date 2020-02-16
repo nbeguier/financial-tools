@@ -9,7 +9,7 @@ Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 
 # Own library
 # pylint: disable=E0401
-import lib.reporting as reporting
+import lib.history as history
 
 def per_text(per_value):
     """
@@ -43,17 +43,11 @@ def peg_text(per_value):
         result = 'croissance annoncée faible'
     return result
 
-def per_by_value(simple_report):
+def per_by_value(current_per, current_val):
     """
     Returns for each PER stage the share value
     """
     result = dict()
-    if not 'PER' in simple_report or not 'valorisation' in simple_report:
-        return result
-    current_per = float(simple_report['PER'])
-    if current_per == 0:
-        return result
-    current_val = float(simple_report['valorisation'])
     result[current_per] = dict()
     result[10] = dict()
     result[17] = dict()
@@ -68,17 +62,11 @@ def per_by_value(simple_report):
     result[25]['current'] = False
     return result
 
-def peg_by_value(simple_report):
+def peg_by_value(current_peg, current_val):
     """
     Returns for each PEG stage the share value
     """
     result = dict()
-    if not 'peg' in simple_report or not 'valorisation' in simple_report:
-        return result
-    current_peg = float(simple_report['peg'])
-    if current_peg == 0:
-        return result
-    current_val = float(simple_report['valorisation'])
     result[current_peg] = dict()
     result[0.5] = dict()
     result[1] = dict()
@@ -103,12 +91,12 @@ def get_last_val_date(isin, val):
     """
     Return the last date of this value
     """
-    history = reporting.get_history(isin, years=5)
-    if not history:
+    val_history = history.get(isin, years=5)
+    if not val_history:
         return False
-    history.reverse()
-    day1 = history[0]
-    for line in history[1:-1]:
+    val_history.reverse()
+    day1 = val_history[0]
+    for line in val_history[1:-1]:
         day0 = line
         # If missing value
         if not day0 or not day0.split(';')[3] \

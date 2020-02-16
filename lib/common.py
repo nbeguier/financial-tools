@@ -40,6 +40,7 @@ def clean_data(raw_data, json_load=True):
     Returns cleaned data
     """
     # Remove html
+    # pylint: disable=W1401
     cleaned_data = re.sub('<[a-zA-Z0-9\.\\\/\"\'=\ ]+>', '', raw_data)
     cleaned_data = cleaned_data.\
                       replace(';', '').\
@@ -81,7 +82,7 @@ def autocomplete(input_str):
                 if re.search('[a-z][a-z][0-9][0-9]', arg):
                     sub_result['ISIN'] = arg.upper()
                 if re.search('x[a-z][a-z][a-z]', arg):
-                    sub_result['place'] = arg.upper()
+                    sub_result['mic'] = arg.upper()
             sub_result['pays'] = res['pays']
             result.append(sub_result)
     return result

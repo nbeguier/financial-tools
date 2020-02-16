@@ -30,7 +30,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.2.0'
+VERSION = '1.3.0'
 
 def get_sign(value):
     """
@@ -46,12 +46,12 @@ def save_report(output_dir):
     Save or display the report on disk
     """
     parameters = dict()
-    parameters['place'] = 'XPAR'
-    parameters['force'] = False
-    parameters['extra'] = dict()
-    parameters['extra']['dividendes'] = True
-    parameters['extra']['bénéfices'] = True
-    parameters['extra']['peg'] = True
+    parameters['mic'] = 'XPAR'
+    parameters['indice'] = 'all'
+    parameters['history'] = dict()
+    parameters['history']['dividendes'] = True
+    parameters['history']['per'] = True
+    parameters['history']['peg'] = True
 
     for _isin in settings.ISIN_SAVE:
         parameters['isin'] = _isin
@@ -79,7 +79,7 @@ def load_report(input_file, display_report=True):
             sub_report = json.loads(line)
             report[sub_report['isin']] = sub_report
             if display_report:
-                display.print_report(sub_report, display_urls=False)
+                display.print_report(sub_report, footer=False)
     return report
 
 def diff_report(oldest_file, newer_file, isin_compare):

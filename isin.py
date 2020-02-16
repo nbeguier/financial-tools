@@ -19,53 +19,72 @@ import lib.reporting as reporting
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.3.1'
+VERSION = '2.0.0'
 
 def main(parameters):
     """
     Main function
     """
     report = reporting.get_report(parameters)
-    report['isin'] = parameters['isin']
     report = reporting.simplify_report(report, parameters)
-    display.print_report(report, place=parameters['place'])
+    if parameters['history']['healthy']:
+        display.print_health(report, parameters['verbose'])
+    else:
+        display.print_report(
+            report,
+            mic=parameters['mic'],
+            header=PARAMS['header'],
+            footer=PARAMS['footer'])
 
 if __name__ == '__main__':
     PARSER = ArgumentParser()
 
     PARSER.add_argument('--version', action='version', version=VERSION)
+    PARSER.add_argument('--verbose', action='store_true',\
+        help="Affiche plus d'informations (=False)", default=False)
+
     PARSER.add_argument('-i', '--isin', action='store',\
-        help='Code ISIN')
-    PARSER.add_argument('-p', '--place', action='store',\
+        help="Code ISIN")
+    PARSER.add_argument('-n', '--nom', action='store',\
+        help="Nom de l'action")
+    PARSER.add_argument('-m', '--market-id-code', action='store',\
         help="Code d'identification de marché (=XPAR)", default='XPAR')
-    PARSER.add_argument('-s', '--search', action='store',\
-        help="Recherche l'ISIN le plus probable")
-    PARSER.add_argument('--extra-dividendes', action='store_true',\
+    PARSER.add_argument('--indice', action='store',\
+        help="Indice boursier (=cac40)", default='cac40')
+    PARSER.add_argument('--no-header', action='store_true',\
+        help="Cache les informations de bases (=False)", default=False)
+    PARSER.add_argument('--no-footer', action='store_true',\
+        help="Cache les URLs de fin (=False)", default=False)
+    PARSER.add_argument('--dividendes-history', action='store_true',\
         help="Affiche plus d'informations sur les dividendes (=False)", default=False)
-    PARSER.add_argument('--extra-peg', action='store_true',\
+    PARSER.add_argument('--per-history', action='store_true',\
+        help="Affiche la valeur théorique du PER (=False)", default=False)
+    PARSER.add_argument('--peg-history', action='store_true',\
         help="Affiche la valeur théorique du PEG (=False)", default=False)
-    PARSER.add_argument('--extra-profit', action='store_true',\
-        help="Affiche la valeur théorique de l'évolution des bénéfices (=False)", default=False)
-    PARSER.add_argument('--extras', action='store_true',\
-        help="Affiche toutes les informations supplémentaires (=False)", default=False)
-    PARSER.add_argument('-f', '--force', action='store_true',\
-        help='Recherche parmis beaucoup de données (=False)', default=False)
+    PARSER.add_argument('--is-healthy', action='store_true',\
+        help="Affiche l'état de santé de l'action (=False)", default=False)
 
     ARGS = PARSER.parse_args()
 
     PARAMS = dict()
     PARAMS['isin'] = ARGS.isin
-    PARAMS['place'] = ARGS.place
-    PARAMS['force'] = ARGS.force
-    PARAMS['extra'] = dict()
-    PARAMS['extra']['dividendes'] = ARGS.extra_dividendes or ARGS.extras
-    PARAMS['extra']['bénéfices'] = ARGS.extra_profit or ARGS.extra_peg or ARGS.extras
-    PARAMS['extra']['peg'] = ARGS.extra_peg or ARGS.extras
-    if not ARGS.isin and not ARGS.search:
+    PARAMS['mic'] = ARGS.market_id_code
+    PARAMS['indice'] = ARGS.indice
+    PARAMS['verbose'] = ARGS.verbose
+    PARAMS['header'] = not ARGS.no_header
+    PARAMS['footer'] = not ARGS.no_footer
+    PARAMS['history'] = dict()
+    PARAMS['history']['dividendes'] = ARGS.dividendes_history
+    PARAMS['history']['per'] = ARGS.per_history
+    PARAMS['history']['peg'] = ARGS.peg_history
+    PARAMS['history']['healthy'] = ARGS.is_healthy
+    if ARGS.is_healthy:
+        PARAMS['indice'] = 'all'
+    if not ARGS.isin and not ARGS.nom:
         PARSER.print_help()
         sys.exit(1)
-    elif ARGS.search is not None:
-        RESULT = common.autocomplete(ARGS.search)
+    elif ARGS.nom is not None:
+        RESULT = common.autocomplete(ARGS.nom)
         if not RESULT:
             print('No result for this name')
             sys.exit(1)
