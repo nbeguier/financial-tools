@@ -30,7 +30,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.3.1'
+VERSION = '1.3.2'
 
 def get_sign(value):
     """
@@ -49,9 +49,9 @@ def save_report(output_dir):
     parameters['mic'] = 'XPAR'
     parameters['indice'] = 'all'
     parameters['history'] = dict()
-    parameters['history']['dividendes'] = True
-    parameters['history']['per'] = True
-    parameters['history']['peg'] = True
+    parameters['history']['dividendes'] = False
+    parameters['history']['per'] = False
+    parameters['history']['peg'] = False
 
     for _isin in settings.ISIN_SAVE:
         parameters['isin'] = _isin
