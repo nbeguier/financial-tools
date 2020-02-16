@@ -19,7 +19,7 @@ import lib.reporting as reporting
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.3.0'
+VERSION = '1.3.1'
 
 def main(parameters):
     """
@@ -48,11 +48,15 @@ if __name__ == '__main__':
         help="Affiche la valeur théorique de l'évolution des bénéfices (=False)", default=False)
     PARSER.add_argument('--extras', action='store_true',\
         help="Affiche toutes les informations supplémentaires (=False)", default=False)
+    PARSER.add_argument('-f', '--force', action='store_true',\
+        help='Recherche parmis beaucoup de données (=False)', default=False)
+
     ARGS = PARSER.parse_args()
 
     PARAMS = dict()
     PARAMS['isin'] = ARGS.isin
     PARAMS['place'] = ARGS.place
+    PARAMS['force'] = ARGS.force
     PARAMS['extra'] = dict()
     PARAMS['extra']['dividendes'] = ARGS.extra_dividendes or ARGS.extras
     PARAMS['extra']['bénéfices'] = ARGS.extra_profit or ARGS.extra_peg or ARGS.extras

@@ -15,11 +15,11 @@ cp settings.py.sample settings.py
 This command returns a list of probable ISIN matchine the input string.
 
 ```
-get_isin.py STRING
+autocomplete.py STRING
 ```
 
 ```
-$ ./get_isin.py carr
+$ ./autocomplete.py "carr"
 [
     {
         "ISIN": "FR0000120172",

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Get ISIN
+Autocomplete
 
 Copyright (c) 2020 Nicolas Beguier
 Licensed under the MIT License

@@ -41,7 +41,10 @@ def extract_infos_boursiere(data):
         elif key == 'PER' \
             and i < len(splitted_data) \
             and splitted_data[i+1] not in INFOS_BOURSIERE:
-            report[key] = splitted_data[i+1].replace(',', '.')
+            if splitted_data[i+1].replace(',', '.') == '-':
+                report[key] = '0'
+            else:
+                report[key] = splitted_data[i+1].replace(',', '.')
         elif key == 'Rendement' \
             and i < len(splitted_data) \
             and splitted_data[i+1] not in INFOS_BOURSIERE:
@@ -64,8 +67,26 @@ def parse_profit(soup, report):
     for raw_data in soup.find_all('tr', 'c-table__row'):
         data = common.clean_data(raw_data.get_text(), json_load=False).split()
         if re.sub('[0-9].*$', '', data[0]).upper() in report['cours']['cotation']['name'].upper():
+            if float(data[-4]) == 0:
+                return profit
             profit = 100 * (float(data[-2]) / float(data[-4]) - 1)
     return profit
+
+def get_history(isin, years=3):
+    """
+    Get 3 years history of this ISIN
+    """
+    url = common.decode_rot(
+        'uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg/SQF/uvfgbel.kzy?' +
+        'ragvgl=rpubf&ivrj=NYY&pbqvsvpngvba=VFVA&rkpunatr=KCNE&' +
+        'nqqQnlYnfgCevpr=snyfr&nqwhfgrq=gehr&onfr100=snyfr&' +
+        'frffJvguAbDhbg=snyfr&crevbq={}L&tenahynevgl=&aoFrff=&'.format(years) +
+        'vafgeGbPzc=haqrsvarq&vaqvpngbeYvfg=&pbzchgrIne=gehr&' +
+        'bhgchg=pfiUvfgb&') + 'code={}'.format(isin)
+    req = SESSION.get(url, verify=False)
+    if req.ok:
+        return req.text.split('\n')
+    return False
 
 def compute_extra_dividendes(parameters, infos_boursiere):
     """
@@ -81,15 +102,8 @@ def compute_extra_dividendes(parameters, infos_boursiere):
     report['last_year'] = 'Unknown'
     if 'Détachement' not in infos_boursiere:
         return report
-    url = common.decode_rot(
-        'uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg/SQF/uvfgbel.kzy?' +
-        'ragvgl=rpubf&ivrj=NYY&pbqvsvpngvba=VFVA&rkpunatr=KCNE&' +
-        'nqqQnlYnfgCevpr=snyfr&nqwhfgrq=gehr&onfr100=snyfr&' +
-        'frffJvguAbDhbg=snyfr&crevbq=3L&tenahynevgl=&aoFrff=&' +
-        'vafgeGbPzc=haqrsvarq&vaqvpngbeYvfg=&pbzchgrIne=gehr&' +
-        'bhgchg=pfiUvfgb&') + 'code={}'.format(parameters['isin'])
-    req = SESSION.get(url, verify=False)
-    if req.ok and infos_boursiere['Détachement'] != '-':
+    history = get_history(parameters['isin'])
+    if history and infos_boursiere['Détachement'] != '-':
         matching_date = infos_boursiere['Détachement'].split('/')
         latest_matching_date = '20{:02d}/{}/'.format(
             int(matching_date[2])-1, matching_date[1])
@@ -97,7 +111,7 @@ def compute_extra_dividendes(parameters, infos_boursiere):
             matching_date[2], matching_date[1], matching_date[0])
         open_value = None
         latest_open_value = None
-        for line in req.text.split('\n'):
+        for line in history:
             date = line.split(';')[0]
             if date == matching_date:
                 open_value = float(line.split(';')[1])
@@ -117,23 +131,27 @@ def compute_extra_dividendes(parameters, infos_boursiere):
             report['last_year'] = latest_matching_date.split('/')[0]
     return report
 
-def compute_extra_benefices(report):
+def compute_extra_benefices(report, parameters):
     """
     Get necessary informations and returns an approximation of the profit development
     """
+    market = '1eCPNP'
+    if parameters['force']:
+        market = '1eCCK5'
     profit = 0
-    url_1 = common.decode_rot(
-        'uggcf://jjj.obhefbenzn.pbz/obhefr/npgvbaf/cnyznerf/qvivqraqrf/cntr-1?' +
-        'znexrg=1eCPNP&inevngvba=6')
-    url_2 = common.decode_rot(
-        'uggcf://jjj.obhefbenzn.pbz/obhefr/npgvbaf/cnyznerf/qvivqraqrf/cntr-2?' +
-        'znexrg=1eCPNP&inevngvba=6')
-    req = SESSION.get(url_1)
-    if req.ok:
-        profit += parse_profit(BeautifulSoup(req.text, 'html.parser'), report)
-    req = SESSION.get(url_2)
-    if req.ok:
-        profit += parse_profit(BeautifulSoup(req.text, 'html.parser'), report)
+    count = 1
+    continue_req = True
+    while continue_req:
+        url = common.decode_rot(
+            'uggcf://jjj.obhefbenzn.pbz/obhefr/npgvbaf/' +
+            'cnyznerf/qvivqraqrf/cntr-{}?'.format(count) +
+            'znexrg={}&inevngvba=6'.format(market))
+        req = SESSION.get(url, allow_redirects=False)
+        continue_req = req.ok and req.status_code == 200
+        if continue_req:
+            profit += parse_profit(BeautifulSoup(req.text, 'html.parser'), report)
+        count += 1
+        continue_req = continue_req and profit == 0
     return round(profit, 2)
 
 def compute_extra_peg(profit, infos_boursiere):
@@ -223,7 +241,7 @@ def get_report(parameters):
             parameters, report['infos_boursiere'])
 
     if parameters['extra']['bénéfices'] or parameters['extra']['peg']:
-        report['extra']['bénéfices'] = compute_extra_benefices(report)
+        report['extra']['bénéfices'] = compute_extra_benefices(report, parameters)
 
     if parameters['extra']['peg']:
         report['extra']['peg'] = compute_extra_peg(

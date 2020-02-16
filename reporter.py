@@ -30,51 +30,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.1.0'
-
-ISIN_SAVE = [
-    'FR0000045072',
-    'FR0000051732',
-    'FR0000052292',
-    'FR0000073272',
-    'FR0000120073',
-    'FR0000120172',
-    'FR0000120271',
-    'FR0000120321',
-    'FR0000120404',
-    'FR0000120503',
-    'FR0000120578',
-    'FR0000120628',
-    'FR0000120644',
-    'FR0000120693',
-    'FR0000121014',
-    'FR0000121220',
-    'FR0000121261',
-    'FR0000121329',
-    'FR0000121485',
-    'FR0000121501',
-    'FR0000121667',
-    'FR0000121972',
-    'FR0000124141',
-    'FR0000125007',
-    'FR0000125338',
-    'FR0000125486',
-    'FR0000127771',
-    'FR0000130577',
-    'FR0000130650',
-    'FR0000130809',
-    'FR0000131104',
-    'FR0000131906',
-    'FR0000133308',
-    'FR0010208488',
-    'FR0010307819',
-    'FR0013176526',
-    'FR0013326246',
-    'GB00BDSFG982',
-    'LU1598757687',
-    'NL0000226223',
-    'NL0000235190',
-]
+VERSION = '1.2.0'
 
 def get_sign(value):
     """
@@ -91,12 +47,13 @@ def save_report(output_dir):
     """
     parameters = dict()
     parameters['place'] = 'XPAR'
+    parameters['force'] = False
     parameters['extra'] = dict()
     parameters['extra']['dividendes'] = True
     parameters['extra']['bénéfices'] = True
     parameters['extra']['peg'] = True
 
-    for _isin in ISIN_SAVE:
+    for _isin in settings.ISIN_SAVE:
         parameters['isin'] = _isin
         report = reporting.get_report(parameters)
         report['isin'] = _isin
@@ -154,10 +111,10 @@ def diff_report(oldest_file, newer_file, isin_compare):
             evo_per = round(float(new_report['PER']) - float(old_report['PER']), 1)
             print('Evolution PER: {}{}'.format(get_sign(evo_per), evo_per))
             print('Evolution PER: {} -> {}'.format(old_report['PER'], new_report['PER']))
-            if analysis.per(old_report['PER']) != analysis.per(new_report['PER']):
+            if analysis.per_text(old_report['PER']) != analysis.per_text(new_report['PER']):
                 print('Evolution PER: {} -> {}'.format(
-                    analysis.per(old_report['PER']),
-                    analysis.per(new_report['PER'])))
+                    analysis.per_text(old_report['PER']),
+                    analysis.per_text(new_report['PER'])))
 
         if 'peg' in new_report \
             and old_report['peg'] != new_report['peg']:
