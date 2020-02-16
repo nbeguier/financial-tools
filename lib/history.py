@@ -80,6 +80,34 @@ def dividendes(parameters, infos_boursiere):
             report['last_year'] = latest_matching_date.split('/')[0]
     return report
 
+def get_last_val_date(isin, val):
+    """
+    Return the last date of this value
+    """
+    val_history = get(isin, years=5)
+    if not val_history:
+        return False
+    val_history.reverse()
+    day1 = val_history[0]
+    for line in val_history[1:-1]:
+        day0 = line
+        # If missing value
+        if not day0 or not day0.split(';')[3] \
+            or not day1 or not day1.split(';')[3]:
+            day1 = day0
+            continue
+        min_value = min(
+            float(day0.split(';')[3]),
+            float(day1.split(';')[3]))
+        max_value = max(
+            float(day0.split(';')[2]),
+            float(day1.split(';')[2]))
+        if min_value <= val <= max_value:
+            return line.split(';')[0]
+        day1 = day0
+
+    return 'Inconnu'
+
 def per(parameters, simple_report):
     """
     Display the differents stage of the PER and when
@@ -95,7 +123,7 @@ def per(parameters, simple_report):
 
     report = analysis.per_by_value(current_per, current_val)
     for _per in report:
-        report[_per]['date'] = analysis.get_last_val_date(
+        report[_per]['date'] = get_last_val_date(
             parameters['isin'], report[_per]['value'])
     return report
 
@@ -113,6 +141,6 @@ def peg(parameters, simple_report, current_peg):
 
     report = analysis.peg_by_value(float(current_peg), current_val)
     for _peg in report:
-        report[_peg]['date'] = analysis.get_last_val_date(
+        report[_peg]['date'] = get_last_val_date(
             parameters['isin'], report[_peg]['value'])
     return report

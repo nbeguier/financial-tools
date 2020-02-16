@@ -7,10 +7,6 @@ Licensed under the MIT License
 Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 """
 
-# Own library
-# pylint: disable=E0401
-import lib.history as history
-
 def per_text(per_value):
     """
     Retuns the analysis of the PER value
@@ -86,31 +82,3 @@ def peg_by_value(current_peg, current_val):
     result[3.6]['value'] = 3.6 * current_val / current_peg
     result[3.6]['current'] = False
     return result
-
-def get_last_val_date(isin, val):
-    """
-    Return the last date of this value
-    """
-    val_history = history.get(isin, years=5)
-    if not val_history:
-        return False
-    val_history.reverse()
-    day1 = val_history[0]
-    for line in val_history[1:-1]:
-        day0 = line
-        # If missing value
-        if not day0 or not day0.split(';')[3] \
-            or not day1 or not day1.split(';')[3]:
-            day1 = day0
-            continue
-        min_value = min(
-            float(day0.split(';')[3]),
-            float(day1.split(';')[3]))
-        max_value = max(
-            float(day0.split(';')[2]),
-            float(day1.split(';')[2]))
-        if min_value <= val <= max_value:
-            return line.split(';')[0]
-        day1 = day0
-
-    return 'Inconnu'
