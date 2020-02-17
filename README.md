@@ -17,26 +17,25 @@ This function returns all metadata related to the input ISIN. You could also spe
 
 ```
 usage: isin.py [-h] [--version] [--verbose] [-i ISIN] [-n NOM]
-               [-m MARKET_ID_CODE] [--indice INDICE] [--no-header]
-               [--no-footer] [--dividendes-history] [--per-history]
-               [--peg-history] [--is-healthy]
+               [-m MARKET_ID_CODE] [--no-header] [--no-footer]
+               [--dividendes-history] [--per-history] [--peg-history]
+               [--is-healthy]
 
 optional arguments:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   --verbose             Affiche plus d'informations (=False)
+  -i ISIN, --isin ISIN  Code ISIN
   -n NOM, --nom NOM     Nom de l'action
   -m MARKET_ID_CODE, --market-id-code MARKET_ID_CODE
                         Code d'identification de marché (=XPAR)
-  --indice INDICE       Indice boursier (=cac40)
   --no-header           Cache les informations de bases (=False)
   --no-footer           Cache les URLs de fin (=False)
   --dividendes-history  Affiche plus d'informations sur les dividendes
                         (=False)
   --per-history         Affiche la valeur théorique du PER (=False)
   --peg-history         Affiche la valeur théorique du PEG (=False)
-  --is-healthy          Affiche l'état de santé de l'action (=False)```
-
+  --is-healthy          Affiche l'état de santé de l'action (=False)
 ```
 
 ```
