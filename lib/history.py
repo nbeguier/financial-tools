@@ -7,19 +7,11 @@ Licensed under the MIT License
 Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 """
 
-# Third party library imports
-from requests import Session
-import urllib3
-
 # Own library
 # pylint: disable=E0401
 import lib.analysis as analysis
+import lib.cache as cache
 import lib.common as common
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-SESSION = Session()
-HEADERS = common.gen_headers()
 
 def get(isin, years=3):
     """
@@ -32,10 +24,10 @@ def get(isin, years=3):
         'frffJvguAbDhbg=snyfr&crevbq={}L&tenahynevgl=&aoFrff=&'.format(years) +
         'vafgeGbPzc=haqrsvarq&vaqvpngbeYvfg=&pbzchgrIne=gehr&' +
         'bhgchg=pfiUvfgb&') + 'code={}'.format(isin)
-    req = SESSION.get(url, verify=False)
-    if req.ok:
-        return req.text.split('\n')
-    return False
+    content = cache.get(url, verify=False)
+    if content:
+        return content.split('\n')
+    return ''
 
 def dividendes(parameters, infos_boursiere):
     """
@@ -49,11 +41,11 @@ def dividendes(parameters, infos_boursiere):
     report['last_detach'] = 'Unknown'
     report['latest_detach'] = 'Unknown'
     report['last_year'] = 'Unknown'
-    if 'Détachement' not in infos_boursiere:
+    if 'Detachement' not in infos_boursiere:
         return report
     history = get(parameters['isin'])
-    if history and infos_boursiere['Détachement'] != '-':
-        matching_date = infos_boursiere['Détachement'].split('/')
+    if history and infos_boursiere['Detachement'] != '-':
+        matching_date = infos_boursiere['Detachement'].split('/')
         latest_matching_date = '20{:02d}/{}/'.format(
             int(matching_date[2])-1, matching_date[1])
         matching_date = '20{}/{}/{}'.format(

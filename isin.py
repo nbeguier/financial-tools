@@ -19,7 +19,7 @@ import lib.reporting as reporting
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '2.0.1'
+VERSION = '2.1.0'
 
 def main(parameters):
     """

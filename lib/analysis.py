@@ -32,7 +32,7 @@ def peg_text(per_value):
     elif float(per_value) <= 0.5:
         result = 'croissance annoncée extrème'
     elif float(per_value) <= 1.5:
-        result = 'croissance annoncée très forte'
+        result = 'croissance annoncée forte'
     elif float(per_value) <= 2.5:
         result = 'croissance annoncée ok'
     elif float(per_value) <= 3.5:

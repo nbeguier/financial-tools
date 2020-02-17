@@ -10,30 +10,17 @@ Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 # Standard library imports
 from codecs import getencoder
 import json
-from random import randint
 import re
 
-# Third party library imports
-from requests import Session
-
-SESSION = Session()
+# Own library
+# pylint: disable=E0401
+import lib.cache as cache
 
 def clean_url(raw_url):
     """
     Returns a clean URL from garbage
     """
     return 'https' + raw_url.split(' https')[1].split('#')[0]
-
-def gen_headers():
-    """
-    Returns random User-Agent
-    """
-    return {'User-Agent': \
-        'Mozilla/5.{a} (Macintosh; Intel Mac OS X 10_15_{a}) '.format(a=randint(1, 100)) +
-        'AppleWebKit/537.{} '.format(randint(1, 100)) +
-        '(KHTML, like Gecko) Chrome/80.{a}.3987.{a} '.format(a=randint(1, 100)) +
-        'Safari/537.{}'.format(randint(1, 100))}
-
 
 def clean_data(raw_data, json_load=True):
     """
@@ -69,12 +56,12 @@ def autocomplete(input_str):
     url = decode_rot('uggcf://vairfgve.yrfrpubf.se') + \
           decode_rot('/nhgbpbzcyrgr/nhgbpbzcyrgr.cuc?') + \
           'input={}'.format(input_str)
-    req = SESSION.get(url)
-    if req.ok:
+    content = cache.get(url)
+    if content:
         result = list()
-        if not 'valeurs' in clean_data(req.text)['results']:
+        if not 'valeurs' in clean_data(content)['results']:
             return result
-        full_result = clean_data(req.text)['results']['valeurs']
+        full_result = clean_data(content)['results']['valeurs']
         for res in full_result:
             sub_result = dict()
             sub_result['titre'] = res['titre']

@@ -19,7 +19,7 @@ import lib.common as common
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.3.0'
+VERSION = '1.4.0'
 
 def print_autocomplete(input_str):
     """

@@ -31,7 +31,7 @@ def print_report(report, mic='XPAR', header=True, footer=True):
             print('|| PER: {} ({})'.format(report['PER'], analysis.per_text(report['PER'])))
             print('|| PEG: {} ({})'.format(report['PEG'], analysis.peg_text(report['PEG'])))
             print('|| Rendement: {} %'.format(report['Rendement']))
-            print('|| Détachement: {}'.format(report['Détachement']))
+            print('|| Détachement: {}'.format(report['Detachement']))
             print('|| Prochain rdv: {}'.format(report['Prochain rdv']))
     # BODY
     if 'dividendes_history' in report:
@@ -105,7 +105,8 @@ def print_health(report, verbose):
     if 'PER' not in report or 'PEG' not in report:
         print(False)
     if analysis.per_text(report['PER']) == 'ration bon' \
-        and analysis.peg_text(report['PEG']) == 'croissance annoncée ok':
+        and (analysis.peg_text(report['PEG']) == 'croissance annoncée ok' \
+            or analysis.peg_text(report['PEG']) == 'croissance annoncée forte'):
         if verbose:
             print(analysis.per_text(report['PER']), analysis.peg_text(report['PEG']))
         return print(True)

@@ -12,21 +12,15 @@ import re
 
 # Third party library imports
 from bs4 import BeautifulSoup
-from requests import Session
-import urllib3
 
 # Own library
 # pylint: disable=E0401
+import lib.cache as cache
 import lib.common as common
 import lib.history as history
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-SESSION = Session()
-HEADERS = common.gen_headers()
-
 # 'Capitalisation' isin removed
-INFOS_BOURSIERE = ['Dividendes', 'PER', 'Rendement', 'Détachement', 'Prochain rdv']
+INFOS_BOURSIERE = ['Dividendes', 'PER', 'Rendement', 'Detachement', 'Prochain rdv']
 
 def extract_infos_boursiere(data):
     """
@@ -53,7 +47,7 @@ def extract_infos_boursiere(data):
         elif key == 'Détachement' \
             and i < len(splitted_data) \
             and splitted_data[i+1] not in INFOS_BOURSIERE:
-            report[key] = splitted_data[i+1]
+            report['Detachement'] = splitted_data[i+1]
         elif key == 'rdv' \
             and i < len(splitted_data) \
             and splitted_data[i+1] not in INFOS_BOURSIERE:
@@ -67,7 +61,19 @@ def parse_profit(soup, report):
     profit = 0
     for raw_data in soup.find_all('tr', 'c-table__row'):
         data = common.clean_data(raw_data.get_text(), json_load=False).split()
-        if re.sub('[0-9].*$', '', data[0]).upper() in report['cours']['cotation']['name'].upper():
+        name = ''
+        end_name = False
+        for char in data:
+            if re.search('[0-9]', char):
+                char = re.sub('[0-9].*$', '', char)
+                end_name = True
+            if char == 'CIE':
+                char = 'COMPAGNIE'
+            name += char
+            if end_name:
+                break
+            name += ' '
+        if name.upper() in report['cours']['cotation']['name'].upper():
             if float(data[-4]) == 0:
                 return profit
             profit = 100 * (float(data[-2]) / float(data[-4]) - 1)
@@ -80,7 +86,6 @@ def compute_benefices(report, parameters):
     indice = '1eCPNP'
     if parameters['indice'] != 'cac40':
         indice = '1eCCK5'
-    profit = 0
     count = 1
     continue_req = True
     while continue_req:
@@ -88,13 +93,14 @@ def compute_benefices(report, parameters):
             'uggcf://jjj.obhefbenzn.pbz/obhefr/npgvbaf/' +
             'cnyznerf/qvivqraqrf/cntr-{}?'.format(count) +
             'znexrg={}&inevngvba=6'.format(indice))
-        req = SESSION.get(url, allow_redirects=False)
-        continue_req = req.ok and req.status_code == 200
+        content = cache.get(url)
+        continue_req = content != ''
         if continue_req:
-            profit += parse_profit(BeautifulSoup(req.text, 'html.parser'), report)
+            profit = parse_profit(BeautifulSoup(content, 'html.parser'), report)
+            if profit != 0:
+                return profit
         count += 1
-        continue_req = continue_req and profit == 0
-    return round(profit, 2)
+    return 0
 
 def compute_peg(profit, infos_boursiere):
     """
@@ -144,26 +150,26 @@ def get_report(parameters):
     url = common.decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg') + \
           common.decode_rot('/fgernzvat/pbhef/trgPbhef?') + \
           'code={}&place={}&codif=ISIN'.format(parameters['isin'], parameters['mic'])
-    req = SESSION.get(url, verify=False)
+    content = cache.get(url, verify=False)
     report['cours'] = None
-    if req.ok:
-        report['cours'] = common.clean_data(req.text)
+    if content:
+        report['cours'] = common.clean_data(content)
 
     url = common.decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg') + \
           common.decode_rot('/fgernzvat/pbhef/oybpf/trgUrnqreSvpur?') + \
           'code={}&place={}&codif=ISIN'.format(parameters['isin'], parameters['mic'])
-    req = SESSION.get(url, verify=False)
+    content = cache.get(url, verify=False)
     header_fiche = None
     report['url'] = None
-    if req.ok:
-        header_fiche = common.clean_data(req.text)
+    if content:
+        header_fiche = common.clean_data(content)
         report['url'] = common.clean_url(header_fiche['headerFiche']['tweetHeaderFiche'])
 
     report['infos_boursiere'] = dict()
     if report['url'] is not None:
-        req = SESSION.get(report['url'])
-        if req.ok:
-            soup = BeautifulSoup(req.text, 'html.parser')
+        content = cache.get(report['url'])
+        if content:
+            soup = BeautifulSoup(content, 'html.parser')
             for tab in soup.find_all('table'):
                 if 'Dividendes' in tab.get_text():
                     report['infos_boursiere'] = extract_infos_boursiere(tab)
