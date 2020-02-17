@@ -22,20 +22,22 @@ def per_text(per_value):
         result = 'action surévaluée'
     return result
 
-def peg_text(per_value):
+def peg_text(peg_value):
     """
     Retuns the analysis of the PEG value
     """
+    if peg_value is None:
+        return 'inconnu'
     result = 'croissance annoncée trop faible'
-    if float(per_value) <= 0:
+    if float(peg_value) <= 0:
         result = 'aucune croissance'
-    elif float(per_value) <= 0.5:
+    elif float(peg_value) <= 0.5:
         result = 'croissance annoncée extrème'
-    elif float(per_value) <= 1.5:
+    elif float(peg_value) <= 1.5:
         result = 'croissance annoncée forte'
-    elif float(per_value) <= 2.5:
+    elif float(peg_value) <= 2.5:
         result = 'croissance annoncée ok'
-    elif float(per_value) <= 3.5:
+    elif float(peg_value) <= 3.5:
         result = 'croissance annoncée faible'
     return result
 

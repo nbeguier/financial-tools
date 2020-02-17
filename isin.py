@@ -19,7 +19,7 @@ import lib.reporting as reporting
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '2.1.0'
+VERSION = '2.1.1'
 
 def main(parameters):
     """
@@ -49,8 +49,6 @@ if __name__ == '__main__':
         help="Nom de l'action")
     PARSER.add_argument('-m', '--market-id-code', action='store',\
         help="Code d'identification de marché (=XPAR)", default='XPAR')
-    PARSER.add_argument('--indice', action='store',\
-        help="Indice boursier (=cac40)", default='cac40')
     PARSER.add_argument('--no-header', action='store_true',\
         help="Cache les informations de bases (=False)", default=False)
     PARSER.add_argument('--no-footer', action='store_true',\
@@ -69,7 +67,6 @@ if __name__ == '__main__':
     PARAMS = dict()
     PARAMS['isin'] = ARGS.isin
     PARAMS['mic'] = ARGS.market_id_code
-    PARAMS['indice'] = ARGS.indice
     PARAMS['verbose'] = ARGS.verbose
     PARAMS['header'] = not ARGS.no_header
     PARAMS['footer'] = not ARGS.no_footer
@@ -78,8 +75,6 @@ if __name__ == '__main__':
     PARAMS['history']['per'] = ARGS.per_history
     PARAMS['history']['peg'] = ARGS.peg_history
     PARAMS['history']['healthy'] = ARGS.is_healthy
-    if ARGS.is_healthy:
-        PARAMS['indice'] = 'all'
     if not ARGS.isin and not ARGS.nom:
         PARSER.print_help()
         sys.exit(1)

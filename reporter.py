@@ -30,7 +30,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.4.0'
+VERSION = '1.4.1'
 
 def get_sign(value):
     """
@@ -47,7 +47,6 @@ def save_report(output_dir):
     """
     parameters = dict()
     parameters['mic'] = 'XPAR'
-    parameters['indice'] = 'all'
     parameters['history'] = dict()
     parameters['history']['dividendes'] = False
     parameters['history']['per'] = False

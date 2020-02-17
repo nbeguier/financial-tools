@@ -79,13 +79,11 @@ def parse_profit(soup, report):
             profit = 100 * (float(data[-2]) / float(data[-4]) - 1)
     return profit
 
-def compute_benefices(report, parameters):
+def compute_benefices(report):
     """
     Get necessary informations and returns an approximation of the profit development
     """
-    indice = '1eCPNP'
-    if parameters['indice'] != 'cac40':
-        indice = '1eCCK5'
+    indice = '1eCCK5'
     count = 1
     continue_req = True
     while continue_req:
@@ -100,7 +98,7 @@ def compute_benefices(report, parameters):
             if profit != 0:
                 return profit
         count += 1
-    return 0
+    return None
 
 def compute_peg(profit, infos_boursiere):
     """
@@ -108,6 +106,8 @@ def compute_peg(profit, infos_boursiere):
     """
     if not 'PER' in infos_boursiere:
         return 0
+    if profit is None:
+        return None
     per = float(infos_boursiere['PER'].split()[0])
     if profit <= 0:
         return 0
@@ -184,7 +184,7 @@ def get_report(parameters):
                     sub_sector.get_text(),
                     json_load=False)
             report['infos_boursiere']['PEG'] = compute_peg(
-                compute_benefices(report, parameters),
+                compute_benefices(report),
                 report['infos_boursiere'])
 
     report['history'] = dict()

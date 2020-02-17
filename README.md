@@ -25,7 +25,6 @@ optional arguments:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   --verbose             Affiche plus d'informations (=False)
-  -i ISIN, --isin ISIN  Code ISIN
   -n NOM, --nom NOM     Nom de l'action
   -m MARKET_ID_CODE, --market-id-code MARKET_ID_CODE
                         Code d'identification de marché (=XPAR)

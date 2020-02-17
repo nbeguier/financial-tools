@@ -127,7 +127,7 @@ def peg(parameters, simple_report, current_peg):
     report = dict()
     if 'valorisation' not in simple_report:
         return report
-    if current_peg == 0:
+    if not current_peg:
         return report
     current_val = float(simple_report['valorisation'])
 
