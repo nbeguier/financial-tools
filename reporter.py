@@ -9,12 +9,11 @@ Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 
 # Standard library imports
 from argparse import ArgumentParser
+from datetime import datetime
 import json
 import os.path
 import sys
-
-# Third party library imports
-from datetime import datetime
+import time
 
 # Own library
 import lib.analysis as analysis
@@ -30,7 +29,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.4.1'
+VERSION = '1.5.0'
 
 def get_sign(value):
     """
@@ -130,6 +129,12 @@ def diff_report(oldest_file, newer_file, isin_compare):
         if 'Prochain rdv' in new_report \
             and old_report['Prochain rdv'] != new_report['Prochain rdv']:
             print('Nouveau rdv: {}'.format(new_report['Prochain rdv']))
+        try:
+            struct_time = time.strptime(new_report['Prochain rdv'], '%d/%m/%y')
+            if 0 <= (datetime(*struct_time[:6]) - datetime.now()).days <= 3:
+                print('[Reminder] Prochain rdv: {}'.format(new_report['Prochain rdv']))
+        except ValueError:
+            pass
         print('==============')
 
 if __name__ == '__main__':
