@@ -17,6 +17,10 @@ import time
 from requests import Session
 import urllib3
 
+# Own library
+# pylint: disable=E0401,E1101
+import settings
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 SESSION = Session()
@@ -87,10 +91,15 @@ def get(url, verify=True):
     """
     Requests the url is not in cache
     """
-    if is_in_cache(url):
+    try:
+        enable_cache = settings.ENABLE_CACHE
+    except AttributeError:
+        enable_cache = True
+    if is_in_cache(url) and enable_cache:
         return load(url)
     req = SESSION.get(url, verify=verify, allow_redirects=False)
     if req.ok and req.status_code == 200:
-        save(url, req.text)
+        if enable_cache:
+            save(url, req.text)
         return req.text
     return ''
