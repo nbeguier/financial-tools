@@ -29,7 +29,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.5.1'
+VERSION = '1.5.2'
 
 def get_sign(value):
     """
@@ -133,7 +133,7 @@ def diff_report(oldest_file, newer_file, isin_compare):
             struct_time = time.strptime(new_report['Prochain rdv'], '%d/%m/%y')
             if 0 <= (datetime(*struct_time[:6]) - datetime.now()).days <= 3:
                 print('[Reminder] Prochain rdv: {}'.format(new_report['Prochain rdv']))
-        except ValueError:
+        except (ValueError, KeyError):
             pass
         print('==============')
 
