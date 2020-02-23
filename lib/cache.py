@@ -21,6 +21,9 @@ import urllib3
 # pylint: disable=E0401,E1101
 import settings
 
+# Debug
+# from pdb import set_trace as st
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 SESSION = Session()

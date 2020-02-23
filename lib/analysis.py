@@ -7,6 +7,9 @@ Licensed under the MIT License
 Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 """
 
+# Debug
+# from pdb import set_trace as st
+
 def per_text(per_value):
     """
     Retuns the analysis of the PER value

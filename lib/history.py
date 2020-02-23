@@ -13,6 +13,9 @@ import lib.analysis as analysis
 import lib.cache as cache
 import lib.common as common
 
+# Debug
+# from pdb import set_trace as st
+
 def get(isin, years=3):
     """
     Get 3 years history of this ISIN
