@@ -39,22 +39,26 @@ optional arguments:
 ```
 
 ```
-# Affiche les infos de FR0000120172 (CARREFOUR)
-$ ./isin.py -i FR0000120172
-ISIN: FR0000120172
-Nom: CARREFOUR
-Secteur: SERVICES AUX CONSOMMATEURS / Détaillants et grossistes - Alimentation
-Valorisation: 15.855 EUR
-Variation 1 an: 6.05 %
-|| Dividendes: 0.46 EUR
-|| PER: 13.4 (ration bon)
-|| PEG: 2.1 (croissance annoncée ok)
-|| Rendement: 2.90 %
-|| Détachement: 20/06/19
-|| Prochain rdv: 27/02/20
+# Affiche les infos de FR0000120073 (AIR LIQUIDE)
+$ ./isin.py -i FR0000120073
+ISIN: FR0000120073
+Nom: AIR LIQUIDE
+Secteur: MATERIAUX DE BASE / Chimie de base
+Valorisation: 139.250 EUR
+Variation 1 an: 10.34 %
+|| Dividendes: 2.70 EUR
+|| PER: 28.6 (bulle spéculative)
+|| PEG: 4.9 (croissance annoncée trop faible)
+|| Rendement: 1.94 %
+|| Détachement: 20/05/19
+|| Prochain rdv: 24/04/20
+|| Potentiel 3 mois: 133.66 EUR
+|| Tendance court terme: Hausse
+|| Tendance moyen terme: Egal
 ==============
-Les Echos: https://investir.lesechos.fr/cours/action-carrefour,xpar,ca,fr0000120172,isin.html
-Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120172
+Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
+Boursorama: https://www.boursorama.com/cours/1rPAI/
+Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
 Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
 ==============
 
@@ -63,53 +67,62 @@ Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/di
 $ ./isin.py -i IT0001046553 -m XMIL
 ISIN: IT0001046553
 Nom: CARRARO
-Valorisation: 1.828 EUR
-Variation 1 an: -17.66 %
+Valorisation: 1.826 EUR
+Variation 1 an: -17.75 %
 ==============
 Les Echos: https://investir.lesechos.fr/cours/action-carraro,xmil,carr,it0001046553,isin.html
+Boursorama: https://www.boursorama.com/cours/1gCARR/
 ==============
 
 
-# Affiche les infos de l'ISIN XPAR le plus proche (CARREFOUR)
-$ ./isin.py -n carr
-ISIN: FR0000120172
-Nom: CARREFOUR
-Secteur: SERVICES AUX CONSOMMATEURS / Détaillants et grossistes - Alimentation
-Valorisation: 15.855 EUR
-Variation 1 an: 6.05 %
-|| Dividendes: 0.46 EUR
-|| PER: 13.4 (ration bon)
-|| PEG: 2.1 (croissance annoncée ok)
-|| Rendement: 2.90 %
-|| Détachement: 20/06/19
-|| Prochain rdv: 27/02/20
+# Affiche les infos de l'ISIN XPAR le plus proche (AIR LIQUIDE)
+$ ./isin.py -n "air liqui"
+ISIN: FR0000120073
+Nom: AIR LIQUIDE
+Secteur: MATERIAUX DE BASE / Chimie de base
+Valorisation: 139.250 EUR
+Variation 1 an: 10.34 %
+|| Dividendes: 2.70 EUR
+|| PER: 28.6 (bulle spéculative)
+|| PEG: 4.9 (croissance annoncée trop faible)
+|| Rendement: 1.94 %
+|| Détachement: 20/05/19
+|| Prochain rdv: 24/04/20
+|| Potentiel 3 mois: 133.66 EUR
+|| Tendance court terme: Hausse
+|| Tendance moyen terme: Egal
 ==============
-Les Echos: https://investir.lesechos.fr/cours/action-carrefour,xpar,ca,fr0000120172,isin.html
-Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120172
+Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
+Boursorama: https://www.boursorama.com/cours/1rPAI/
+Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
 Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
 ==============
 
 
-# Affiche plus d'informations sur les dividendes de Carrefour
-$ ./isin.py --dividendes-history -i FR0000120172
-ISIN: FR0000120172
-Nom: CARREFOUR
-Secteur: SERVICES AUX CONSOMMATEURS / Détaillants et grossistes - Alimentation
-Valorisation: 15.855 EUR
-Variation 1 an: 6.05 %
-|| Dividendes: 0.46 EUR
-|| PER: 13.4 (ration bon)
-|| PEG: 2.1 (croissance annoncée ok)
-|| Rendement: 2.90 %
-|| Détachement: 20/06/19
-|| Prochain rdv: 27/02/20
-[Dividendes History] [2018] Rendement: 2.86 %
-[Dividendes History] [2018] Valorisation: 16.09 EUR
-[Dividendes History] [2019/06/20] Valorisation: 16.8 EUR
-[Dividendes History] [2018/06/01] Valorisation: 15.38 EUR
+# Affiche plus d'informations sur les dividendes d'Air Liquide
+$ ./isin.py --dividendes-history -i FR0000120073
+ISIN: FR0000120073
+Nom: AIR LIQUIDE
+Secteur: MATERIAUX DE BASE / Chimie de base
+Valorisation: 139.250 EUR
+Variation 1 an: 10.34 %
+|| Dividendes: 2.70 EUR
+|| PER: 28.6 (bulle spéculative)
+|| PEG: 4.9 (croissance annoncée trop faible)
+|| Rendement: 1.94 %
+|| Détachement: 20/05/19
+|| Prochain rdv: 24/04/20
+|| Potentiel 3 mois: 133.66 EUR
+|| Tendance court terme: Hausse
+|| Tendance moyen terme: Egal
+[Dividendes History] [2018] Rendement: 2.65 %
+[Dividendes History] [2018] Valorisation: 101.73 EUR
+[Dividendes History] [2019/05/20] Valorisation: 105.23 EUR
+[Dividendes History] [2018/05/02] Valorisation: 98.23 EUR
 ==============
-Les Echos: https://investir.lesechos.fr/cours/action-carrefour,xpar,ca,fr0000120172,isin.html
-Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120172
+Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
+Boursorama: https://www.boursorama.com/cours/1rPAI/
+Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
 Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
 ==============
 
@@ -119,28 +132,32 @@ $ ./isin.py --peg-history --per-history --dividendes-history -n "air liquide"
 ISIN: FR0000120073
 Nom: AIR LIQUIDE
 Secteur: MATERIAUX DE BASE / Chimie de base
-Valorisation: 138.800 EUR
-Variation 1 an: 9.98 %
+Valorisation: 139.250 EUR
+Variation 1 an: 10.34 %
 || Dividendes: 2.70 EUR
-|| PER: 28.5 (bulle spéculative)
-|| PEG: 3.7 (croissance annoncée trop faible)
-|| Rendement: 1.95 %
+|| PER: 28.6 (bulle spéculative)
+|| PEG: 4.9 (croissance annoncée trop faible)
+|| Rendement: 1.94 %
 || Détachement: 20/05/19
 || Prochain rdv: 24/04/20
+|| Potentiel 3 mois: 133.66 EUR
+|| Tendance court terme: Hausse
+|| Tendance moyen terme: Egal
 [Dividendes History] [2018] Rendement: 2.65 %
 [Dividendes History] [2018] Valorisation: 101.73 EUR
 [Dividendes History] [2019/05/20] Valorisation: 105.23 EUR
 [Dividendes History] [2018/05/02] Valorisation: 98.23 EUR
-[PER History] [Inconnu] PER 10 (action sous-évaluée): 48.7 EUR
-[PER History] [2017/02/09] PER 17 (ration bon): 82.79 EUR
-[PER History] [2019/12/11] PER 25 (action surévaluée): 121.75 EUR
-[PEG History] [Inconnu] PEG 0.5 (croissance annoncée extrème): 18.76 EUR
-[PEG History] [Inconnu] PEG 1 (croissance annoncée très forte): 37.51 EUR
-[PEG History] [2016/11/09] PEG 2 (croissance annoncée ok): 75.03 EUR
-[PEG History] [2019/09/10] PEG 3 (croissance annoncée faible): 112.54 EUR
-[PEG History] [2020/02/10] PEG 3.6 (croissance annoncée trop faible): 135.05 EUR
+[PER History] [Inconnu] PER 10 (action sous-évaluée): 48.69 EUR
+[PER History] [2017/02/09] PER 17 (ration bon): 82.77 EUR
+[PER History] [2019/12/11] PER 25 (action surévaluée): 121.72 EUR
+[PEG History] [Inconnu] PEG 0.5 (croissance annoncée extrème): 14.21 EUR
+[PEG History] [Inconnu] PEG 1 (croissance annoncée forte): 28.42 EUR
+[PEG History] [Inconnu] PEG 2 (croissance annoncée ok): 56.84 EUR
+[PEG History] [2017/09/08] PEG 3 (croissance annoncée faible): 85.26 EUR
+[PEG History] [2019/06/04] PEG 3.6 (croissance annoncée trop faible): 102.31 EUR
 ==============
 Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
+Boursorama: https://www.boursorama.com/cours/1rPAI/
 Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
 Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
 ==============
