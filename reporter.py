@@ -29,7 +29,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.8.0'
+VERSION = '1.9.0'
 
 def get_sign(value):
     """
@@ -136,9 +136,16 @@ def diff_report(oldest_file, newer_file, isin_compare):
         except (ValueError, KeyError):
             pass
         if 'potential' in new_report:
-            if 'potential' not in old_report or (\
-                old_report['potential'] != new_report['potential']):
-                print('Potentiel 3 mois: {}'.format(new_report['potential']))
+            if 'potential' not in old_report or \
+                'brsrm' not in old_report['potential'] or (\
+                old_report['potential']['brsrm']['value'] != new_report['potential']['brsrm']['value']):
+                print('[Boursorama] Potentiel 3 mois: {} EUR'.format(
+                    new_report['potential']['brsrm']['value']))
+            if 'potential' not in old_report or \
+                'frtn' not in old_report['potential'] or (\
+                old_report['potential']['frtn']['value'] != new_report['potential']['frtn']['value']):
+                print('[Fortuneo] Potentiel: {} EUR'.format(
+                    new_report['potential']['frtn']['value']))
         if 'trend' in new_report:
             if 'trend' not in old_report or (\
                 old_report['trend']['echos']['short term'] != new_report['trend']['echos']['short term']):

@@ -52,12 +52,16 @@ Variation 1 an: 10.34 %
 || Rendement: 1.94 %
 || Détachement: 20/05/19
 || Prochain rdv: 24/04/20
-|| Potentiel 3 mois: 133.66 EUR
-|| Tendance court terme: Hausse
-|| Tendance moyen terme: Egal
+[Boursorama] Potentiel 3 mois: 133.66 EUR, -4.0 %
+[Fortuneo] Potentiel: 132.5 EUR, -4.8 %
+[Echos] Tendance court terme: Hausse
+[Echos] Tendance moyen terme: Neutre
+[Fortuneo] Tendance court terme: Hausse
+[Fortuneo] Tendance moyen terme: Hausse
 ==============
 Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
 Boursorama: https://www.boursorama.com/cours/1rPAI/
+Fortuneo: https://bourse.fortuneo.fr/actions/cours-air-liquide-AI-FR0000120073-23
 Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
 Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
 ==============
@@ -88,12 +92,16 @@ Variation 1 an: 10.34 %
 || Rendement: 1.94 %
 || Détachement: 20/05/19
 || Prochain rdv: 24/04/20
-|| Potentiel 3 mois: 133.66 EUR
-|| Tendance court terme: Hausse
-|| Tendance moyen terme: Egal
+[Boursorama] Potentiel 3 mois: 133.66 EUR, -4.0 %
+[Fortuneo] Potentiel: 132.5 EUR, -4.8 %
+[Echos] Tendance court terme: Hausse
+[Echos] Tendance moyen terme: Neutre
+[Fortuneo] Tendance court terme: Hausse
+[Fortuneo] Tendance moyen terme: Hausse
 ==============
 Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
 Boursorama: https://www.boursorama.com/cours/1rPAI/
+Fortuneo: https://bourse.fortuneo.fr/actions/cours-air-liquide-AI-FR0000120073-23
 Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
 Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
 ==============
@@ -112,9 +120,12 @@ Variation 1 an: 10.34 %
 || Rendement: 1.94 %
 || Détachement: 20/05/19
 || Prochain rdv: 24/04/20
-|| Potentiel 3 mois: 133.66 EUR
-|| Tendance court terme: Hausse
-|| Tendance moyen terme: Egal
+[Boursorama] Potentiel 3 mois: 133.66 EUR, -4.0 %
+[Fortuneo] Potentiel: 132.5 EUR, -4.8 %
+[Echos] Tendance court terme: Hausse
+[Echos] Tendance moyen terme: Neutre
+[Fortuneo] Tendance court terme: Hausse
+[Fortuneo] Tendance moyen terme: Hausse
 [Dividendes History] [2018] Rendement: 2.65 %
 [Dividendes History] [2018] Valorisation: 101.73 EUR
 [Dividendes History] [2019/05/20] Valorisation: 105.23 EUR
@@ -122,6 +133,7 @@ Variation 1 an: 10.34 %
 ==============
 Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
 Boursorama: https://www.boursorama.com/cours/1rPAI/
+Fortuneo: https://bourse.fortuneo.fr/actions/cours-air-liquide-AI-FR0000120073-23
 Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
 Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
 ==============
@@ -140,9 +152,12 @@ Variation 1 an: 10.34 %
 || Rendement: 1.94 %
 || Détachement: 20/05/19
 || Prochain rdv: 24/04/20
-|| Potentiel 3 mois: 133.66 EUR
-|| Tendance court terme: Hausse
-|| Tendance moyen terme: Egal
+[Boursorama] Potentiel 3 mois: 133.66 EUR, -4.0 %
+[Fortuneo] Potentiel: 132.5 EUR, -4.8 %
+[Echos] Tendance court terme: Hausse
+[Echos] Tendance moyen terme: Neutre
+[Fortuneo] Tendance court terme: Hausse
+[Fortuneo] Tendance moyen terme: Hausse
 [Dividendes History] [2018] Rendement: 2.65 %
 [Dividendes History] [2018] Valorisation: 101.73 EUR
 [Dividendes History] [2019/05/20] Valorisation: 105.23 EUR
@@ -158,6 +173,7 @@ Variation 1 an: 10.34 %
 ==============
 Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
 Boursorama: https://www.boursorama.com/cours/1rPAI/
+Fortuneo: https://bourse.fortuneo.fr/actions/cours-air-liquide-AI-FR0000120073-23
 Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
 Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
 ==============

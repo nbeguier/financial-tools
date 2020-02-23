@@ -120,7 +120,7 @@ def compute_peg(profit, infos_boursiere):
     return round(per/profit, 1)
 
 
-def get_echos_url(isin, mic):
+def get_url_echos(isin, mic):
     """
     Return Echos URL
     """
@@ -134,7 +134,7 @@ def get_echos_url(isin, mic):
     url_echos = common.clean_url(header_fiche['headerFiche']['tweetHeaderFiche'])
     return url_echos
 
-def get_brsrm_url(isin):
+def get_url_brsrm(isin):
     """
     Return Brsrm URL
     """
@@ -147,7 +147,7 @@ def get_brsrm_url(isin):
     path = soup.find('a', 'search__list__link')['href']
     return base_url+path
 
-def get_frtn_url(isin):
+def get_url_frtn(isin):
     """
     Return Frtn URL
     """
@@ -165,26 +165,49 @@ def get_frtn_url(isin):
         return None
     return url
 
-def get_potential(url_brsrm):
+def get_potential(url_brsrm, url_frtn, cours):
     """
     Returns the potential for 3 month
     """
-    if not url_brsrm:
-        return None
-    content = cache.get(url_brsrm)
-    if not content:
-        return None
-    soup = BeautifulSoup(content, 'html.parser')
-    potential = None
-    for i in soup.find_all('p'):
-        if 'Objectif de cours' in i.text:
-            value = i.find('span', 'u-text-bold')
-            if not value:
+    report = dict()
+    report['brsrm'] = dict()
+    report['brsrm']['value'] = None
+    report['brsrm']['percentage'] = 0
+    report['frtn'] = dict()
+    report['frtn']['value'] = None
+    report['frtn']['percentage'] = 0
+    if url_brsrm:
+        content = cache.get(url_brsrm)
+        if content:
+            soup = BeautifulSoup(content, 'html.parser')
+            for i in soup.find_all('p'):
+                if 'Objectif de cours' in i.text:
+                    value = i.find('span', 'u-text-bold')
+                    if not value:
+                        return None, 0
+                    report['brsrm']['value'] = common.clean_data(
+                        value.text, json_load=False).split()[0]
+                    if cours:
+                        val = float(cours['cotation']['valorisation'].replace(',', '.'))
+                        report['brsrm']['percentage'] = round(
+                            (float(report['brsrm']['value']) / val - 1)*100, 1)
+    if url_frtn:
+        market = int(url_frtn.split('-')[-1])
+        isin = url_frtn.split('-')[-2]
+        avis_url = common.decode_rot('uggcf://obhefr.sbegharb.se/ncv/inyhr/nivf/SGA') + \
+            '{market:06d}{isin}'.format(market=market, isin=isin)
+        content = cache.get(avis_url)
+        if content:
+            try:
+                json_content = json.loads(content)
+            except json.decoder.JSONDecodeError:
                 return None
-            potential = common.clean_data(value.text, json_load=False).split()[0]
-    return potential
+            report['frtn']['value'] = json_content['consensus']['objectif']
+            report['frtn']['percentage'] = round(
+                float(json_content['consensus']['potentiel'])*100, 1)
+    return report
 
-def get_trend(echos_url, frtn_url):
+def get_trend(url_echos, url_frtn):
     """
     Returns trend short/mid term
     """
@@ -196,8 +219,8 @@ def get_trend(echos_url, frtn_url):
     report['frtn']['short term'] = None
     report['frtn']['mid term'] = None
     # Echos
-    if echos_url:
-        url = echos_url.replace('/action-', '/recommandations-action-')
+    if url_echos:
+        url = url_echos.replace('/action-', '/recommandations-action-')
         content = cache.get(url)
         if content:
             soup = BeautifulSoup(content, 'html.parser')
@@ -217,9 +240,9 @@ def get_trend(echos_url, frtn_url):
                 if 'moyen terme' in i.text:
                     report['echos']['mid term'] = 'Baisse'
     # Frtn
-    if frtn_url:
-        market = int(frtn_url.split('-')[-1])
-        isin = frtn_url.split('-')[-2]
+    if url_frtn:
+        market = int(url_frtn.split('-')[-1])
+        isin = url_frtn.split('-')[-2]
         trend_url = common.decode_rot('uggcf://obhefr.sbegharb.se/ncv/inyhr/geraqf/NPGVBAF/SGA') + \
             '{market:06d}{isin}'.format(market=market, isin=isin)
         content = cache.get(trend_url)
@@ -285,9 +308,9 @@ def get_report(parameters):
     if content:
         report['cours'] = common.clean_data(content)
 
-    report['url_echos'] = get_echos_url(parameters['isin'], parameters['mic'])
-    report['url_brsrm'] = get_brsrm_url(parameters['isin'])
-    report['url_frtn'] = get_frtn_url(parameters['isin'])
+    report['url_echos'] = get_url_echos(parameters['isin'], parameters['mic'])
+    report['url_brsrm'] = get_url_brsrm(parameters['isin'])
+    report['url_frtn'] = get_url_frtn(parameters['isin'])
 
     report['infos_boursiere'] = dict()
     if report['url_echos'] is not None:
@@ -311,7 +334,7 @@ def get_report(parameters):
                 compute_benefices(report),
                 report['infos_boursiere'])
     report['trend'] = get_trend(report['url_echos'], report['url_frtn'])
-    report['potential'] = get_potential(report['url_brsrm'])
+    report['potential'] = get_potential(report['url_brsrm'], report['url_frtn'], report['cours'])
 
     report['history'] = dict()
     if parameters['history']['dividendes']:

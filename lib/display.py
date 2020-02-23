@@ -36,7 +36,12 @@ def print_report(report, mic='XPAR', header=True, footer=True):
             print('|| Rendement: {} %'.format(report['Rendement']))
             print('|| Détachement: {}'.format(report['Detachement']))
             print('|| Prochain rdv: {}'.format(report['Prochain rdv']))
-            print('[Boursorama] Potentiel 3 mois: {} EUR'.format(report['potential']))
+            print('[Boursorama] Potentiel 3 mois: {} EUR, {} %'.format(
+                report['potential']['brsrm']['value'],
+                report['potential']['brsrm']['percentage']))
+            print('[Fortuneo] Potentiel: {} EUR, {} %'.format(
+                report['potential']['frtn']['value'],
+                report['potential']['frtn']['percentage']))
             print('[Echos] Tendance court terme: {}'.format(
                 report['trend']['echos']['short term']))
             print('[Echos] Tendance moyen terme: {}'.format(
