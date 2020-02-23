@@ -14,7 +14,7 @@ from random import randint
 import time
 
 # Third party library imports
-from requests import Session
+from requests import exceptions, Session
 import urllib3
 
 # Own library
@@ -68,36 +68,53 @@ def is_in_cache(url):
         return False
     return True
 
+def purge_cache(cache_path):
+    """
+    Remove cache is present
+    """
+    if os.path.exists(cache_path):
+        os.remove(cache_path)
+
 def save(url, content):
     """
     Save the content in the cache
     """
-    url_hash = get_hash(url)
+    cache_path = 'cache/{}'.format(get_hash(url))
     if not os.path.exists('cache'):
         os.mkdir('cache')
-    with open('cache/{}'.format(url_hash), 'w') as url_file:
-        url_file.write(content)
+    try:
+        with open(cache_path, 'w') as url_file:
+            url_file.write(content)
+    except UnicodeEncodeError:
+        purge_cache(cache_path)
 
 def load(url):
     """
     Returns the url's content from the cache
     """
-    url_hash = get_hash(url)
-    with open('cache/{}'.format(url_hash), 'r') as url_file:
-        content = url_file.read()
+    cache_path = 'cache/{}'.format(get_hash(url))
+    try:
+        with open(cache_path, 'r') as url_file:
+            content = url_file.read()
+    except UnicodeDecodeError:
+        purge_cache(cache_path)
+        content = get(url, verify=False, disable_cache=True)
     return content
 
-def get(url, verify=True):
+def get(url, verify=True, disable_cache=False):
     """
     Requests the url is not in cache
     """
     try:
-        enable_cache = settings.ENABLE_CACHE
+        enable_cache = settings.ENABLE_CACHE and not disable_cache
     except AttributeError:
-        enable_cache = True
+        enable_cache = not disable_cache
     if is_in_cache(url) and enable_cache:
         return load(url)
-    req = SESSION.get(url, verify=verify, allow_redirects=False)
+    try:
+        req = SESSION.get(url, verify=verify, allow_redirects=False)
+    except exceptions.ConnectionError:
+        return ''
     if req.ok and req.status_code == 200:
         if enable_cache:
             save(url, req.text)
