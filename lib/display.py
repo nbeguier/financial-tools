@@ -50,6 +50,10 @@ def print_report(report, mic='XPAR', header=True, footer=True):
                 report['trend']['frtn']['short term']))
             print('[Fortuneo] Tendance moyen terme: {}'.format(
                 report['trend']['frtn']['mid term']))
+            print('[BNP] Tendance court terme: {}'.format(
+                report['trend']['bnp']['short term']))
+            print('[BNP] Tendance moyen terme: {}'.format(
+                report['trend']['bnp']['mid term']))
     # BODY
     if 'dividendes_history' in report:
         print('[Dividendes History] [{}] Rendement: {} %'.format(

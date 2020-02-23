@@ -58,6 +58,8 @@ Variation 1 an: 10.34 %
 [Echos] Tendance moyen terme: Neutre
 [Fortuneo] Tendance court terme: Hausse
 [Fortuneo] Tendance moyen terme: Hausse
+[BNP] Tendance court terme: Hausse
+[BNP] Tendance moyen terme: Neutre
 ==============
 Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
 Boursorama: https://www.boursorama.com/cours/1rPAI/
@@ -98,6 +100,8 @@ Variation 1 an: 10.34 %
 [Echos] Tendance moyen terme: Neutre
 [Fortuneo] Tendance court terme: Hausse
 [Fortuneo] Tendance moyen terme: Hausse
+[BNP] Tendance court terme: Hausse
+[BNP] Tendance moyen terme: Neutre
 ==============
 Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
 Boursorama: https://www.boursorama.com/cours/1rPAI/
@@ -126,6 +130,8 @@ Variation 1 an: 10.34 %
 [Echos] Tendance moyen terme: Neutre
 [Fortuneo] Tendance court terme: Hausse
 [Fortuneo] Tendance moyen terme: Hausse
+[BNP] Tendance court terme: Hausse
+[BNP] Tendance moyen terme: Neutre
 [Dividendes History] [2018] Rendement: 2.65 %
 [Dividendes History] [2018] Valorisation: 101.73 EUR
 [Dividendes History] [2019/05/20] Valorisation: 105.23 EUR
@@ -158,6 +164,8 @@ Variation 1 an: 10.34 %
 [Echos] Tendance moyen terme: Neutre
 [Fortuneo] Tendance court terme: Hausse
 [Fortuneo] Tendance moyen terme: Hausse
+[BNP] Tendance court terme: Hausse
+[BNP] Tendance moyen terme: Neutre
 [Dividendes History] [2018] Rendement: 2.65 %
 [Dividendes History] [2018] Valorisation: 101.73 EUR
 [Dividendes History] [2019/05/20] Valorisation: 105.23 EUR

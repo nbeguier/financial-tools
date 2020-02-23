@@ -29,7 +29,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.9.0'
+VERSION = '1.10.0'
 
 def get_sign(value):
     """
@@ -163,6 +163,14 @@ def diff_report(oldest_file, newer_file, isin_compare):
                 old_report['trend']['frtn']['mid term'] != new_report['trend']['frtn']['mid term']):
                 print('[Fortuneo] Tendance moyen terme: {}'.format(
                     new_report['trend']['frtn']['mid term']))
+            if 'trend' not in old_report or (\
+                old_report['trend']['bnp']['short term'] != new_report['trend']['bnp']['short term']):
+                print('[BNP] Tendance court terme: {}'.format(
+                    new_report['trend']['bnp']['short term']))
+            if 'trend' not in old_report or (\
+                old_report['trend']['bnp']['mid term'] != new_report['trend']['bnp']['mid term']):
+                print('[BNP] Tendance moyen terme: {}'.format(
+                    new_report['trend']['bnp']['mid term']))
         print('==============')
 
 if __name__ == '__main__':

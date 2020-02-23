@@ -115,11 +115,30 @@ def get(url, verify=True, disable_cache=False):
     if is_in_cache(url) and enable_cache:
         return load(url)
     try:
-        req = SESSION.get(url, verify=verify, allow_redirects=False)
+        req = SESSION.get(url, verify=verify, allow_redirects=False, headers=HEADERS)
     except exceptions.ConnectionError:
         return ''
     if req.ok and req.status_code == 200:
         if enable_cache:
             save(url, req.text)
+        return req.text
+    return ''
+
+def post(url, payload, verify=True, disable_cache=False):
+    """
+    Requests the url is not in cache
+    """
+    # TODO: implement cache
+    HEADERS.update({'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'})
+    try:
+        req = SESSION.post(
+            url,
+            data=payload,
+            verify=verify,
+            allow_redirects=False,
+            headers=HEADERS)
+    except exceptions.ConnectionError:
+        return ''
+    if req.ok and req.status_code == 200:
         return req.text
     return ''

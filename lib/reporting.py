@@ -218,6 +218,9 @@ def get_trend(url_echos, url_frtn):
     report['frtn'] = dict()
     report['frtn']['short term'] = None
     report['frtn']['mid term'] = None
+    report['bnp'] = dict()
+    report['bnp']['short term'] = None
+    report['bnp']['mid term'] = None
     # Echos
     if url_echos:
         url = url_echos.replace('/action-', '/recommandations-action-')
@@ -260,6 +263,31 @@ def get_trend(url_echos, url_frtn):
                 report['frtn']['short term'] = mapping[json_content['opinionCT']]
             if 'opinionMT' in json_content and json_content['opinionMT'] in mapping:
                 report['frtn']['mid term'] = mapping[json_content['opinionMT']]
+    # BNP
+    trend_url = common.decode_rot('uggcf://ppvjro.oaccnevonf.pbz/ri/se/terraonax/-;'+ \
+        'rifvq=fHXKzv85nNLdRgeWB8AO-0TPC4JTJ7FDJO63tOwt.aqyc-ppvjro-nf07')
+    payload = common.decode_rot('%24cneg=oacc.znexrgqngn.fancfubgObql&%24rirag=ybnq') + \
+        common.decode_rot('&znaqngbelSvryqf%5O%5Q=frphevglGlcr&znaqngbelSvryqf%5O%5Q=vq') + \
+        common.decode_rot('&znaqngbelSvryqf%5O%5Q=bevtvanyFrphevgl&znaqngbelSvryqf%5O%5Q') + \
+        common.decode_rot('=rkpunatrPbqr&cersvk=ppv.znexrgqngn.fancfubg&oy=terraonax&br=se') + \
+        '&id='+ isin + common.decode_rot('&frphevglGlcr=fgbpxf&zvo_hfre_ybttva=snyfr')
+    content = cache.post(trend_url, payload)
+    if content:
+        soup = BeautifulSoup(content, 'html.parser')
+        mapping = {
+            'termArrow2': 'Hausse',
+            'termArrow1': 'Hausse',
+            'termArrow0': 'Neutre',
+            'termArrow-1': 'Baisse',
+            'termArrow-2': 'Baisse',
+            'termArrown.c.': None,
+        }
+        try:
+            table = soup.find('table', 'analysisTeaserTable').find('tr', 'even-row')
+            report['bnp']['short term'] = mapping[table.find_all('div')[0]['class'][0]]
+            report['bnp']['mid term'] = mapping[table.find_all('div')[1]['class'][0]]
+        except (IndexError, AttributeError):
+            pass
     return report
 
 def simplify_report(report, parameters):
