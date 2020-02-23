@@ -19,6 +19,9 @@ import lib.cache as cache
 import lib.common as common
 import lib.history as history
 
+# Debug
+# from pdb import set_trace as st
+
 # 'Capitalisation' isin removed
 INFOS_BOURSIERE = ['Dividendes', 'PER', 'Rendement', 'Detachement', 'Prochain rdv']
 
@@ -113,27 +116,26 @@ def compute_peg(profit, infos_boursiere):
         return 0
     return round(per/profit, 1)
 
-def get_brsrm(parameters):
+def get_brsrm(isin):
     """
     Return Brsrm
     """
     base_url = common.decode_rot('uggcf://jjj.obhefbenzn.pbz')
     search_path = common.decode_rot('/erpurepur/nwnk?dhrel=')
-    content = cache.get(base_url+search_path+parameters['isin'])
+    content = cache.get(base_url+search_path+isin)
     if not content:
         return None
     soup = BeautifulSoup(content, 'html.parser')
     path = soup.find('a', 'search__list__link')['href']
     return base_url+path
 
-def get_potential(parameters):
+def get_potential(url_brsrm):
     """
     Returns the potential for 3 month
     """
-    url = get_brsrm(parameters)
-    if not url:
+    if not url_brsrm:
         return None
-    content = cache.get(url)
+    content = cache.get(url_brsrm)
     if not content:
         return None
     soup = BeautifulSoup(content, 'html.parser')
@@ -146,6 +148,37 @@ def get_potential(parameters):
             potential = common.clean_data(value.text, json_load=False).split()[0]
     return potential
 
+def get_trend(base_url):
+    """
+    Returns trend short/mid term
+    """
+    report = dict()
+    report['short term'] = None
+    report['mid term'] = None
+    if not base_url:
+        return report
+    url = base_url.replace('/action-', '/recommandations-action-')
+    content = cache.get(url)
+    if not content:
+        return report
+    soup = BeautifulSoup(content, 'html.parser')
+    for i in soup.find_all('div', 'tendance hausse'):
+        if 'court terme' in i.text:
+            report['short term'] = 'Hausse'
+        if 'moyen terme' in i.text:
+            report['mid term'] = 'Hausse'
+    for i in soup.find_all('div', 'tendance egal'):
+        if 'court terme' in i.text:
+            report['short term'] = 'Egal'
+        if 'moyen terme' in i.text:
+            report['mid term'] = 'Egal'
+    for i in soup.find_all('div', 'tendance baisse'):
+        if 'court terme' in i.text:
+            report['short term'] = 'Baisse'
+        if 'moyen terme' in i.text:
+            report['mid term'] = 'Baisse'
+    return report
+
 def simplify_report(report, parameters):
     """
     Returns a simplified version of the report
@@ -153,6 +186,9 @@ def simplify_report(report, parameters):
     simple_report = dict()
     simple_report['isin'] = report['isin']
     simple_report['url'] = report['url']
+    simple_report['potential'] = report['potential']
+    simple_report['url_brsrm'] = report['url_brsrm']
+    simple_report['trend'] = report['trend']
 
     if report['cours'] is not None:
         simple_report['nom'] = report['cours']['cotation']['name']
@@ -172,7 +208,6 @@ def simplify_report(report, parameters):
         simple_report['per_history'] = report['history']['per']
     if parameters['history']['peg'] and 'peg' in report['history']:
         simple_report['peg_history'] = report['history']['peg']
-    simple_report['potential'] = report['potential']
     return simple_report
 
 def get_report(parameters):
@@ -220,7 +255,9 @@ def get_report(parameters):
             report['infos_boursiere']['PEG'] = compute_peg(
                 compute_benefices(report),
                 report['infos_boursiere'])
-    report['potential'] = get_potential(parameters)
+    report['trend'] = get_trend(report['url'])
+    report['url_brsrm'] = get_brsrm(parameters['isin'])
+    report['potential'] = get_potential(report['url_brsrm'])
 
     report['history'] = dict()
     if parameters['history']['dividendes']:

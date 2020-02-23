@@ -11,6 +11,9 @@ Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 # pylint: disable=E0401
 import lib.analysis as analysis
 
+# Debug
+# from pdb import set_trace as st
+
 def print_report(report, mic='XPAR', header=True, footer=True):
     """
     Prints the report
@@ -34,6 +37,8 @@ def print_report(report, mic='XPAR', header=True, footer=True):
             print('|| Détachement: {}'.format(report['Detachement']))
             print('|| Prochain rdv: {}'.format(report['Prochain rdv']))
             print('|| Potentiel 3 mois: {} EUR'.format(report['potential']))
+            print('|| Tendance court terme: {}'.format(report['trend']['short term']))
+            print('|| Tendance moyen terme: {}'.format(report['trend']['mid term']))
     # BODY
     if 'dividendes_history' in report:
         print('[Dividendes History] [{}] Rendement: {} %'.format(
@@ -57,6 +62,8 @@ def print_report(report, mic='XPAR', header=True, footer=True):
         print('==============')
         if report['url'] is not None:
             print('Les Echos: {}'.format(report['url']))
+        if report['url_brsrm'] is not None:
+            print('Boursorama: {}'.format(report['url_brsrm']))
         if mic == 'XPAR':
             print('Recapitulatif dividendes: https://www.bnains.org' +
                   '/archives/action.php?' +
