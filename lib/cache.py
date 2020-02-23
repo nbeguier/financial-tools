@@ -14,7 +14,7 @@ from random import randint
 import time
 
 # Third party library imports
-from requests import Session
+from requests import exceptions, Session
 import urllib3
 
 # Own library
@@ -111,7 +111,10 @@ def get(url, verify=True, disable_cache=False):
         enable_cache = not disable_cache
     if is_in_cache(url) and enable_cache:
         return load(url)
-    req = SESSION.get(url, verify=verify, allow_redirects=False)
+    try:
+        req = SESSION.get(url, verify=verify, allow_redirects=False)
+    except exceptions.ConnectionError:
+        return ''
     if req.ok and req.status_code == 200:
         if enable_cache:
             save(url, req.text)
