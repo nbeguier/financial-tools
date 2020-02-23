@@ -8,6 +8,7 @@ Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 """
 
 # Standard library imports
+import json
 import re
 
 # Third party library imports
@@ -76,6 +77,8 @@ def parse_profit(soup, report):
             if end_name:
                 break
             name += ' '
+        # pylint: disable=W1401
+        name = re.sub(' \(.*\)', '', name)
         if name.upper() in report['cours']['cotation']['name'].upper():
             if float(data[-4]) == 0:
                 return profit
@@ -116,9 +119,24 @@ def compute_peg(profit, infos_boursiere):
         return 0
     return round(per/profit, 1)
 
-def get_brsrm(isin):
+
+def get_echos_url(isin, mic):
     """
-    Return Brsrm
+    Return Echos URL
+    """
+    url = common.decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg') + \
+          common.decode_rot('/fgernzvat/pbhef/oybpf/trgUrnqreSvpur?') + \
+          'code={}&place={}&codif=ISIN'.format(isin, mic)
+    content = cache.get(url, verify=False)
+    if not content:
+        return None
+    header_fiche = common.clean_data(content)
+    url_echos = common.clean_url(header_fiche['headerFiche']['tweetHeaderFiche'])
+    return url_echos
+
+def get_brsrm_url(isin):
+    """
+    Return Brsrm URL
     """
     base_url = common.decode_rot('uggcf://jjj.obhefbenzn.pbz')
     search_path = common.decode_rot('/erpurepur/nwnk?dhrel=')
@@ -128,6 +146,24 @@ def get_brsrm(isin):
     soup = BeautifulSoup(content, 'html.parser')
     path = soup.find('a', 'search__list__link')['href']
     return base_url+path
+
+def get_frtn_url(isin):
+    """
+    Return Frtn URL
+    """
+    base_url = 'https://bourse.fortuneo.fr/api/search?term={}'.format(isin)
+    content = cache.get(base_url)
+    if not content:
+        return None
+    try:
+        json_content = json.loads(content)
+    except json.decoder.JSONDecodeError:
+        return None
+    try:
+        url = json_content['searchResults']['market']['arkea']['items'][0]['url']
+    except (KeyError, IndexError):
+        return None
+    return url
 
 def get_potential(url_brsrm):
     """
@@ -148,35 +184,59 @@ def get_potential(url_brsrm):
             potential = common.clean_data(value.text, json_load=False).split()[0]
     return potential
 
-def get_trend(base_url):
+def get_trend(echos_url, frtn_url):
     """
     Returns trend short/mid term
     """
     report = dict()
-    report['short term'] = None
-    report['mid term'] = None
-    if not base_url:
-        return report
-    url = base_url.replace('/action-', '/recommandations-action-')
-    content = cache.get(url)
-    if not content:
-        return report
-    soup = BeautifulSoup(content, 'html.parser')
-    for i in soup.find_all('div', 'tendance hausse'):
-        if 'court terme' in i.text:
-            report['short term'] = 'Hausse'
-        if 'moyen terme' in i.text:
-            report['mid term'] = 'Hausse'
-    for i in soup.find_all('div', 'tendance egal'):
-        if 'court terme' in i.text:
-            report['short term'] = 'Egal'
-        if 'moyen terme' in i.text:
-            report['mid term'] = 'Egal'
-    for i in soup.find_all('div', 'tendance baisse'):
-        if 'court terme' in i.text:
-            report['short term'] = 'Baisse'
-        if 'moyen terme' in i.text:
-            report['mid term'] = 'Baisse'
+    report['echos'] = dict()
+    report['echos']['short term'] = None
+    report['echos']['mid term'] = None
+    report['frtn'] = dict()
+    report['frtn']['short term'] = None
+    report['frtn']['mid term'] = None
+    # Echos
+    if echos_url:
+        url = echos_url.replace('/action-', '/recommandations-action-')
+        content = cache.get(url)
+        if content:
+            soup = BeautifulSoup(content, 'html.parser')
+            for i in soup.find_all('div', 'tendance hausse'):
+                if 'court terme' in i.text:
+                    report['echos']['short term'] = 'Hausse'
+                if 'moyen terme' in i.text:
+                    report['echos']['mid term'] = 'Hausse'
+            for i in soup.find_all('div', 'tendance egal'):
+                if 'court terme' in i.text:
+                    report['echos']['short term'] = 'Neutre'
+                if 'moyen terme' in i.text:
+                    report['echos']['mid term'] = 'Neutre'
+            for i in soup.find_all('div', 'tendance baisse'):
+                if 'court terme' in i.text:
+                    report['echos']['short term'] = 'Baisse'
+                if 'moyen terme' in i.text:
+                    report['echos']['mid term'] = 'Baisse'
+    # Frtn
+    if frtn_url:
+        market = int(frtn_url.split('-')[-1])
+        isin = frtn_url.split('-')[-2]
+        trend_url = common.decode_rot('uggcf://obhefr.sbegharb.se/ncv/inyhr/geraqf/NPGVBAF/SGA') + \
+            '{market:06d}{isin}'.format(market=market, isin=isin)
+        content = cache.get(trend_url)
+        if content and content != 'null':
+            try:
+                json_content = json.loads(content)
+            except json.decoder.JSONDecodeError:
+                return None
+            mapping = {
+                'POSITIVE': 'Hausse',
+                'NEUTRE': 'Neutre',
+                'NEGATIVE': 'Baisse',
+            }
+            if 'opinionCT' in json_content and json_content['opinionCT'] in mapping:
+                report['frtn']['short term'] = mapping[json_content['opinionCT']]
+            if 'opinionMT' in json_content and json_content['opinionMT'] in mapping:
+                report['frtn']['mid term'] = mapping[json_content['opinionMT']]
     return report
 
 def simplify_report(report, parameters):
@@ -185,9 +245,10 @@ def simplify_report(report, parameters):
     """
     simple_report = dict()
     simple_report['isin'] = report['isin']
-    simple_report['url'] = report['url']
     simple_report['potential'] = report['potential']
+    simple_report['url_echos'] = report['url_echos']
     simple_report['url_brsrm'] = report['url_brsrm']
+    simple_report['url_frtn'] = report['url_frtn']
     simple_report['trend'] = report['trend']
 
     if report['cours'] is not None:
@@ -224,19 +285,13 @@ def get_report(parameters):
     if content:
         report['cours'] = common.clean_data(content)
 
-    url = common.decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg') + \
-          common.decode_rot('/fgernzvat/pbhef/oybpf/trgUrnqreSvpur?') + \
-          'code={}&place={}&codif=ISIN'.format(parameters['isin'], parameters['mic'])
-    content = cache.get(url, verify=False)
-    header_fiche = None
-    report['url'] = None
-    if content:
-        header_fiche = common.clean_data(content)
-        report['url'] = common.clean_url(header_fiche['headerFiche']['tweetHeaderFiche'])
+    report['url_echos'] = get_echos_url(parameters['isin'], parameters['mic'])
+    report['url_brsrm'] = get_brsrm_url(parameters['isin'])
+    report['url_frtn'] = get_frtn_url(parameters['isin'])
 
     report['infos_boursiere'] = dict()
-    if report['url'] is not None:
-        content = cache.get(report['url'])
+    if report['url_echos'] is not None:
+        content = cache.get(report['url_echos'])
         if content:
             soup = BeautifulSoup(content, 'html.parser')
             for tab in soup.find_all('table'):
@@ -255,8 +310,7 @@ def get_report(parameters):
             report['infos_boursiere']['PEG'] = compute_peg(
                 compute_benefices(report),
                 report['infos_boursiere'])
-    report['trend'] = get_trend(report['url'])
-    report['url_brsrm'] = get_brsrm(parameters['isin'])
+    report['trend'] = get_trend(report['url_echos'], report['url_frtn'])
     report['potential'] = get_potential(report['url_brsrm'])
 
     report['history'] = dict()

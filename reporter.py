@@ -29,7 +29,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.7.0'
+VERSION = '1.8.0'
 
 def get_sign(value):
     """
@@ -141,11 +141,21 @@ def diff_report(oldest_file, newer_file, isin_compare):
                 print('Potentiel 3 mois: {}'.format(new_report['potential']))
         if 'trend' in new_report:
             if 'trend' not in old_report or (\
-                old_report['trend']['short term'] != new_report['trend']['short term']):
-                print('Tendance court terme: {}'.format(new_report['trend']['short term']))
+                old_report['trend']['echos']['short term'] != new_report['trend']['echos']['short term']):
+                print('[Echos] Tendance court terme: {}'.format(
+                    new_report['trend']['echos']['short term']))
             if 'trend' not in old_report or (\
-                old_report['trend']['mid term'] != new_report['trend']['mid term']):
-                print('Tendance moyen terme: {}'.format(new_report['trend']['mid term']))
+                old_report['trend']['echos']['mid term'] != new_report['trend']['echos']['mid term']):
+                print('[Echos] Tendance moyen terme: {}'.format(
+                    new_report['trend']['echos']['mid term']))
+            if 'trend' not in old_report or (\
+                old_report['trend']['frtn']['short term'] != new_report['trend']['frtn']['short term']):
+                print('[Fortuneo] Tendance court terme: {}'.format(
+                    new_report['trend']['frtn']['short term']))
+            if 'trend' not in old_report or (\
+                old_report['trend']['frtn']['mid term'] != new_report['trend']['frtn']['mid term']):
+                print('[Fortuneo] Tendance moyen terme: {}'.format(
+                    new_report['trend']['frtn']['mid term']))
         print('==============')
 
 if __name__ == '__main__':

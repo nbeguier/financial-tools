@@ -36,9 +36,15 @@ def print_report(report, mic='XPAR', header=True, footer=True):
             print('|| Rendement: {} %'.format(report['Rendement']))
             print('|| Détachement: {}'.format(report['Detachement']))
             print('|| Prochain rdv: {}'.format(report['Prochain rdv']))
-            print('|| Potentiel 3 mois: {} EUR'.format(report['potential']))
-            print('|| Tendance court terme: {}'.format(report['trend']['short term']))
-            print('|| Tendance moyen terme: {}'.format(report['trend']['mid term']))
+            print('[Boursorama] Potentiel 3 mois: {} EUR'.format(report['potential']))
+            print('[Echos] Tendance court terme: {}'.format(
+                report['trend']['echos']['short term']))
+            print('[Echos] Tendance moyen terme: {}'.format(
+                report['trend']['echos']['mid term']))
+            print('[Fortuneo] Tendance court terme: {}'.format(
+                report['trend']['frtn']['short term']))
+            print('[Fortuneo] Tendance moyen terme: {}'.format(
+                report['trend']['frtn']['mid term']))
     # BODY
     if 'dividendes_history' in report:
         print('[Dividendes History] [{}] Rendement: {} %'.format(
@@ -60,10 +66,12 @@ def print_report(report, mic='XPAR', header=True, footer=True):
     # FOOTER
     if footer:
         print('==============')
-        if report['url'] is not None:
-            print('Les Echos: {}'.format(report['url']))
+        if report['url_echos'] is not None:
+            print('Les Echos: {}'.format(report['url_echos']))
         if report['url_brsrm'] is not None:
             print('Boursorama: {}'.format(report['url_brsrm']))
+        if report['url_frtn'] is not None:
+            print('Fortuneo: {}'.format(report['url_frtn']))
         if mic == 'XPAR':
             print('Recapitulatif dividendes: https://www.bnains.org' +
                   '/archives/action.php?' +
