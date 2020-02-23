@@ -29,7 +29,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.5.2'
+VERSION = '1.6.0'
 
 def get_sign(value):
     """
@@ -135,6 +135,10 @@ def diff_report(oldest_file, newer_file, isin_compare):
                 print('[Reminder] Prochain rdv: {}'.format(new_report['Prochain rdv']))
         except (ValueError, KeyError):
             pass
+        if 'potential' in new_report:
+            if 'potential' not in old_report or (\
+                old_report['potential'] != new_report['potential']):
+                print('Potentiel 3 mois: {}'.format(new_report['potential']))
         print('==============')
 
 if __name__ == '__main__':

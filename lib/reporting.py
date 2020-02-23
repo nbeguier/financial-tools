@@ -113,6 +113,39 @@ def compute_peg(profit, infos_boursiere):
         return 0
     return round(per/profit, 1)
 
+def get_brsrm(parameters):
+    """
+    Return Brsrm
+    """
+    base_url = common.decode_rot('uggcf://jjj.obhefbenzn.pbz')
+    search_path = common.decode_rot('/erpurepur/nwnk?dhrel=')
+    content = cache.get(base_url+search_path+parameters['isin'])
+    if not content:
+        return None
+    soup = BeautifulSoup(content, 'html.parser')
+    path = soup.find('a', 'search__list__link')['href']
+    return base_url+path
+
+def get_potential(parameters):
+    """
+    Returns the potential for 3 month
+    """
+    url = get_brsrm(parameters)
+    if not url:
+        return None
+    content = cache.get(url)
+    if not content:
+        return None
+    soup = BeautifulSoup(content, 'html.parser')
+    potential = None
+    for i in soup.find_all('p'):
+        if 'Objectif de cours' in i.text:
+            value = i.find('span', 'u-text-bold')
+            if not value:
+                return None
+            potential = common.clean_data(value.text, json_load=False).split()[0]
+    return potential
+
 def simplify_report(report, parameters):
     """
     Returns a simplified version of the report
@@ -139,6 +172,7 @@ def simplify_report(report, parameters):
         simple_report['per_history'] = report['history']['per']
     if parameters['history']['peg'] and 'peg' in report['history']:
         simple_report['peg_history'] = report['history']['peg']
+    simple_report['potential'] = report['potential']
     return simple_report
 
 def get_report(parameters):
@@ -186,6 +220,7 @@ def get_report(parameters):
             report['infos_boursiere']['PEG'] = compute_peg(
                 compute_benefices(report),
                 report['infos_boursiere'])
+    report['potential'] = get_potential(parameters)
 
     report['history'] = dict()
     if parameters['history']['dividendes']:

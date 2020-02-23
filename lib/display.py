@@ -33,6 +33,7 @@ def print_report(report, mic='XPAR', header=True, footer=True):
             print('|| Rendement: {} %'.format(report['Rendement']))
             print('|| Détachement: {}'.format(report['Detachement']))
             print('|| Prochain rdv: {}'.format(report['Prochain rdv']))
+            print('|| Potentiel 3 mois: {} EUR'.format(report['potential']))
     # BODY
     if 'dividendes_history' in report:
         print('[Dividendes History] [{}] Rendement: {} %'.format(
