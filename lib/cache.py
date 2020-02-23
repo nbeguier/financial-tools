@@ -68,6 +68,13 @@ def is_in_cache(url):
         return False
     return True
 
+def purge_cache(cache_path):
+    """
+    Remove cache is present
+    """
+    if os.path.exists(cache_path):
+        os.remove(cache_path)
+
 def save(url, content):
     """
     Save the content in the cache
@@ -75,8 +82,11 @@ def save(url, content):
     cache_path = 'cache/{}'.format(get_hash(url))
     if not os.path.exists('cache'):
         os.mkdir('cache')
-    with open(cache_path, 'w') as url_file:
-        url_file.write(content)
+    try:
+        with open(cache_path, 'w') as url_file:
+            url_file.write(content)
+    except UnicodeEncodeError:
+        purge_cache(cache_path)
 
 def load(url):
     """
@@ -87,9 +97,8 @@ def load(url):
         with open(cache_path, 'r') as url_file:
             content = url_file.read()
     except UnicodeDecodeError:
-        if not os.path.exists(cache_path):
-            os.remove(cache_path)
-            content = get(url, verify=False, disable_cache=True)
+        purge_cache(cache_path)
+        content = get(url, verify=False, disable_cache=True)
     return content
 
 def get(url, verify=True, disable_cache=False):
