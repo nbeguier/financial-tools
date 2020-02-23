@@ -72,29 +72,34 @@ def save(url, content):
     """
     Save the content in the cache
     """
-    url_hash = get_hash(url)
+    cache_path = 'cache/{}'.format(get_hash(url))
     if not os.path.exists('cache'):
         os.mkdir('cache')
-    with open('cache/{}'.format(url_hash), 'w') as url_file:
+    with open(cache_path, 'w') as url_file:
         url_file.write(content)
 
 def load(url):
     """
     Returns the url's content from the cache
     """
-    url_hash = get_hash(url)
-    with open('cache/{}'.format(url_hash), 'r') as url_file:
-        content = url_file.read()
+    cache_path = 'cache/{}'.format(get_hash(url))
+    try:
+        with open(cache_path, 'r') as url_file:
+            content = url_file.read()
+    except UnicodeDecodeError:
+        if not os.path.exists(cache_path):
+            os.remove(cache_path)
+            content = get(url, verify=False, disable_cache=True)
     return content
 
-def get(url, verify=True):
+def get(url, verify=True, disable_cache=False):
     """
     Requests the url is not in cache
     """
     try:
-        enable_cache = settings.ENABLE_CACHE
+        enable_cache = settings.ENABLE_CACHE and not disable_cache
     except AttributeError:
-        enable_cache = True
+        enable_cache = not disable_cache
     if is_in_cache(url) and enable_cache:
         return load(url)
     req = SESSION.get(url, verify=verify, allow_redirects=False)
