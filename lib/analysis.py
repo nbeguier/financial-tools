@@ -87,3 +87,48 @@ def peg_by_value(current_peg, current_val):
     result[3.6]['value'] = 3.6 * current_val / current_peg
     result[3.6]['current'] = False
     return result
+
+def trend(simple_report):
+    """
+    Returns the trend score on 5pts
+        - 3pts : average of trend
+        - 2pts : average of potential
+    """
+    report = dict()
+    report['short term'] = 0
+    report['mid term'] = 0
+    mapping = {
+        'Hausse': 1,
+        'Neutre': 0.5,
+        'Baisse': 0,
+        None: 0,
+    }
+    count_st_trend = 0
+    count_mt_trend = 0
+    for market in simple_report['trend']:
+        if simple_report['trend'][market]['short term']:
+            count_st_trend += 1
+        if simple_report['trend'][market]['mid term']:
+            count_mt_trend += 1
+        report['short term'] += mapping[simple_report['trend'][market]['short term']]
+        report['mid term'] += mapping[simple_report['trend'][market]['mid term']]
+    if count_st_trend == 0 or count_mt_trend == 0:
+        return {'short term': '-', 'mid term': '-'}
+    report['short term'] = 3 * report['short term'] / count_st_trend
+    report['mid term'] = 3 * report['mid term'] /count_mt_trend
+    potential_value = 0
+    potential_count = 0
+    for market in simple_report['potential']:
+        if simple_report['potential'][market]['value'] is not None:
+            potential_count += 1
+        if simple_report['potential'][market]['percentage'] > 1:
+            potential_value += 1
+        elif simple_report['potential'][market]['percentage'] > -1:
+            potential_value += 0.5
+    if potential_count == 0:
+        report['short term'] = report['short term'] * 5/3
+        report['mid term'] = report['mid term'] * 5/3
+    else:
+        report['short term'] += 2 * potential_value / potential_count
+        report['mid term'] += 2 * potential_value / potential_count
+    return report

@@ -36,24 +36,29 @@ def print_report(report, mic='XPAR', header=True, footer=True):
             print('|| Rendement: {} %'.format(report['Rendement']))
             print('|| Détachement: {}'.format(report['Detachement']))
             print('|| Prochain rdv: {}'.format(report['Prochain rdv']))
-            print('[Boursorama] Potentiel 3 mois: {} EUR, {} %'.format(
-                report['potential']['brsrm']['value'],
-                report['potential']['brsrm']['percentage']))
-            print('[Fortuneo] Potentiel: {} EUR, {} %'.format(
-                report['potential']['frtn']['value'],
-                report['potential']['frtn']['percentage']))
-            print('[Echos] Tendance court terme: {}'.format(
-                report['trend']['echos']['short term']))
-            print('[Echos] Tendance moyen terme: {}'.format(
-                report['trend']['echos']['mid term']))
-            print('[Fortuneo] Tendance court terme: {}'.format(
-                report['trend']['frtn']['short term']))
-            print('[Fortuneo] Tendance moyen terme: {}'.format(
-                report['trend']['frtn']['mid term']))
-            print('[BNP] Tendance court terme: {}'.format(
-                report['trend']['bnp']['short term']))
-            print('[BNP] Tendance moyen terme: {}'.format(
-                report['trend']['bnp']['mid term']))
+            print('|| Tendance court terme: {}/5'.format(
+                round(analysis.trend(report)['short term'], 1)))
+            print('|| Tendance moyen terme: {}/5'.format(
+                round(analysis.trend(report)['mid term'], 1)))
+            # TODO: Add argument to display this
+            # print('[Boursorama] Potentiel 3 mois: {} EUR, {} %'.format(
+            #     report['potential']['brsrm']['value'],
+            #     report['potential']['brsrm']['percentage']))
+            # print('[Fortuneo] Potentiel: {} EUR, {} %'.format(
+            #     report['potential']['frtn']['value'],
+            #     report['potential']['frtn']['percentage']))
+            # print('[Echos] Tendance court terme: {}'.format(
+            #     report['trend']['echos']['short term']))
+            # print('[Echos] Tendance moyen terme: {}'.format(
+            #     report['trend']['echos']['mid term']))
+            # print('[Fortuneo] Tendance court terme: {}'.format(
+            #     report['trend']['frtn']['short term']))
+            # print('[Fortuneo] Tendance moyen terme: {}'.format(
+            #     report['trend']['frtn']['mid term']))
+            # print('[BNP] Tendance court terme: {}'.format(
+            #     report['trend']['bnp']['short term']))
+            # print('[BNP] Tendance moyen terme: {}'.format(
+            #     report['trend']['bnp']['mid term']))
     # BODY
     if 'dividendes_history' in report:
         print('[Dividendes History] [{}] Rendement: {} %'.format(

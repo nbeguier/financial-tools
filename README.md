@@ -52,14 +52,8 @@ Variation 1 an: 10.34 %
 || Rendement: 1.94 %
 || Détachement: 20/05/19
 || Prochain rdv: 24/04/20
-[Boursorama] Potentiel 3 mois: 133.66 EUR, -4.0 %
-[Fortuneo] Potentiel: 132.5 EUR, -4.8 %
-[Echos] Tendance court terme: Hausse
-[Echos] Tendance moyen terme: Neutre
-[Fortuneo] Tendance court terme: Hausse
-[Fortuneo] Tendance moyen terme: Hausse
-[BNP] Tendance court terme: Hausse
-[BNP] Tendance moyen terme: Neutre
+|| Tendance court terme: 4.0/5
+|| Tendance moyen terme: 3.0/5
 ==============
 Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
 Boursorama: https://www.boursorama.com/cours/1rPAI/
@@ -93,15 +87,8 @@ Variation 1 an: 10.34 %
 || PEG: 4.9 (croissance annoncée trop faible)
 || Rendement: 1.94 %
 || Détachement: 20/05/19
-|| Prochain rdv: 24/04/20
-[Boursorama] Potentiel 3 mois: 133.66 EUR, -4.0 %
-[Fortuneo] Potentiel: 132.5 EUR, -4.8 %
-[Echos] Tendance court terme: Hausse
-[Echos] Tendance moyen terme: Neutre
-[Fortuneo] Tendance court terme: Hausse
-[Fortuneo] Tendance moyen terme: Hausse
-[BNP] Tendance court terme: Hausse
-[BNP] Tendance moyen terme: Neutre
+|| Tendance court terme: 4.0/5
+|| Tendance moyen terme: 3.0/5
 ==============
 Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
 Boursorama: https://www.boursorama.com/cours/1rPAI/
@@ -124,14 +111,8 @@ Variation 1 an: 10.34 %
 || Rendement: 1.94 %
 || Détachement: 20/05/19
 || Prochain rdv: 24/04/20
-[Boursorama] Potentiel 3 mois: 133.66 EUR, -4.0 %
-[Fortuneo] Potentiel: 132.5 EUR, -4.8 %
-[Echos] Tendance court terme: Hausse
-[Echos] Tendance moyen terme: Neutre
-[Fortuneo] Tendance court terme: Hausse
-[Fortuneo] Tendance moyen terme: Hausse
-[BNP] Tendance court terme: Hausse
-[BNP] Tendance moyen terme: Neutre
+|| Tendance court terme: 4.0/5
+|| Tendance moyen terme: 3.0/5
 [Dividendes History] [2018] Rendement: 2.65 %
 [Dividendes History] [2018] Valorisation: 101.73 EUR
 [Dividendes History] [2019/05/20] Valorisation: 105.23 EUR
@@ -158,14 +139,8 @@ Variation 1 an: 10.34 %
 || Rendement: 1.94 %
 || Détachement: 20/05/19
 || Prochain rdv: 24/04/20
-[Boursorama] Potentiel 3 mois: 133.66 EUR, -4.0 %
-[Fortuneo] Potentiel: 132.5 EUR, -4.8 %
-[Echos] Tendance court terme: Hausse
-[Echos] Tendance moyen terme: Neutre
-[Fortuneo] Tendance court terme: Hausse
-[Fortuneo] Tendance moyen terme: Hausse
-[BNP] Tendance court terme: Hausse
-[BNP] Tendance moyen terme: Neutre
+|| Tendance court terme: 4.0/5
+|| Tendance moyen terme: 3.0/5
 [Dividendes History] [2018] Rendement: 2.65 %
 [Dividendes History] [2018] Valorisation: 101.73 EUR
 [Dividendes History] [2019/05/20] Valorisation: 105.23 EUR

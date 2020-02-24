@@ -184,7 +184,7 @@ def get_potential(url_brsrm, url_frtn, cours):
                 if 'Objectif de cours' in i.text:
                     value = i.find('span', 'u-text-bold')
                     if not value:
-                        return None, 0
+                        return report
                     report['brsrm']['value'] = common.clean_data(
                         value.text, json_load=False).split()[0]
                     if cours:
@@ -200,11 +200,11 @@ def get_potential(url_brsrm, url_frtn, cours):
         if content:
             try:
                 json_content = json.loads(content)
+                report['frtn']['value'] = json_content['consensus']['objectif']
+                report['frtn']['percentage'] = round(
+                    float(json_content['consensus']['potentiel'])*100, 1)
             except json.decoder.JSONDecodeError:
-                return None
-            report['frtn']['value'] = json_content['consensus']['objectif']
-            report['frtn']['percentage'] = round(
-                float(json_content['consensus']['potentiel'])*100, 1)
+                pass
     return report
 
 def get_trend(url_echos, url_frtn):
@@ -252,17 +252,17 @@ def get_trend(url_echos, url_frtn):
         if content and content != 'null':
             try:
                 json_content = json.loads(content)
+                mapping = {
+                    'POSITIVE': 'Hausse',
+                    'NEUTRE': 'Neutre',
+                    'NEGATIVE': 'Baisse',
+                }
+                if 'opinionCT' in json_content and json_content['opinionCT'] in mapping:
+                    report['frtn']['short term'] = mapping[json_content['opinionCT']]
+                if 'opinionMT' in json_content and json_content['opinionMT'] in mapping:
+                    report['frtn']['mid term'] = mapping[json_content['opinionMT']]
             except json.decoder.JSONDecodeError:
-                return None
-            mapping = {
-                'POSITIVE': 'Hausse',
-                'NEUTRE': 'Neutre',
-                'NEGATIVE': 'Baisse',
-            }
-            if 'opinionCT' in json_content and json_content['opinionCT'] in mapping:
-                report['frtn']['short term'] = mapping[json_content['opinionCT']]
-            if 'opinionMT' in json_content and json_content['opinionMT'] in mapping:
-                report['frtn']['mid term'] = mapping[json_content['opinionMT']]
+                pass
     # BNP
     trend_url = common.decode_rot('uggcf://ppvjro.oaccnevonf.pbz/ri/se/terraonax/-;'+ \
         'rifvq=fHXKzv85nNLdRgeWB8AO-0TPC4JTJ7FDJO63tOwt.aqyc-ppvjro-nf07')
