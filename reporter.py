@@ -29,7 +29,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.10.0'
+VERSION = '1.10.1'
 
 def get_sign(value):
     """
@@ -102,7 +102,7 @@ def diff_report(oldest_file, newer_file, isin_compare):
                 float(new_report['valorisation']) / float(old_report['valorisation'])), 2)
             print('Evolution valorisation: {}{} %'.format(
                 get_sign(evo_valorisation), evo_valorisation))
-            print('Evolution valorisation: {} -> {}'.format(
+            print('Evolution valorisation: {} -> {} EUR'.format(
                 old_report['valorisation'], new_report['valorisation']))
         if 'PER' in new_report \
             and old_report['PER'] != new_report['PER']:
@@ -139,37 +139,45 @@ def diff_report(oldest_file, newer_file, isin_compare):
             if 'potential' not in old_report or \
                 'brsrm' not in old_report['potential'] or (\
                 old_report['potential']['brsrm']['value'] != new_report['potential']['brsrm']['value']):
-                print('[Boursorama] Potentiel 3 mois: {} EUR'.format(
+                print('[Boursorama] Potentiel 3 mois: {} -> {} EUR'.format(
+                    old_report['potential']['brsrm']['value'],
                     new_report['potential']['brsrm']['value']))
             if 'potential' not in old_report or \
                 'frtn' not in old_report['potential'] or (\
                 old_report['potential']['frtn']['value'] != new_report['potential']['frtn']['value']):
-                print('[Fortuneo] Potentiel: {} EUR'.format(
+                print('[Fortuneo] Potentiel: {} -> {} EUR'.format(
+                    old_report['potential']['frtn']['value'],
                     new_report['potential']['frtn']['value']))
         if 'trend' in new_report:
             if 'trend' not in old_report or (\
                 old_report['trend']['echos']['short term'] != new_report['trend']['echos']['short term']):
-                print('[Echos] Tendance court terme: {}'.format(
+                print('[Echos] Tendance court terme: {} -> {}'.format(
+                    old_report['trend']['echos']['short term'],
                     new_report['trend']['echos']['short term']))
             if 'trend' not in old_report or (\
                 old_report['trend']['echos']['mid term'] != new_report['trend']['echos']['mid term']):
-                print('[Echos] Tendance moyen terme: {}'.format(
+                print('[Echos] Tendance moyen terme: {} -> {}'.format(
+                    old_report['trend']['echos']['mid term'],
                     new_report['trend']['echos']['mid term']))
             if 'trend' not in old_report or (\
                 old_report['trend']['frtn']['short term'] != new_report['trend']['frtn']['short term']):
-                print('[Fortuneo] Tendance court terme: {}'.format(
+                print('[Fortuneo] Tendance court terme: {} -> {}'.format(
+                    old_report['trend']['frtn']['short term'],
                     new_report['trend']['frtn']['short term']))
             if 'trend' not in old_report or (\
                 old_report['trend']['frtn']['mid term'] != new_report['trend']['frtn']['mid term']):
-                print('[Fortuneo] Tendance moyen terme: {}'.format(
+                print('[Fortuneo] Tendance moyen terme: {} -> {}'.format(
+                    old_report['trend']['frtn']['mid term'],
                     new_report['trend']['frtn']['mid term']))
             if 'trend' not in old_report or (\
                 old_report['trend']['bnp']['short term'] != new_report['trend']['bnp']['short term']):
-                print('[BNP] Tendance court terme: {}'.format(
+                print('[BNP] Tendance court terme: {} -> {}'.format(
+                    old_report['trend']['bnp']['short term'],
                     new_report['trend']['bnp']['short term']))
             if 'trend' not in old_report or (\
                 old_report['trend']['bnp']['mid term'] != new_report['trend']['bnp']['mid term']):
-                print('[BNP] Tendance moyen terme: {}'.format(
+                print('[BNP] Tendance moyen terme: {} -> {}'.format(
+                    old_report['trend']['bnp']['mid term'],
                     new_report['trend']['bnp']['mid term']))
         print('==============')
 
