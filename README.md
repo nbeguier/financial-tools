@@ -226,36 +226,64 @@ optional arguments:
 ```
 
 ```
-$ ./reporter.py diff data/2020_02_11.txt data/2020_02_15.txt
-ISIN: FR0000121485
-Nom: KERING
-Evolution valorisation: +3.11 %
-Evolution valorisation: 561.900 -> 579.400
-Evolution PER: -1.0
-Evolution PER: 23.8 -> 22.8
-Evolution PEG: -0.1
-Evolution PEG: 2.6 -> 2.5
+$ ./reporter.py diff data/2020_02_23.txt data/2020_02_24.txt
 ==============
 ISIN: FR0000120073
 Nom: AIR LIQUIDE
-Evolution valorisation: +0.76 %
-Evolution valorisation: 137.750 -> 138.800
-Evolution PER: +3.4
-Evolution PER: 25.1 -> 28.5
-Evolution PEG: +0.4
-Evolution PEG: 3.3 -> 3.7
-Nouveau rdv: 24/04/20
+Evolution valorisation: -3.95 %
+Evolution valorisation: 139.250 -> 133.750 EUR
+Tendance court terme: 3.0/5 -> 4.0/5
+Tendance moyen terme: 2.25/5 -> 3.0/5
 ==============
 ISIN: FR0000120628
 Nom: AXA
-Evolution valorisation: +1.41 %
-Evolution valorisation: 25.105 -> 25.460
-Evolution PER: +0.3
-Evolution PER: 9.5 -> 9.8
-Evolution PEG: +0.1
-Evolution PEG: 1.5 -> 1.6
-Evolution benefices: +0.02 points
-Evolution benefices: 6.21 -> 6.23
+Evolution valorisation: -3.25 %
+Evolution valorisation: 24.130 -> 23.345 EUR
+Tendance court terme: 2.75/5 -> 2.5/5
+Tendance moyen terme: 4.25/5 -> 4.0/5
+==============
+ISIN: FR0000120172
+Nom: CARREFOUR
+Evolution valorisation: -2.54 %
+Evolution valorisation: 16.130 -> 15.720 EUR
+[Reminder] Prochain rdv: 27/02/20
+Tendance court terme: 5.0/5
+Tendance moyen terme: 2.0/5 -> 3.5/5
+==============
+ISIN: FR0000053324
+Nom: COMPAGNIE DES ALPES (CDA)
+Evolution valorisation: -8.95 %
+Evolution valorisation: 29.050 -> 26.450 EUR
+Tendance court terme: 2.0/5
+Tendance moyen terme: 3.5/5
+==============
+ISIN: FR0013451333
+Nom: FDJ
+Evolution valorisation: -3.18 %
+Evolution valorisation: 30.345 -> 29.380 EUR
+Tendance court terme: 3.0/5
+Tendance moyen terme: 1.5/5
+==============
+ISIN: FR0011869312
+Nom: LYXOR UCITS ETF PEA MSCI AC ASIA PACIFIC EX JAPAN C-EUR
+Evolution valorisation: -3.63 %
+Evolution valorisation: 15.941 -> 15.363 EUR
+Tendance court terme: -/5
+Tendance moyen terme: -/5
+==============
+ISIN: FR0011882364
+Nom: LYXOR UCITS ETF PEA WORLD WATER C-EUR
+Evolution valorisation: -3.22 %
+Evolution valorisation: 21.094 -> 20.414 EUR
+Tendance court terme: -/5
+Tendance moyen terme: -/5
+==============
+ISIN: FR0000121485
+Nom: KERING
+Evolution valorisation: -4.72 %
+Evolution valorisation: 561.600 -> 535.100 EUR
+Tendance court terme: 5.0/5
+Tendance moyen terme: 5.0/5 -> 4.25/5
 ==============
 ```
 
