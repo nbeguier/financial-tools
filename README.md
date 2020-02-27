@@ -287,3 +287,13 @@ Tendance moyen terme: 5.0/5 -> 4.25/5
 ==============
 ```
 
+### DASHBOARD
+
+```
+$ ./dashboard.py
+Nom          Cours
+-----------  -------
+KERING       511,700
+AIR LIQUIDE  127,800
+AXA          21,855
+```

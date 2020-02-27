@@ -19,7 +19,7 @@ import lib.reporting as reporting
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '2.6.0'
+VERSION = '2.6.1'
 
 def main(parameters):
     """
@@ -33,8 +33,9 @@ def main(parameters):
         display.print_report(
             report,
             mic=parameters['mic'],
-            header=PARAMS['header'],
-            footer=PARAMS['footer'])
+            header=parameters['header'],
+            footer=parameters['footer'],
+            verbose=parameters['verbose'])
 
 if __name__ == '__main__':
     PARSER = ArgumentParser()

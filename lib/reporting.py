@@ -26,6 +26,19 @@ import lib.history as history
 # 'Capitalisation' isin removed
 INFOS_BOURSIERE = ['Dividendes', 'PER', 'Rendement', 'Detachement', 'Prochain rdv']
 
+def get_cours(isin, mic, disable_cache=False):
+    """
+    Returns core info from isin
+    """
+    url = common.decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg') + \
+          common.decode_rot('/fgernzvat/pbhef/trgPbhef?') + \
+          'code={}&place={}&codif=ISIN'.format(isin, mic)
+    content = cache.get(url, verify=False, disable_cache=disable_cache)
+    cours = None
+    if content:
+        cours = common.clean_data(content)
+    return cours
+
 def extract_infos_boursiere(data):
     """
     Extracts dictionnary from list
@@ -328,13 +341,8 @@ def get_report(parameters):
     """
     report = dict()
     report['isin'] = parameters['isin']
-    url = common.decode_rot('uggcf://yrfrpubf-obhefr-sb-pqa.jyo.nj.ngbf.arg') + \
-          common.decode_rot('/fgernzvat/pbhef/trgPbhef?') + \
-          'code={}&place={}&codif=ISIN'.format(parameters['isin'], parameters['mic'])
-    content = cache.get(url, verify=False)
-    report['cours'] = None
-    if content:
-        report['cours'] = common.clean_data(content)
+
+    report['cours'] = get_cours(parameters['isin'], parameters['mic'])
 
     report['url_echos'] = get_url_echos(parameters['isin'], parameters['mic'])
     report['url_brsrm'] = get_url_brsrm(parameters['isin'])
