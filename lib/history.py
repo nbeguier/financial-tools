@@ -75,7 +75,7 @@ def dividendes(parameters, infos_boursiere):
             report['last_year'] = latest_matching_date.split('/')[0]
     return report
 
-def get_last_val_date(isin, val):
+def get_last_val_date(isin, val, start=0):
     """
     Return the last date of this value
     """
@@ -83,8 +83,8 @@ def get_last_val_date(isin, val):
     if not val_history:
         return False
     val_history.reverse()
-    day1 = val_history[0]
-    for line in val_history[1:-1]:
+    day1 = val_history[start]
+    for line in val_history[start+1:-1]:
         day0 = line
         # If missing value
         if not day0 or not day0.split(';')[3] \
