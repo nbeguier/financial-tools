@@ -25,7 +25,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.0.0'
+VERSION = '1.1.0'
 
 def main():
     """
@@ -37,11 +37,16 @@ def main():
         if not isin_data:
             listing.append(list())
             continue
-        listing.append([isin_data['cotation']['name'], isin_data['cotation']['valorisation']])
-
+        listing.append([
+            isin_data['cotation']['name'],
+            isin_data['cotation']['valorisation'],
+            isin_data['cotation']['variation'],
+        ])
     print(tabulate(listing, [
         'Nom',
-        'Cours']))
+        'Cours',
+        'Variation',
+    ]))
 
 if __name__ == '__main__':
     main()

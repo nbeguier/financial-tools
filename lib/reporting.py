@@ -303,6 +303,61 @@ def get_trend(url_echos, url_frtn):
             pass
     return report
 
+def get_dividend(infos_boursiere, url_brsrm, url_frtn):
+    """
+    Compute the next dividend value
+    """
+    report = dict()
+    report['echos'] = dict()
+    report['echos']['percent'] = None
+    report['brsrm'] = dict()
+    report['brsrm']['percent'] = None
+    report['frtn'] = dict()
+    report['frtn']['percent'] = None
+    report['average_percent'] = 0
+
+    if infos_boursiere and 'Rendement' in infos_boursiere:
+        report['echos']['percent'] = float(infos_boursiere['Rendement'])
+
+    if url_brsrm:
+        content = cache.get(url_brsrm)
+        if content:
+            soup = BeautifulSoup(content, 'html.parser')
+            for div_relative in soup.find_all('div', 'u-relative'):
+                if 'Rendement' not in div_relative.text:
+                    continue
+                if len(div_relative.find_all('td')) < 6:
+                    continue
+                report['brsrm']['percent'] = float(
+                    common.clean_data(div_relative.find_all('td')[6].\
+                    text, json_load=False).split()[0].split('%')[0])
+
+    if url_frtn:
+        market = int(url_frtn.split('-')[-1])
+        isin = url_frtn.split('-')[-2]
+        avis_url = common.decode_rot('uggcf://obhefr.sbegharb.se/ncv/inyhr/nivf/SGA') + \
+            '{market:06d}{isin}'.format(market=market, isin=isin)
+        content = cache.get(avis_url)
+        if content:
+            try:
+                json_content = json.loads(content)
+                if len(json_content['consensus']['listeAnnee']) > 1:
+                    report['frtn']['percent'] = round(float(
+                        json_content['consensus']['listeAnnee'][1]['rendement'])*100, 2)
+            except json.decoder.JSONDecodeError:
+                pass
+
+    count = 0
+    for url in report:
+        if isinstance(report[url], dict) and 'percent' in report[url] and report[url]['percent']:
+            report['average_percent'] += float(report[url]['percent'])
+            count += 1
+    if count != 0:
+        report['average_percent'] = round(report['average_percent']/count, 2)
+    else:
+        report['average_percent'] = '-'
+    return report
+
 def simplify_report(report, parameters):
     """
     Returns a simplified version of the report
@@ -314,6 +369,7 @@ def simplify_report(report, parameters):
     simple_report['url_brsrm'] = report['url_brsrm']
     simple_report['url_frtn'] = report['url_frtn']
     simple_report['trend'] = report['trend']
+    simple_report['dividend'] = report['dividend']
 
     if report['cours'] is not None:
         simple_report['nom'] = report['cours']['cotation']['name']
@@ -324,6 +380,8 @@ def simplify_report(report, parameters):
             split()[0].replace(',', '.')
         simple_report['valorisation_1an'] = report['cours']['cotation']['variationYear'].\
             replace(',', '.')
+    for info in INFOS_BOURSIERE:
+        simple_report[info] = None
     if 'infos_boursiere' in report:
         for info in report['infos_boursiere']:
             simple_report[info] = report['infos_boursiere'][info]
@@ -371,6 +429,7 @@ def get_report(parameters):
                 report['infos_boursiere'])
     report['trend'] = get_trend(report['url_echos'], report['url_frtn'])
     report['potential'] = get_potential(report['url_brsrm'], report['url_frtn'], report['cours'])
+    report['dividend'] = get_dividend(report['infos_boursiere'], report['url_brsrm'], report['url_frtn'])
 
     report['history'] = dict()
     if parameters['history']['dividendes']:

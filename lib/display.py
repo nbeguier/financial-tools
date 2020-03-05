@@ -29,17 +29,24 @@ def print_report(report, mic='XPAR', header=True, footer=True, verbose=False):
         if 'valorisation' in report:
             print('Valorisation: {} EUR'.format(report['valorisation']))
             print('Variation 1 an: {} %'.format(report['valorisation_1an']))
-        if 'Dividendes' in report:
-            print('|| Dividendes: {} EUR'.format(report['Dividendes']))
+        if 'dividend' in report:
+            print('|| Dividendes: {} %'.format(
+                report['dividend']['average_percent']))
+            if verbose:
+                print('>> [Echos] Dividendes: {} %'.format(
+                    report['dividend']['echos']['percent']))
+                print('>> [Boursorama] Dividendes: {} %'.format(
+                    report['dividend']['brsrm']['percent']))
+                print('>> [Fortuneo] Dividendes: {} %'.format(
+                    report['dividend']['frtn']['percent']))
             print('|| PER: {} ({})'.format(report['PER'], analysis.per_text(report['PER'])))
             print('|| PEG: {} ({})'.format(report['PEG'], analysis.peg_text(report['PEG'])))
-            print('|| Rendement: {} %'.format(report['Rendement']))
             print('|| Détachement: {}'.format(report['Detachement']))
             print('|| Prochain rdv: {}'.format(report['Prochain rdv']))
             print('|| Tendance court terme: {}/5'.format(
-                round(analysis.trend(report)['short term'], 1)))
+                analysis.trend(report)['short term']))
             print('|| Tendance moyen terme: {}/5'.format(
-                round(analysis.trend(report)['mid term'], 1)))
+                analysis.trend(report)['mid term']))
             if verbose:
                 print('>> [Boursorama] Potentiel 3 mois: {} EUR, {} %'.format(
                     report['potential']['brsrm']['value'],

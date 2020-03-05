@@ -14,6 +14,8 @@ def per_text(per_value):
     """
     Retuns the analysis of the PER value
     """
+    if per_value is None:
+        return 'inconnu'
     result = 'bulle spéculative'
     if float(per_value) <= 0:
         result = 'action sans bénéfices'
