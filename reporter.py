@@ -29,7 +29,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.10.3'
+VERSION = '1.10.4'
 
 def get_sign(value):
     """
@@ -104,7 +104,7 @@ def diff_report(oldest_file, newer_file, isin_compare):
                 get_sign(evo_valorisation), evo_valorisation))
             print('Evolution valorisation: {} -> {} EUR'.format(
                 old_report['valorisation'], new_report['valorisation']))
-        if 'PER' in new_report \
+        if 'PER' in new_report and 'PER' in old_report\
             and old_report['PER'] != new_report['PER']:
             evo_per = round(float(new_report['PER']) - float(old_report['PER']), 1)
             print('Evolution PER: {}{}'.format(get_sign(evo_per), evo_per))
@@ -114,7 +114,7 @@ def diff_report(oldest_file, newer_file, isin_compare):
                     analysis.per_text(old_report['PER']),
                     analysis.per_text(new_report['PER'])))
 
-        if 'peg' in new_report \
+        if 'peg' in new_report and 'peg' in old_report\
             and old_report['peg'] != new_report['peg']:
             evo_peg = round(float(new_report['peg']) - float(old_report['peg']), 1)
             print('Evolution PEG: {}{}'.format(get_sign(evo_peg), evo_peg))
@@ -126,27 +126,28 @@ def diff_report(oldest_file, newer_file, isin_compare):
                 get_sign(evo_benef), evo_benef))
             print('Evolution benefices: {} -> {}'.format(
                 old_report['benefices'], new_report['benefices']))
-        if 'Prochain rdv' in new_report \
+        if 'Prochain rdv' in new_report and 'Prochain rdv' in old_report\
             and old_report['Prochain rdv'] != new_report['Prochain rdv']:
             print('Nouveau rdv: {}'.format(new_report['Prochain rdv']))
         try:
             struct_time = time.strptime(new_report['Prochain rdv'], '%d/%m/%y')
             if 0 <= (datetime(*struct_time[:6]) - datetime.now()).days <= 3:
                 print('[Reminder] Prochain rdv: {}'.format(new_report['Prochain rdv']))
-        except (ValueError, KeyError):
+        except (ValueError, KeyError, TypeError):
             pass
-        old_trend = analysis.trend(old_report)
-        new_trend = analysis.trend(new_report)
-        if old_trend['short term'] != new_trend['short term']:
-            print('Tendance court terme: {}/5 -> {}/5'.format(
-                old_trend['short term'], new_trend['short term']))
-        else:
-            print('Tendance court terme: {}/5'.format(new_trend['short term']))
-        if old_trend['mid term'] != new_trend['mid term']:
-            print('Tendance moyen terme: {}/5 -> {}/5'.format(
-                old_trend['mid term'], new_trend['mid term']))
-        else:
-            print('Tendance moyen terme: {}/5'.format(new_trend['mid term']))
+        if 'trend' in old_report and 'trend' in new_report:
+            old_trend = analysis.trend(old_report)
+            new_trend = analysis.trend(new_report)
+            if old_trend['short term'] != new_trend['short term']:
+                print('Tendance court terme: {}/5 -> {}/5'.format(
+                    old_trend['short term'], new_trend['short term']))
+            else:
+                print('Tendance court terme: {}/5'.format(new_trend['short term']))
+            if old_trend['mid term'] != new_trend['mid term']:
+                print('Tendance moyen terme: {}/5 -> {}/5'.format(
+                    old_trend['mid term'], new_trend['mid term']))
+            else:
+                print('Tendance moyen terme: {}/5'.format(new_trend['mid term']))
         if 'potential' in new_report:
             if 'potential' not in old_report or \
                 'brsrm' not in old_report['potential'] or (\
