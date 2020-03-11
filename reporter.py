@@ -29,7 +29,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.10.7'
+VERSION = '1.11.0'
 
 def get_sign(value):
     """
@@ -39,6 +39,14 @@ def get_sign(value):
     if value > 0:
         sign = '+'
     return sign
+
+def is_different_and_valid(old_report, new_report, key):
+    """
+    Returns True if the key is present in both report and valid
+    """
+    return key in new_report and key in old_report\
+            and old_report[key] != new_report[key] \
+            and old_report[key] is not None and new_report[key] is not None
 
 def save_report(output_dir):
     """
@@ -96,18 +104,16 @@ def diff_report(oldest_file, newer_file, isin_compare):
         print('ISIN: {}'.format(new_report['isin']))
         if 'nom' in new_report:
             print('Nom: {}'.format(new_report['nom']))
-        if 'valorisation' in new_report \
-            and 'valorisation' in old_report \
-            and old_report['valorisation'] != new_report['valorisation']:
+
+        if is_different_and_valid(old_report, new_report, 'valorisation'):
             evo_valorisation = round(100 * (-1 + \
                 float(new_report['valorisation']) / float(old_report['valorisation'])), 2)
             print('Evolution valorisation: {}{} %'.format(
                 get_sign(evo_valorisation), evo_valorisation))
             print('Evolution valorisation: {} -> {} EUR'.format(
                 old_report['valorisation'], new_report['valorisation']))
-        if 'PER' in new_report and 'PER' in old_report\
-            and old_report['PER'] != new_report['PER'] \
-            and old_report['PER'] is not None and new_report['PER'] is not None:
+
+        if is_different_and_valid(old_report, new_report, 'PER'):
             evo_per = round(float(new_report['PER']) - float(old_report['PER']), 1)
             print('Evolution PER: {}{}'.format(get_sign(evo_per), evo_per))
             print('Evolution PER: {} -> {}'.format(old_report['PER'], new_report['PER']))
@@ -116,20 +122,19 @@ def diff_report(oldest_file, newer_file, isin_compare):
                     analysis.per_text(old_report['PER']),
                     analysis.per_text(new_report['PER'])))
 
-        if 'peg' in new_report and 'peg' in old_report\
-            and old_report['peg'] != new_report['peg']:
+        if is_different_and_valid(old_report, new_report, 'peg'):
             evo_peg = round(float(new_report['peg']) - float(old_report['peg']), 1)
             print('Evolution PEG: {}{}'.format(get_sign(evo_peg), evo_peg))
             print('Evolution PEG: {} -> {}'.format(old_report['peg'], new_report['peg']))
-        if 'benefices' in new_report \
-            and old_report['benefices'] != new_report['benefices']:
+
+        if is_different_and_valid(old_report, new_report, 'benefices'):
             evo_benef = round(float(new_report['benefices']) - float(old_report['benefices']), 2)
             print('Evolution benefices: {}{} points'.format(
                 get_sign(evo_benef), evo_benef))
             print('Evolution benefices: {} -> {}'.format(
                 old_report['benefices'], new_report['benefices']))
-        if 'Prochain rdv' in new_report and 'Prochain rdv' in old_report\
-            and old_report['Prochain rdv'] != new_report['Prochain rdv']:
+
+        if is_different_and_valid(old_report, new_report, 'Prochain rdv'):
             print('Nouveau rdv: {}'.format(new_report['Prochain rdv']))
         try:
             struct_time = time.strptime(new_report['Prochain rdv'], '%d/%m/%y')
@@ -137,6 +142,7 @@ def diff_report(oldest_file, newer_file, isin_compare):
                 print('[Reminder] Prochain rdv: {}'.format(new_report['Prochain rdv']))
         except (ValueError, KeyError, TypeError):
             pass
+
         if 'trend' in old_report and 'trend' in new_report:
             old_trend = analysis.trend(old_report)
             new_trend = analysis.trend(new_report)
@@ -150,6 +156,7 @@ def diff_report(oldest_file, newer_file, isin_compare):
                     old_trend['mid term'], new_trend['mid term']))
             else:
                 print('Tendance moyen terme: {}/5'.format(new_trend['mid term']))
+
         if 'potential' in new_report:
             if 'potential' not in old_report:
                 print('[Boursorama] Potentiel 3 mois: {} EUR'.format(
