@@ -29,7 +29,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.10.6'
+VERSION = '1.10.7'
 
 def get_sign(value):
     """
@@ -106,7 +106,8 @@ def diff_report(oldest_file, newer_file, isin_compare):
             print('Evolution valorisation: {} -> {} EUR'.format(
                 old_report['valorisation'], new_report['valorisation']))
         if 'PER' in new_report and 'PER' in old_report\
-            and old_report['PER'] != new_report['PER']:
+            and old_report['PER'] != new_report['PER'] \
+            and old_report['PER'] is not None and new_report['PER'] is not None:
             evo_per = round(float(new_report['PER']) - float(old_report['PER']), 1)
             print('Evolution PER: {}{}'.format(get_sign(evo_per), evo_per))
             print('Evolution PER: {} -> {}'.format(old_report['PER'], new_report['PER']))
