@@ -14,59 +14,59 @@ import lib.analysis as analysis
 # Debug
 # from pdb import set_trace as st
 
-def print_report(report, mic='XPAR', header=True, footer=True, verbose=False):
+def display_header(report, verbose):
     """
-    Prints the report
+    Display the header
     """
-    # TITLE
-    print('ISIN: {}'.format(report['isin']))
-    # HEADER
-    if header:
-        if 'nom' in report:
-            print('Nom: {}'.format(report['nom']))
-        if 'secteur' in report:
-            print('Secteur: {}'.format(report['secteur']))
-        if 'valorisation' in report:
-            print('Valorisation: {} EUR'.format(report['valorisation']))
-            print('Variation 1 an: {} %'.format(report['valorisation_1an']))
-        if 'dividend' in report:
-            print('|| Dividendes: {} %'.format(
-                report['dividend']['average_percent']))
-            if verbose:
-                print('>> [Echos] Dividendes: {} %'.format(
-                    report['dividend']['echos']['percent']))
-                print('>> [Boursorama] Dividendes: {} %'.format(
-                    report['dividend']['brsrm']['percent']))
-                print('>> [Fortuneo] Dividendes: {} %'.format(
-                    report['dividend']['frtn']['percent']))
-            print('|| PER: {} ({})'.format(report['PER'], analysis.per_text(report['PER'])))
-            print('|| PEG: {} ({})'.format(report['PEG'], analysis.peg_text(report['PEG'])))
-            print('|| Détachement: {}'.format(report['Detachement']))
-            print('|| Prochain rdv: {}'.format(report['Prochain rdv']))
-            print('|| Tendance court terme: {}/5'.format(
-                analysis.trend(report)['short term']))
-            print('|| Tendance moyen terme: {}/5'.format(
-                analysis.trend(report)['mid term']))
-            if verbose:
-                print('>> [Boursorama] Potentiel 3 mois: {} EUR, {} %'.format(
-                    report['potential']['brsrm']['value'],
-                    report['potential']['brsrm']['percentage']))
-                print('>> [Fortuneo] Potentiel: {} EUR, {} %'.format(
-                    report['potential']['frtn']['value'],
-                    report['potential']['frtn']['percentage']))
-                print('>> [Echos] Tendance court terme: {}'.format(
-                    report['trend']['echos']['short term']))
-                print('>> [Echos] Tendance moyen terme: {}'.format(
-                    report['trend']['echos']['mid term']))
-                print('>> [Fortuneo] Tendance court terme: {}'.format(
-                    report['trend']['frtn']['short term']))
-                print('>> [Fortuneo] Tendance moyen terme: {}'.format(
-                    report['trend']['frtn']['mid term']))
-                print('>> [BNP] Tendance court terme: {}'.format(
-                    report['trend']['bnp']['short term']))
-                print('>> [BNP] Tendance moyen terme: {}'.format(
-                    report['trend']['bnp']['mid term']))
-    # BODY
+    if 'nom' in report:
+        print('Nom: {}'.format(report['nom']))
+    if 'secteur' in report:
+        print('Secteur: {}'.format(report['secteur']))
+    if 'valorisation' in report:
+        print('Valorisation: {} EUR'.format(report['valorisation']))
+        print('Variation 1 an: {} %'.format(report['valorisation_1an']))
+    if 'dividend' in report:
+        print('|| Dividendes: {} %'.format(
+            report['dividend']['average_percent']))
+        if verbose:
+            print('>> [Echos] Dividendes: {} %'.format(
+                report['dividend']['echos']['percent']))
+            print('>> [Boursorama] Dividendes: {} %'.format(
+                report['dividend']['brsrm']['percent']))
+            print('>> [Fortuneo] Dividendes: {} %'.format(
+                report['dividend']['frtn']['percent']))
+        print('|| PER: {} ({})'.format(report['PER'], analysis.per_text(report['PER'])))
+        print('|| PEG: {} ({})'.format(report['PEG'], analysis.peg_text(report['PEG'])))
+        print('|| Détachement: {}'.format(report['Detachement']))
+        print('|| Prochain rdv: {}'.format(report['Prochain rdv']))
+        print('|| Tendance court terme: {}/5'.format(
+            analysis.trend(report)['short term']))
+        print('|| Tendance moyen terme: {}/5'.format(
+            analysis.trend(report)['mid term']))
+        if verbose:
+            print('>> [Boursorama] Potentiel 3 mois: {} EUR, {} %'.format(
+                report['potential']['brsrm']['value'],
+                report['potential']['brsrm']['percentage']))
+            print('>> [Fortuneo] Potentiel: {} EUR, {} %'.format(
+                report['potential']['frtn']['value'],
+                report['potential']['frtn']['percentage']))
+            print('>> [Echos] Tendance court terme: {}'.format(
+                report['trend']['echos']['short term']))
+            print('>> [Echos] Tendance moyen terme: {}'.format(
+                report['trend']['echos']['mid term']))
+            print('>> [Fortuneo] Tendance court terme: {}'.format(
+                report['trend']['frtn']['short term']))
+            print('>> [Fortuneo] Tendance moyen terme: {}'.format(
+                report['trend']['frtn']['mid term']))
+            print('>> [BNP] Tendance court terme: {}'.format(
+                report['trend']['bnp']['short term']))
+            print('>> [BNP] Tendance moyen terme: {}'.format(
+                report['trend']['bnp']['mid term']))
+
+def display_body(report, header):
+    """
+    Display the body
+    """
     if 'dividendes_history' in report:
         print('[Dividendes History] [{}] Rendement: {} %'.format(
             report['dividendes_history']['last_year'],
@@ -84,21 +84,36 @@ def print_report(report, mic='XPAR', header=True, footer=True, verbose=False):
         print_per(report['per_history'], header)
     if 'peg_history' in report:
         print_peg(report['peg_history'], header)
-    # FOOTER
+
+def display_footer(report, mic):
+    """
+    Display the footer
+    """
+    print('==============')
+    if report['url_echos'] is not None:
+        print('Les Echos: {}'.format(report['url_echos']))
+    if report['url_brsrm'] is not None:
+        print('Boursorama: {}'.format(report['url_brsrm']))
+    if report['url_frtn'] is not None:
+        print('Fortuneo: {}'.format(report['url_frtn']))
+    if mic == 'XPAR':
+        print('Recapitulatif dividendes: https://www.bnains.org' +
+              '/archives/action.php?' +
+              'codeISIN={}'.format(report['isin']))
+        print('Palmares CAC40 dividendes: https://www.boursorama.com' +
+              '/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6')
+
+def print_report(report, mic='XPAR', header=True, footer=True, verbose=False):
+    """
+    Prints the report
+    """
+    # TITLE
+    print('ISIN: {}'.format(report['isin']))
+    if header:
+        display_header(report, verbose)
+    display_body(report, header)
     if footer:
-        print('==============')
-        if report['url_echos'] is not None:
-            print('Les Echos: {}'.format(report['url_echos']))
-        if report['url_brsrm'] is not None:
-            print('Boursorama: {}'.format(report['url_brsrm']))
-        if report['url_frtn'] is not None:
-            print('Fortuneo: {}'.format(report['url_frtn']))
-        if mic == 'XPAR':
-            print('Recapitulatif dividendes: https://www.bnains.org' +
-                  '/archives/action.php?' +
-                  'codeISIN={}'.format(report['isin']))
-            print('Palmares CAC40 dividendes: https://www.boursorama.com' +
-                  '/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6')
+        display_footer(report, mic)
     print('==============')
 
 def print_per(pers, header):

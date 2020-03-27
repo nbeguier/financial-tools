@@ -220,63 +220,66 @@ def get_potential(url_brsrm, url_frtn, cours):
                 pass
     return report
 
-def get_trend(url_echos, url_frtn):
+def get_trend_echos(url_echos, report):
     """
-    Returns trend short/mid term
+    Get Echos trend
     """
-    report = dict()
-    report['echos'] = dict()
-    report['echos']['short term'] = None
-    report['echos']['mid term'] = None
-    report['frtn'] = dict()
-    report['frtn']['short term'] = None
-    report['frtn']['mid term'] = None
-    report['bnp'] = dict()
-    report['bnp']['short term'] = None
-    report['bnp']['mid term'] = None
-    # Echos
-    if url_echos:
-        url = url_echos.replace('/action-', '/recommandations-action-')
-        content = cache.get(url)
-        if content:
-            soup = BeautifulSoup(content, 'html.parser')
-            for i in soup.find_all('div', 'tendance hausse'):
-                if 'court terme' in i.text:
-                    report['echos']['short term'] = 'Hausse'
-                if 'moyen terme' in i.text:
-                    report['echos']['mid term'] = 'Hausse'
-            for i in soup.find_all('div', 'tendance egal'):
-                if 'court terme' in i.text:
-                    report['echos']['short term'] = 'Neutre'
-                if 'moyen terme' in i.text:
-                    report['echos']['mid term'] = 'Neutre'
-            for i in soup.find_all('div', 'tendance baisse'):
-                if 'court terme' in i.text:
-                    report['echos']['short term'] = 'Baisse'
-                if 'moyen terme' in i.text:
-                    report['echos']['mid term'] = 'Baisse'
-    # Frtn
-    if url_frtn:
-        market = int(url_frtn.split('-')[-1])
-        isin = url_frtn.split('-')[-2]
-        trend_url = common.decode_rot('uggcf://obhefr.sbegharb.se/ncv/inyhr/geraqf/NPGVBAF/SGA') + \
-            '{market:06d}{isin}'.format(market=market, isin=isin)
-        content = cache.get(trend_url)
-        if content and content != 'null':
-            try:
-                json_content = json.loads(content)
-                mapping = {
-                    'POSITIVE': 'Hausse',
-                    'NEUTRE': 'Neutre',
-                    'NEGATIVE': 'Baisse',
-                }
-                if 'opinionCT' in json_content and json_content['opinionCT'] in mapping:
-                    report['frtn']['short term'] = mapping[json_content['opinionCT']]
-                if 'opinionMT' in json_content and json_content['opinionMT'] in mapping:
-                    report['frtn']['mid term'] = mapping[json_content['opinionMT']]
-            except json.decoder.JSONDecodeError:
-                pass
-    # BNP
+    if not url_echos:
+        return report
+    url = url_echos.replace('/action-', '/recommandations-action-')
+    content = cache.get(url)
+    if content:
+        soup = BeautifulSoup(content, 'html.parser')
+        for i in soup.find_all('div', 'tendance hausse'):
+            if 'court terme' in i.text:
+                report['echos']['short term'] = 'Hausse'
+            if 'moyen terme' in i.text:
+                report['echos']['mid term'] = 'Hausse'
+        for i in soup.find_all('div', 'tendance egal'):
+            if 'court terme' in i.text:
+                report['echos']['short term'] = 'Neutre'
+            if 'moyen terme' in i.text:
+                report['echos']['mid term'] = 'Neutre'
+        for i in soup.find_all('div', 'tendance baisse'):
+            if 'court terme' in i.text:
+                report['echos']['short term'] = 'Baisse'
+            if 'moyen terme' in i.text:
+                report['echos']['mid term'] = 'Baisse'
+    return report
+
+def get_trend_frtn(url_frtn, report):
+    """
+    Get FRTN trend
+    """
+    if not url_frtn:
+        return report, None
+    market = int(url_frtn.split('-')[-1])
+    isin = url_frtn.split('-')[-2]
+    trend_url = common.decode_rot('uggcf://obhefr.sbegharb.se/ncv/inyhr/geraqf/NPGVBAF/SGA') + \
+        '{market:06d}{isin}'.format(market=market, isin=isin)
+    content = cache.get(trend_url)
+    if content and content != 'null':
+        try:
+            json_content = json.loads(content)
+            mapping = {
+                'POSITIVE': 'Hausse',
+                'NEUTRE': 'Neutre',
+                'NEGATIVE': 'Baisse',
+            }
+            if 'opinionCT' in json_content and json_content['opinionCT'] in mapping:
+                report['frtn']['short term'] = mapping[json_content['opinionCT']]
+            if 'opinionMT' in json_content and json_content['opinionMT'] in mapping:
+                report['frtn']['mid term'] = mapping[json_content['opinionMT']]
+        except json.decoder.JSONDecodeError:
+            pass
+    return report, isin
+
+def get_trend_bnp(isin, report):
+    """
+    Get FRTN trend
+    """
+    if not isin:
+        return report
     trend_url = common.decode_rot('uggcf://ppvjro.oaccnevonf.pbz/ri/se/terraonax/-;'+ \
         'rifvq=fHXKzv85nNLdRgeWB8AO-0TPC4JTJ7FDJO63tOwt.aqyc-ppvjro-nf07')
     payload = common.decode_rot('%24cneg=oacc.znexrgqngn.fancfubgObql&%24rirag=ybnq') + \
@@ -303,6 +306,70 @@ def get_trend(url_echos, url_frtn):
             pass
     return report
 
+def get_trend(url_echos, url_frtn):
+    """
+    Returns trend short/mid term
+    """
+    report = dict()
+    report['echos'] = dict()
+    report['echos']['short term'] = None
+    report['echos']['mid term'] = None
+    report['frtn'] = dict()
+    report['frtn']['short term'] = None
+    report['frtn']['mid term'] = None
+    report['bnp'] = dict()
+    report['bnp']['short term'] = None
+    report['bnp']['mid term'] = None
+    # Echos
+    report = get_trend_echos(url_echos, report)
+    # Frtn
+    report, isin = get_trend_frtn(url_frtn, report)
+    # BNP
+    report = get_trend_bnp(isin, report)
+    return report
+
+def get_dividend_brsrm(url_brsrm, report):
+    """
+    Get dividend from BRSRM
+    """
+    if not url_brsrm:
+        return report
+    content = cache.get(url_brsrm)
+    if not content:
+        return report
+    soup = BeautifulSoup(content, 'html.parser')
+    for div_relative in soup.find_all('div', 'u-relative'):
+        if 'Rendement' not in div_relative.text:
+            continue
+        if len(div_relative.find_all('td')) < 6:
+            continue
+        report['brsrm']['percent'] = float(
+            common.clean_data(div_relative.find_all('td')[6].\
+            text, json_load=False).split()[0].split('%')[0])
+    return report
+
+def get_dividend_frtn(url_frtn, report):
+    """
+    Get dividend from FRTN
+    """
+    if not url_frtn:
+        return report
+    market = int(url_frtn.split('-')[-1])
+    isin = url_frtn.split('-')[-2]
+    avis_url = common.decode_rot('uggcf://obhefr.sbegharb.se/ncv/inyhr/nivf/SGA') + \
+        '{market:06d}{isin}'.format(market=market, isin=isin)
+    content = cache.get(avis_url)
+    if not content:
+        return report
+    try:
+        json_content = json.loads(content)
+        if len(json_content['consensus']['listeAnnee']) > 1:
+            report['frtn']['percent'] = round(float(
+                json_content['consensus']['listeAnnee'][1]['rendement'])*100, 2)
+    except json.decoder.JSONDecodeError:
+        pass
+    return report
+
 def get_dividend(infos_boursiere, url_brsrm, url_frtn):
     """
     Compute the next dividend value
@@ -319,33 +386,10 @@ def get_dividend(infos_boursiere, url_brsrm, url_frtn):
     if infos_boursiere and 'Rendement' in infos_boursiere:
         report['echos']['percent'] = float(infos_boursiere['Rendement'])
 
-    if url_brsrm:
-        content = cache.get(url_brsrm)
-        if content:
-            soup = BeautifulSoup(content, 'html.parser')
-            for div_relative in soup.find_all('div', 'u-relative'):
-                if 'Rendement' not in div_relative.text:
-                    continue
-                if len(div_relative.find_all('td')) < 6:
-                    continue
-                report['brsrm']['percent'] = float(
-                    common.clean_data(div_relative.find_all('td')[6].\
-                    text, json_load=False).split()[0].split('%')[0])
-
-    if url_frtn:
-        market = int(url_frtn.split('-')[-1])
-        isin = url_frtn.split('-')[-2]
-        avis_url = common.decode_rot('uggcf://obhefr.sbegharb.se/ncv/inyhr/nivf/SGA') + \
-            '{market:06d}{isin}'.format(market=market, isin=isin)
-        content = cache.get(avis_url)
-        if content:
-            try:
-                json_content = json.loads(content)
-                if len(json_content['consensus']['listeAnnee']) > 1:
-                    report['frtn']['percent'] = round(float(
-                        json_content['consensus']['listeAnnee'][1]['rendement'])*100, 2)
-            except json.decoder.JSONDecodeError:
-                pass
+    # BRSRM
+    report = get_dividend_brsrm(url_brsrm, report)
+    # FRTN
+    report = get_dividend_frtn(url_frtn, report)
 
     count = 0
     for url in report:
@@ -429,7 +473,8 @@ def get_report(parameters):
                 report['infos_boursiere'])
     report['trend'] = get_trend(report['url_echos'], report['url_frtn'])
     report['potential'] = get_potential(report['url_brsrm'], report['url_frtn'], report['cours'])
-    report['dividend'] = get_dividend(report['infos_boursiere'], report['url_brsrm'], report['url_frtn'])
+    report['dividend'] = get_dividend(
+        report['infos_boursiere'], report['url_brsrm'], report['url_frtn'])
 
     report['history'] = dict()
     if parameters['history']['dividendes']:

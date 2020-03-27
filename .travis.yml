@@ -16,3 +16,5 @@ script:
   - pylint dashboard.py
   - pylint isin.py
   - pylint reporter.py
+  - pylint lib/*.py
+

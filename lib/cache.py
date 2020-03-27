@@ -19,6 +19,7 @@ import urllib3
 
 # Own library
 # pylint: disable=E0401,E1101
+# pylint: disable=fixme,unused-argument
 import settings
 
 # Debug
