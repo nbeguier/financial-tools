@@ -301,3 +301,9 @@ KERING       511,700
 AIR LIQUIDE  127,800
 AXA          21,855
 ```
+
+# License
+Licensed under the [MIT License](https://github.com/nbeguier/financial-tools/blob/master/LICENSE).
+
+# Copyright
+Copyright 2020 Nicolas Beguier; ([nbeguier](https://beguier.eu/nicolas/) - nicolas_beguier[at]hotmail[dot]com)
