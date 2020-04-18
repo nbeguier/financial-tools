@@ -384,7 +384,10 @@ def get_dividend(infos_boursiere, url_brsrm, url_frtn):
     report['average_percent'] = 0
 
     if infos_boursiere and 'Rendement' in infos_boursiere:
-        report['echos']['percent'] = float(infos_boursiere['Rendement'])
+        try:
+            report['echos']['percent'] = float(infos_boursiere['Rendement'])
+        except ValueError:
+            report['echos']['percent'] = None
 
     # BRSRM
     report = get_dividend_brsrm(url_brsrm, report)
