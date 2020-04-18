@@ -16,6 +16,14 @@ import lib.common as common
 # Debug
 # from pdb import set_trace as st
 
+VAL_TYPE_DICT = {
+    'open': 1,
+    'high': 2,
+    'low': 3,
+    'last': 4,
+    'close': 5,
+}
+
 def get(isin, years=3):
     """
     Get 3 years history of this ISIN
@@ -58,10 +66,10 @@ def dividendes(parameters, infos_boursiere):
         for line in history:
             date = line.split(';')[0]
             if date == matching_date:
-                open_value = float(line.split(';')[1])
+                open_value = float(line.split(';')[VAL_TYPE_DICT['open']])
             elif latest_matching_date in date:
                 latest_matching_date = date
-                latest_open_value = float(line.split(';')[1])
+                latest_open_value = float(line.split(';')[VAL_TYPE_DICT['open']])
         if open_value is not None and latest_open_value is not None:
             div = float(infos_boursiere['Dividendes'].split()[0])
             average_val = (open_value+latest_open_value)/2
@@ -75,9 +83,9 @@ def dividendes(parameters, infos_boursiere):
             report['last_year'] = latest_matching_date.split('/')[0]
     return report
 
-def get_last_val_date(isin, val, start=0):
+def get_last_date_by_val(isin, val, start=0):
     """
-    Return the last date of this value
+    Return the last date (YY/mm/dd) of this value
     """
     val_history = get(isin, years=5)
     if not val_history:
@@ -87,20 +95,34 @@ def get_last_val_date(isin, val, start=0):
     for line in val_history[start+1:-1]:
         day0 = line
         # If missing value
-        if not day0 or not day0.split(';')[3] \
-            or not day1 or not day1.split(';')[3]:
+        if not day0 or not day0.split(';')[VAL_TYPE_DICT['low']] \
+            or not day1 or not day1.split(';')[VAL_TYPE_DICT['low']]:
             day1 = day0
             continue
         min_value = min(
-            float(day0.split(';')[3]),
-            float(day1.split(';')[3]))
+            float(day0.split(';')[VAL_TYPE_DICT['low']]),
+            float(day1.split(';')[VAL_TYPE_DICT['low']]))
         max_value = max(
-            float(day0.split(';')[2]),
-            float(day1.split(';')[2]))
+            float(day0.split(';')[VAL_TYPE_DICT['high']]),
+            float(day1.split(';')[VAL_TYPE_DICT['high']]))
         if min_value <= val <= max_value:
             return line.split(';')[0]
         day1 = day0
 
+    return 'Inconnu'
+
+def get_val_by_date(isin, date, val_type='open'):
+    """
+    Return the value of this date (YY/mm/dd)
+    """
+    val_history = get(isin, years=5)
+    if not val_history:
+        return False
+    val_history.reverse()
+    for line in val_history:
+        if not line.startswith(date+';'):
+            continue
+        return float(line.split(';')[VAL_TYPE_DICT[val_type]])
     return 'Inconnu'
 
 def per(parameters, simple_report):
@@ -118,7 +140,7 @@ def per(parameters, simple_report):
 
     report = analysis.per_by_value(current_per, current_val)
     for _per in report:
-        report[_per]['date'] = get_last_val_date(
+        report[_per]['date'] = get_last_date_by_val(
             parameters['isin'], report[_per]['value'])
     return report
 
@@ -136,6 +158,6 @@ def peg(parameters, simple_report, current_peg):
 
     report = analysis.peg_by_value(float(current_peg), current_val)
     for _peg in report:
-        report[_peg]['date'] = get_last_val_date(
+        report[_peg]['date'] = get_last_date_by_val(
             parameters['isin'], report[_peg]['value'])
     return report
