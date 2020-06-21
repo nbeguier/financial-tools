@@ -157,7 +157,7 @@ def get_url_brsrm(isin):
     if not content:
         return None
     soup = BeautifulSoup(content, 'html.parser')
-    path = soup.find('a', 'search__list__link')['href']
+    path = soup.find('a', 'search__list-link')['href']
     return base_url+path
 
 def get_url_frtn(isin):
