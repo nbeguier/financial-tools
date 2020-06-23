@@ -417,6 +417,7 @@ def simplify_report(report, parameters):
     simple_report['url_frtn'] = report['url_frtn']
     simple_report['trend'] = report['trend']
     simple_report['dividend'] = report['dividend']
+    simple_report['PEG'] = None
 
     if report['cours'] is not None:
         simple_report['nom'] = report['cours']['cotation']['name']

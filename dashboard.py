@@ -25,7 +25,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.1.0'
+VERSION = '1.2.0'
 
 def main():
     """
@@ -33,7 +33,11 @@ def main():
     """
     listing = list()
     for isin in settings.ISIN_DASHBOARD:
-        isin_data = reporting.get_cours(isin, 'XPAR', disable_cache=True)
+        market = 'XPAR'
+        if ',' in isin:
+            market = isin.split(',')[1]
+            isin = isin.split(',')[0]
+        isin_data = reporting.get_cours(isin, market, disable_cache=True)
         if not isin_data:
             listing.append(list())
             continue
