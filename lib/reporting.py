@@ -201,7 +201,7 @@ def get_potential(url_brsrm, url_frtn, cours):
                     report['brsrm']['value'] = common.clean_data(
                         value.text, json_load=False).split()[0]
                     if cours:
-                        val = float(cours['cotation']['valorisation'].replace(',', '.'))
+                        val = float(cours['cotation']['valorisation'].replace(',', '.').split()[0])
                         report['brsrm']['percentage'] = round(
                             (float(report['brsrm']['value']) / val - 1)*100, 1)
     if url_frtn:
