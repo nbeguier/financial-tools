@@ -19,7 +19,7 @@ import lib.reporting as reporting
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '2.7.2'
+VERSION = '2.7.3'
 
 def main(parameters):
     """
@@ -81,7 +81,7 @@ if __name__ == '__main__':
         sys.exit(1)
     elif ARGS.nom is not None:
         RESULT = common.autocomplete(ARGS.nom)
-        if not RESULT:
+        if not RESULT or 'ISIN' not in RESULT[0]:
             print('No result for this name')
             sys.exit(1)
         else:
