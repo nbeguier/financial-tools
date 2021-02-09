@@ -230,6 +230,30 @@ optional arguments:
 ```
 
 ```
+$ ./reporter.py save -o data/
+# Wait one day...
+$ ./reporter.py save -o data/
+
+
+$ ./reporter.py load data/2020_02_24.txt
+==============
+ISIN: FR0000120073
+Nom: AIR LIQUIDE
+Secteur: MATERIAUX DE BASE / Chimie de base
+Valorisation: 139.250 EUR
+Variation 1 an: 10.34 %
+|| Dividendes: 2.70 EUR
+|| PER: 28.6 (bulle spéculative)
+|| PEG: 4.9 (croissance annoncée trop faible)
+|| Rendement: 1.94 %
+|| Détachement: 20/05/19
+|| Prochain rdv: 24/04/20
+|| Tendance court terme: 4.0/5
+|| Tendance moyen terme: 3.0/5
+==============
+# etc...
+
+
 $ ./reporter.py diff data/2020_02_23.txt data/2020_02_24.txt
 ==============
 ISIN: FR0000120073

@@ -157,6 +157,9 @@ def get_url_brsrm(isin):
     if not content:
         return None
     soup = BeautifulSoup(content, 'html.parser')
+    if soup.find('a', 'search__list-link') is None \
+        or 'href' not in soup.find('a', 'search__list-link'):
+        return None
     path = soup.find('a', 'search__list-link')['href']
     return base_url+path
 
@@ -405,6 +408,29 @@ def get_dividend(infos_boursiere, url_brsrm, url_frtn):
         report['average_percent'] = '-'
     return report
 
+def get_history_frtn(url_frtn, report):
+    """
+    Get history from FRTN
+    """
+    if not url_frtn:
+        return report
+    market = int(url_frtn.split('-')[-1])
+    isin = url_frtn.split('-')[-2]
+    history_url = common.decode_rot('uggcf://obhefr.sbegharb.se/ncv/inyhr/uvfgbel/NPGVBAF/SGA') + \
+        '{market:06d}{isin}'.format(market=market, isin=isin)
+    content = cache.get(history_url)
+    if not content:
+        return report
+    try:
+        json_content = json.loads(content)
+        if 'historic' in json_content \
+            and len(json_content['historic']) > 1 \
+            and 'price' in json_content['historic'][0]:
+            report['cours']['cotation']['valorisation'] = str(json_content['historic'][0]['price'])
+    except json.decoder.JSONDecodeError:
+        pass
+    return report
+
 def simplify_report(report, parameters):
     """
     Returns a simplified version of the report
@@ -475,6 +501,16 @@ def get_report(parameters):
             report['infos_boursiere']['PEG'] = compute_peg(
                 compute_benefices(report),
                 report['infos_boursiere'])
+    elif report['url_frtn'] is not None:
+        if not isinstance(report['cours'], dict):
+            report['cours'] = dict()
+        report['cours']['cotation'] = dict()
+        name = ' '.join(report['url_frtn'].split('-')[1:-3]).upper()
+        if not name:
+            name = parameters['isin'].upper()
+        report['cours']['cotation']['name'] = name
+        report['cours']['cotation']['variationYear'] = '0'
+        get_history_frtn(report['url_frtn'], report)
     report['trend'] = get_trend(report['url_echos'], report['url_frtn'])
     report['potential'] = get_potential(report['url_brsrm'], report['url_frtn'], report['cours'])
     report['dividend'] = get_dividend(
