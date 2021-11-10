@@ -50,11 +50,11 @@ def per_by_value(current_per, current_val):
     """
     Returns for each PER stage the share value
     """
-    result = dict()
-    result[current_per] = dict()
-    result[10] = dict()
-    result[17] = dict()
-    result[25] = dict()
+    result = {}
+    result[current_per] = {}
+    result[10] = {}
+    result[17] = {}
+    result[25] = {}
     result[current_per]['value'] = current_val
     result[current_per]['current'] = True
     result[10]['value'] = current_val * 10 / current_per
@@ -69,13 +69,13 @@ def peg_by_value(current_peg, current_val):
     """
     Returns for each PEG stage the share value
     """
-    result = dict()
-    result[current_peg] = dict()
-    result[0.5] = dict()
-    result[1] = dict()
-    result[2] = dict()
-    result[3] = dict()
-    result[3.6] = dict()
+    result = {}
+    result[current_peg] = {}
+    result[0.5] = {}
+    result[1] = {}
+    result[2] = {}
+    result[3] = {}
+    result[3.6] = {}
     result[current_peg]['value'] = current_val
     result[current_peg]['current'] = True
     result[0.5]['value'] = 0.5 * current_val / current_peg
@@ -96,37 +96,38 @@ def trend(simple_report):
         - 3pts : average of trend
         - 2pts : average of potential
     """
-    report = dict()
+    report = {}
     report['short term'] = 0
     report['mid term'] = 0
     mapping = {
         'Hausse': 1,
         'Neutre': 0.5,
         'Baisse': 0,
-        None: 0,
     }
+    # Count trend and the sum of trend points (see mapping)
     count_st_trend = 0
     count_mt_trend = 0
     for market in simple_report['trend']:
-        if simple_report['trend'][market]['short term']:
+        if simple_report['trend'][market]['short term'] in mapping:
             count_st_trend += 1
-        if simple_report['trend'][market]['mid term']:
+            report['short term'] += mapping[simple_report['trend'][market]['short term']]
+        if simple_report['trend'][market]['mid term'] in mapping:
             count_mt_trend += 1
-        report['short term'] += mapping[simple_report['trend'][market]['short term']]
-        report['mid term'] += mapping[simple_report['trend'][market]['mid term']]
+            report['mid term'] += mapping[simple_report['trend'][market]['mid term']]
     if count_st_trend == 0 or count_mt_trend == 0:
         return {'short term': '-', 'mid term': '-'}
     report['short term'] = 3 * report['short term'] / count_st_trend
     report['mid term'] = 3 * report['mid term'] /count_mt_trend
+    # Sum potential points
     potential_value = 0
     potential_count = 0
     for market in simple_report['potential']:
         if simple_report['potential'][market]['value'] is not None:
             potential_count += 1
-        if simple_report['potential'][market]['percentage'] > 1:
-            potential_value += 1
-        elif simple_report['potential'][market]['percentage'] > -1:
-            potential_value += 0.5
+            if simple_report['potential'][market]['percentage'] > 1:
+                potential_value += 1
+            elif simple_report['potential'][market]['percentage'] > -1:
+                potential_value += 0.5
     if potential_count == 0:
         report['short term'] = report['short term'] * 5/3
         report['mid term'] = report['mid term'] * 5/3

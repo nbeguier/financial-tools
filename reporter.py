@@ -29,7 +29,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.13.0'
+VERSION = '1.13.1'
 
 def get_sign(value):
     """
