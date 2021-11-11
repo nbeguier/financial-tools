@@ -29,7 +29,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.13.1'
+VERSION = '1.13.2'
 
 def get_sign(value):
     """
@@ -95,7 +95,12 @@ def report_valorisation(old_report, new_report, html_tag):
     if is_different_and_valid(old_report, new_report, 'valorisation'):
         evo_valorisation = round(100 * (-1 + \
             float(new_report['valorisation']) / float(old_report['valorisation'])), 2)
-        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution valorisation{html_tag["bold_out"]}: {get_sign(evo_valorisation)}{evo_valorisation} %{html_tag["li_out"]}')
+        sign = get_sign(evo_valorisation)
+        if sign == '+':
+            evo_valorisation = f'{html_tag["green_in"]}{sign}{evo_valorisation} %{html_tag["green_out"]}'
+        else:
+            evo_valorisation = f'{html_tag["red_in"]}{sign}{evo_valorisation} %{html_tag["red_out"]}'
+        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution valorisation{html_tag["bold_out"]}: {evo_valorisation}{html_tag["li_out"]}')
         print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution valorisation{html_tag["bold_out"]}: {old_report["valorisation"]} -> {new_report["valorisation"]} EUR{html_tag["li_out"]}')
 
 def report_per(old_report, new_report, html_tag):
@@ -104,7 +109,8 @@ def report_per(old_report, new_report, html_tag):
     """
     if is_different_and_valid(old_report, new_report, 'PER'):
         evo_per = round(float(new_report['PER']) - float(old_report['PER']), 1)
-        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PER{html_tag["bold_out"]}: {get_sign(evo_per)}{evo_per}{html_tag["li_out"]}')
+        evo_per = f'{html_tag["blue_in"]}{get_sign(evo_per)}{evo_per}{html_tag["blue_out"]}'
+        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PER{html_tag["bold_out"]}: {evo_per}{html_tag["li_out"]}')
         print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PER{html_tag["bold_out"]}: {old_report["PER"]} -> {new_report["PER"]}{html_tag["li_out"]}')
         if analysis.per_text(old_report['PER']) != analysis.per_text(new_report['PER']):
             print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PER{html_tag["bold_out"]}: {analysis.per_text(old_report["PER"])} -> {analysis.per_text(new_report["PER"])}{html_tag["li_out"]}')
@@ -115,7 +121,8 @@ def report_peg(old_report, new_report, html_tag):
     """
     if is_different_and_valid(old_report, new_report, 'peg'):
         evo_peg = round(float(new_report['peg']) - float(old_report['peg']), 1)
-        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PEG{html_tag["bold_out"]}: {get_sign(evo_peg)}{evo_peg}{html_tag["li_out"]}')
+        evo_peg = f'{html_tag["blue_in"]}{get_sign(evo_peg)}{evo_peg}{html_tag["blue_out"]}'
+        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PEG{html_tag["bold_out"]}: {evo_peg}{html_tag["li_out"]}')
         print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PEG{html_tag["bold_out"]}: {old_report["peg"]} -> {new_report["peg"]}{html_tag["li_out"]}')
 
 def report_benefices(old_report, new_report, html_tag):
@@ -124,7 +131,12 @@ def report_benefices(old_report, new_report, html_tag):
     """
     if is_different_and_valid(old_report, new_report, 'benefices'):
         evo_benef = round(float(new_report['benefices']) - float(old_report['benefices']), 2)
-        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution benefices{html_tag["bold_out"]}: {get_sign(evo_benef)}{evo_benef} points{html_tag["li_out"]}')
+        sign = get_sign(evo_benef)
+        if sign == '+':
+            evo_benef = f'{html_tag["green_in"]}{sign}{evo_benef} pts{html_tag["green_out"]}'
+        else:
+            evo_benef = f'{html_tag["red_in"]}{sign}{evo_benef} pts{html_tag["red_out"]}'
+        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution benefices{html_tag["bold_out"]}: {evo_benef}{html_tag["li_out"]}')
         print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution benefices{html_tag["bold_out"]}: {old_report["benefices"]} -> {new_report["benefices"]}{html_tag["li_out"]}')
 
 def report_rdv(old_report, new_report, html_tag):
@@ -132,11 +144,11 @@ def report_rdv(old_report, new_report, html_tag):
     Report the Rendez-vous
     """
     if is_different_and_valid(old_report, new_report, 'Prochain rdv'):
-        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Nouveau rdv{html_tag["bold_out"]}: {new_report["Prochain rdv"]}{html_tag["li_out"]}')
+        print(f'{html_tag["li_in"]}{html_tag["blue_in"]}{html_tag["bold_in"]}Nouveau rdv{html_tag["bold_out"]}: {new_report["Prochain rdv"]}{html_tag["blue_out"]}{html_tag["li_out"]}')
     try:
         struct_time = time.strptime(new_report['Prochain rdv'], '%d/%m/%y')
         if 0 <= (datetime(*struct_time[:6]) - datetime.now()).days <= 3:
-            print(f'{html_tag["li_in"]}{html_tag["bold_in"]}[Reminder] Prochain rdv{html_tag["bold_out"]}: {new_report["Prochain rdv"]}{html_tag["li_out"]}')
+            print(f'{html_tag["li_in"]}{html_tag["blue_in"]}{html_tag["bold_in"]}[Reminder] Prochain rdv{html_tag["bold_out"]}: {new_report["Prochain rdv"]}{html_tag["blue_out"]}{html_tag["li_out"]}')
     except (ValueError, KeyError, TypeError):
         pass
 
@@ -182,14 +194,26 @@ def diff_report(oldest_file, newer_file, isin_compare, is_html):
         'bold_in': '',
         'bold_out': '',
         'li_in': '',
-        'li_out': ''
+        'li_out': '',
+        'red_in': '',
+        'red_out': '',
+        'green_in': '',
+        'green_out': '',
+        'blue_in': '',
+        'blue_out': '',
     }
     if is_html:
         html_tag = {
             'bold_in': '<b>',
             'bold_out': '</b>',
             'li_in': '<li>',
-            'li_out': '</li>'
+            'li_out': '</li>',
+            'red_in': '<span style="color: #f00;">',
+            'red_out': '</span>',
+            'green_in': '<span style="color: #18b724;">',
+            'green_out': '</span>',
+            'blue_in': '<span style="color: #007eff;">',
+            'blue_out': '</span>',
         }
 
     old_reports = load_report(oldest_file, display_report=False)
