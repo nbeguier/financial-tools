@@ -330,4 +330,4 @@ AXA          21,855
 Licensed under the [MIT License](https://github.com/nbeguier/financial-tools/blob/master/LICENSE).
 
 # Copyright
-Copyright 2020-2021 Nicolas Beguier; ([nbeguier](https://beguier.eu/nicolas/) - nicolas_beguier[at]hotmail[dot]com)
+Copyright 2020-2022 Nicolas Beguier; ([nbeguier](https://beguier.eu/nicolas/) - nicolas_beguier[at]hotmail[dot]com)
