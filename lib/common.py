@@ -2,7 +2,7 @@
 """
 Common library
 
-Copyright (c) 2020-2022 Nicolas Beguier
+Copyright (c) 2020-2023 Nicolas Beguier
 Licensed under the MIT License
 Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 """
