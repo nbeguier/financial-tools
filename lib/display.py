@@ -29,7 +29,7 @@ def display_body(report):
     """
     if 'DIVIDEND' in report:
         print(f"|| Dividendes: {report['DIVIDEND']['v']} {report['M_CUR']['v']}")
-    if 'CUSTOM_DIVIDEND_PERCENT' in report:
+    if 'DIVIDEND' in report and 'CUSTOM_DIVIDEND_PERCENT' in report:
         print(f"||           : {report['CUSTOM_DIVIDEND_PERCENT']} %")
     if 'CROISSANCE_BNPA_ANNEEN2' in report:
         print(f"|| Croissance BNPA: {round(report['CROISSANCE_BNPA_ANNEEN2']['v'])} % -> {round(report['CROISSANCE_BNPA_ANNEE_PRECEDENTE']['v'])} % -> {round(report['CROISSANCE_BNPA_ANNEE_COURANTE']['v'])} %")
@@ -39,16 +39,16 @@ def display_body(report):
         print(f"|| PER prévisionel: {round(report['PER_ANNEE_ESTIMEE']['v'], 2)} ({analysis.per_text(report['PER_ANNEE_ESTIMEE']['v'])})")
     if report['CUSTOM_PEG'] != '-':
         print(f"|| PEG prévisionel: {report['CUSTOM_PEG']} ({analysis.peg_text(report['CUSTOM_PEG'])})")
-    if report['CUSTOM_PEG_MAISON'] != '-':
+    if 'CUSTOM_PEG_MAISON' in report and report['CUSTOM_PEG_MAISON'] != '-':
         print(f"|| PEG réaliste: {report['CUSTOM_PEG_MAISON']} ({analysis.peg_text(report['CUSTOM_PEG_MAISON'])})")
     print('--')
     if 'DIV_ANNEE_PRECEDENTE' in report:
         print(f"|| Dividende Année précédente: {report['DIV_ANNEE_PRECEDENTE']['v']} {report['M_CUR']['v']}")
-    if 'CUSTOM_DIVIDEND_ANNEE_PRECEDENTE_PERCENT' in report:
+    if 'DIV_ANNEE_PRECEDENTE' in report and 'CUSTOM_DIVIDEND_ANNEE_PRECEDENTE_PERCENT' in report:
         print(f"||                           : {report['CUSTOM_DIVIDEND_ANNEE_PRECEDENTE_PERCENT']} %")
     if 'PER_ANNEE_PRECEDENTE' in report:
         print(f"|| PER Année précédente: {round(report['PER_ANNEE_PRECEDENTE']['v'], 2)} ({analysis.per_text(report['PER_ANNEE_PRECEDENTE']['v'])})")
-    if report['CUSTOM_PEG_ANNEE_PRECEDENTE'] != '-':
+    if 'CUSTOM_PEG_ANNEE_PRECEDENTE' in report and report['CUSTOM_PEG_ANNEE_PRECEDENTE'] != '-':
         print(f"|| PEG Année précédente: {report['CUSTOM_PEG_ANNEE_PRECEDENTE']} ({analysis.peg_text(report['CUSTOM_PEG_ANNEE_PRECEDENTE'])})")
 
 def print_report(report, header=True):

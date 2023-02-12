@@ -20,149 +20,71 @@ cp settings.py.sample settings.py
 This function returns all metadata related to the input ISIN. You could also specify the place, this is 'XPAR' by default.
 
 ```
-usage: isin.py [-h] [--version] [--verbose] [-i ISIN] [-n NOM]
-               [-m MARKET_ID_CODE] [--no-header] [--no-footer]
-               [--dividendes-history] [--per-history] [--peg-history]
-               [--is-healthy]
+$ python isin.py --help
+usage: isin.py [-h] [--version] [-i ISIN] [-n NOM] [-m MARKET_ID_CODE] [--no-header]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
-  --verbose             Affiche plus d'informations (=False)
   -i ISIN, --isin ISIN  Code ISIN
   -n NOM, --nom NOM     Nom de l'action
   -m MARKET_ID_CODE, --market-id-code MARKET_ID_CODE
                         Code d'identification de marché (=XPAR)
   --no-header           Cache les informations de bases (=False)
-  --no-footer           Cache les URLs de fin (=False)
-  --dividendes-history  Affiche plus d'informations sur les dividendes
-                        (=False)
-  --per-history         Affiche la valeur théorique du PER (=False)
-  --peg-history         Affiche la valeur théorique du PEG (=False)
-  --is-healthy          Affiche l'état de santé de l'action (=False)
 ```
 
 ```
 # Affiche les infos de FR0000120073 (AIR LIQUIDE)
-$ ./isin.py -i FR0000120073
+$ python isin.py -i FR0000120073
 ISIN: FR0000120073
-Nom: AIR LIQUIDE
-Secteur: MATERIAUX DE BASE / Chimie de base
-Valorisation: 139.250 EUR
-Variation 1 an: 10.34 %
-|| Dividendes: 2.70 EUR
-|| PER: 28.6 (bulle spéculative)
-|| PEG: 4.9 (croissance annoncée trop faible)
-|| Rendement: 1.94 %
-|| Détachement: 20/05/19
-|| Prochain rdv: 24/04/20
-|| Tendance court terme: 4.0/5
-|| Tendance moyen terme: 3.0/5
-==============
-Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
-Boursorama: https://www.boursorama.com/cours/1rPAI/
-Fortuneo: https://bourse.fortuneo.fr/actions/cours-air-liquide-AI-FR0000120073-23
-Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
-Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
+Nom: Air Liquide
+Secteur: Chimie
+Valorisation: 142.32 EUR
+Variation 1 an: 8.96 %
+|| Dividendes: 2.9 EUR
+||           : 2.0 %
+|| Croissance BNPA: 0 % -> 10 % -> 18 %
+|| Croissance CA: -7 % -> 14 % -> 28 %
+|| PER prévisionel: 24.99 (croissance annoncée énorme)
+|| PEG prévisionel: 1.4 (action surévaluée)
+|| PEG réaliste: 2.8 (bulle spéculative)
+--
+|| Dividende Année précédente: 2.9 EUR
+||                           : 2.0 %
+|| PER Année précédente: 29.36 (croissance annoncée extraordinaire)
+|| PEG Année précédente: 3.0 (bulle spéculative)
 ==============
 
-
-# Affiche les infos de IT0001046553 (CARRARO), XMIL = Borsa Italiana S.P.A.
-$ ./isin.py -i IT0001046553 -m XMIL
-ISIN: IT0001046553
-Nom: CARRARO
-Valorisation: 1.826 EUR
-Variation 1 an: -17.75 %
-==============
-Les Echos: https://investir.lesechos.fr/cours/action-carraro,xmil,carr,it0001046553,isin.html
-Boursorama: https://www.boursorama.com/cours/1gCARR/
+# Affiche les infos de XS2215041513 (3.75 Carraro26Nts-S), HMTF
+$ python isin.py -i XS2215041513 -m HMTF
+ISIN: XS2215041513
+Nom: 3.75 Carraro26Nts-S
+Secteur: Financial, investment & other diversified comp.
+Valorisation: 98.88 EUR
+Variation 1 an: -1.53 %
+--
 ==============
 
 
 # Affiche les infos de l'ISIN XPAR le plus proche (AIR LIQUIDE)
-$ ./isin.py -n "air liqui"
+$ python isin.py -n "air liqui"
 ISIN: FR0000120073
-Nom: AIR LIQUIDE
-Secteur: MATERIAUX DE BASE / Chimie de base
-Valorisation: 139.250 EUR
-Variation 1 an: 10.34 %
-|| Dividendes: 2.70 EUR
-|| PER: 28.6 (bulle spéculative)
-|| PEG: 4.9 (croissance annoncée trop faible)
-|| Rendement: 1.94 %
-|| Détachement: 20/05/19
-|| Tendance court terme: 4.0/5
-|| Tendance moyen terme: 3.0/5
-==============
-Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
-Boursorama: https://www.boursorama.com/cours/1rPAI/
-Fortuneo: https://bourse.fortuneo.fr/actions/cours-air-liquide-AI-FR0000120073-23
-Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
-Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
-==============
-
-
-# Affiche plus d'informations sur les dividendes d'Air Liquide
-$ ./isin.py --dividendes-history -i FR0000120073
-ISIN: FR0000120073
-Nom: AIR LIQUIDE
-Secteur: MATERIAUX DE BASE / Chimie de base
-Valorisation: 139.250 EUR
-Variation 1 an: 10.34 %
-|| Dividendes: 2.70 EUR
-|| PER: 28.6 (bulle spéculative)
-|| PEG: 4.9 (croissance annoncée trop faible)
-|| Rendement: 1.94 %
-|| Détachement: 20/05/19
-|| Prochain rdv: 24/04/20
-|| Tendance court terme: 4.0/5
-|| Tendance moyen terme: 3.0/5
-[Dividendes History] [2018] Rendement: 2.65 %
-[Dividendes History] [2018] Valorisation: 101.73 EUR
-[Dividendes History] [2019/05/20] Valorisation: 105.23 EUR
-[Dividendes History] [2018/05/02] Valorisation: 98.23 EUR
-==============
-Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
-Boursorama: https://www.boursorama.com/cours/1rPAI/
-Fortuneo: https://bourse.fortuneo.fr/actions/cours-air-liquide-AI-FR0000120073-23
-Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
-Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
-==============
-
-
-# Affiche le maximum d'informations sur l'action d'Air Liquide
-$ ./isin.py --peg-history --per-history --dividendes-history -n "air liquide"
-ISIN: FR0000120073
-Nom: AIR LIQUIDE
-Secteur: MATERIAUX DE BASE / Chimie de base
-Valorisation: 139.250 EUR
-Variation 1 an: 10.34 %
-|| Dividendes: 2.70 EUR
-|| PER: 28.6 (bulle spéculative)
-|| PEG: 4.9 (croissance annoncée trop faible)
-|| Rendement: 1.94 %
-|| Détachement: 20/05/19
-|| Prochain rdv: 24/04/20
-|| Tendance court terme: 4.0/5
-|| Tendance moyen terme: 3.0/5
-[Dividendes History] [2018] Rendement: 2.65 %
-[Dividendes History] [2018] Valorisation: 101.73 EUR
-[Dividendes History] [2019/05/20] Valorisation: 105.23 EUR
-[Dividendes History] [2018/05/02] Valorisation: 98.23 EUR
-[PER History] [Inconnu] PER 10 (action sous-évaluée): 48.69 EUR
-[PER History] [2017/02/09] PER 17 (ration bon): 82.77 EUR
-[PER History] [2019/12/11] PER 25 (action surévaluée): 121.72 EUR
-[PEG History] [Inconnu] PEG 0.5 (croissance annoncée extrème): 14.21 EUR
-[PEG History] [Inconnu] PEG 1 (croissance annoncée forte): 28.42 EUR
-[PEG History] [Inconnu] PEG 2 (croissance annoncée ok): 56.84 EUR
-[PEG History] [2017/09/08] PEG 3 (croissance annoncée faible): 85.26 EUR
-[PEG History] [2019/06/04] PEG 3.6 (croissance annoncée trop faible): 102.31 EUR
-==============
-Les Echos: https://investir.lesechos.fr/cours/action-air-liquide,xpar,ai,fr0000120073,isin.html
-Boursorama: https://www.boursorama.com/cours/1rPAI/
-Fortuneo: https://bourse.fortuneo.fr/actions/cours-air-liquide-AI-FR0000120073-23
-Recapitulatif dividendes: https://www.bnains.org/archives/action.php?codeISIN=FR0000120073
-Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6
+Nom: Air Liquide
+Secteur: Chimie
+Valorisation: 142.32 EUR
+Variation 1 an: 8.96 %
+|| Dividendes: 2.9 EUR
+||           : 2.0 %
+|| Croissance BNPA: 0 % -> 10 % -> 18 %
+|| Croissance CA: -7 % -> 14 % -> 28 %
+|| PER prévisionel: 24.99 (croissance annoncée énorme)
+|| PEG prévisionel: 1.4 (action surévaluée)
+|| PEG réaliste: 2.8 (bulle spéculative)
+--
+|| Dividende Année précédente: 2.9 EUR
+||                           : 2.0 %
+|| PER Année précédente: 29.36 (croissance annoncée extraordinaire)
+|| PEG Année précédente: 3.0 (bulle spéculative)
 ==============
 ```
 
@@ -171,41 +93,41 @@ Palmares CAC40 dividendes: https://www.boursorama.com/bourse/actions/palmares/di
 This command returns a list of probable ISIN matchine the input string.
 
 ```
-autocomplete.py STRING
+$ python autocomplete.py <STRING>
 ```
 
 ```
-$ ./autocomplete.py "carr"
+$ python autocomplete.py "carr"
 [
     {
+        "ISIN": "US14448C1045",
+        "mic": "XNYS",
+        "pays": "NYSE US COMPOSITE",
+        "titre": "CARRIER"
+    },
+    {
+        "ISIN": "US14448C1045",
+        "mic": "XNYS",
+        "pays": "NEW YORK STOCK EXCHANGE, INC",
+        "titre": "CARRIER"
+    },
+    {
+        "ISIN": "US14448C1045",
+        "mic": "XADF",
+        "pays": "NYSE-CTA FINRA ALTERNATIVE DISPLAY FACILITY (ADF)",
+        "titre": "CARRIER"
+    },
+    {
         "ISIN": "FR0000120172",
-        "pays": "fr",
-        "place": "XPAR",
-        "titre": "CARREFOUR",
+        "mic": "XPAR",
+        "pays": "EURONEXT - EURONEXT PARIS",
+        "titre": "CARREFOUR"
     },
     {
-        "ISIN": "US1439051079",
-        "pays": "us",
-        "place": "XNYS",
-        "titre": "CARRIAGE SERVICES INC",
-    },
-    {
-        "ISIN": "US1445771033",
-        "pays": "us",
-        "place": "XNAS",
-        "titre": "CARRIZO OIL & GAS INC",
-    },
-    {
-        "ISIN": "US14574X1046",
-        "pays": "us",
-        "place": "XNAS",
-        "titre": "CARROLS RESTAURANT GROUP INC",
-    },
-    {
-        "ISIN": "IT0001046553",
-        "pays": "it",
-        "place": "XMIL",
-        "titre": "CARRARO",
+        "ISIN": "US14448C1045",
+        "mic": "XNAS",
+        "pays": "CTA NASDAQ OMX STOCK EXCHANGE",
+        "titre": "CARRIER"
     }
 ]
 
@@ -216,6 +138,7 @@ $ ./autocomplete.py "carr"
 This function save, display and compare reports of a set of ISIN.
 
 ```
+$ python reporter.py --help
 usage: reporter.py [-h] [--version] {save,load,diff} ...
 
 positional arguments:
@@ -224,37 +147,36 @@ positional arguments:
     load            Load command
     diff            Diff command
 
-optional arguments:
+options:
   -h, --help        show this help message and exit
   --version         show program's version number and exit
 ```
 
 ```
-$ ./reporter.py save -o data/
+$ python reporter.py save -o data/
 # Wait one day...
-$ ./reporter.py save -o data/
+$ python reporter.py save -o data/
 
 
-$ ./reporter.py load data/2020_02_24.txt
-==============
-ISIN: FR0000120073
-Nom: AIR LIQUIDE
-Secteur: MATERIAUX DE BASE / Chimie de base
-Valorisation: 139.250 EUR
-Variation 1 an: 10.34 %
-|| Dividendes: 2.70 EUR
-|| PER: 28.6 (bulle spéculative)
-|| PEG: 4.9 (croissance annoncée trop faible)
-|| Rendement: 1.94 %
-|| Détachement: 20/05/19
-|| Prochain rdv: 24/04/20
-|| Tendance court terme: 4.0/5
-|| Tendance moyen terme: 3.0/5
+$ python reporter.py load data/2023_02_12.txt
+ISIN: FR0000121485
+Nom: Kering
+Secteur: Commerce de détail, grands magasins
+Valorisation: 559.5 EUR
+Variation 1 an: -9.73 %
+|| Dividendes: 4.5 EUR
+||           : 0.8 %
+|| Croissance BNPA: -38 % -> 62 % -> 23 %
+|| Croissance CA: -18 % -> 35 % -> 16 %
+|| PER prévisionel: 19.05 (croissance annoncée énorme)
+--
+|| Dividende Année précédente: 12.0 EUR
+|| PER Année précédente: 23.5 (croissance annoncée énorme)
 ==============
 # etc...
 
 
-$ ./reporter.py diff data/2020_02_23.txt data/2020_02_24.txt
+$ python reporter.py diff data/2020_02_23.txt data/2020_02_24.txt
 ==============
 ISIN: FR0000120073
 Nom: AIR LIQUIDE
@@ -318,12 +240,19 @@ Tendance moyen terme: 5.0/5 -> 4.25/5
 ### DASHBOARD
 
 ```
-$ ./dashboard.py
-Nom          Cours
------------  -------
-KERING       511,700
-AIR LIQUIDE  127,800
-AXA          21,855
+$ python dashboard.py 
+Nom                                                                       Cours    Variation
+----------------------------------------------------------------------  -------  -----------
+Lyxor PEA Eau (MSCI Water) UCITS ETF FCP                                 24.741    -0.241926
+Cie des Alpes                                                            14.18     -0.421348
+Air Liquide                                                             142.32     -1.99697
+FDJ                                                                      37.68     -2.35812
+Kering                                                                  559.5      -3.40124
+Lyxor PEA Asie Pacifique (MSCI AC Asia Pacific Ex Japan) UCITS ETF FCP   16.892    -0.856908
+Carrefour                                                                16.295    -2.22022
+AXA                                                                      28.425    -0.97544
+CD Projekt                                                               28.71     -4.01204
+Vinci                                                                   105.08     -0.699301
 ```
 
 # License
