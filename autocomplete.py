@@ -14,12 +14,12 @@ import sys
 # Third party library imports
 
 # Own library
-import lib.common as common
+from lib import common
 
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.4.0'
+VERSION = '3.0.0'
 
 def print_autocomplete(input_str):
     """

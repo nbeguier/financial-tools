@@ -14,16 +14,10 @@ import re
 
 # Own library
 # pylint: disable=E0401
-import lib.cache as cache
+from lib import cache
 
 # Debug
 # from pdb import set_trace as st
-
-def clean_url(raw_url):
-    """
-    Returns a clean URL from garbage
-    """
-    return 'https' + raw_url.split(' https')[1].split('#')[0]
 
 def clean_data(raw_data, json_load=True):
     """
@@ -56,23 +50,19 @@ def autocomplete(input_str):
     """
     Returns a list of probable results
     """
-    url = decode_rot('uggcf://vairfgve.yrfrpubf.se') + \
-          decode_rot('/nhgbpbzcyrgr/nhgbpbzcyrgr.cuc?') + \
-          'input={}'.format(input_str)
-    content = cache.get(url)
+    url = decode_rot('uggcf://yrfrpubfcek.fbyhgvbaf.jrost.pu/zqc-nhgu/yrfrpubf-ncv/dhbgrf/_zhygvfrnepu?d') + \
+        f'={input_str}&fields=DISPLAY_NAME,ISIN,MARKET,MIC,MARKET:description&size=5'
+    content = json.loads(cache.get(url))
+    result = []
     if content:
-        result = list()
-        if not 'valeurs' in clean_data(content)['results']:
+        if not 'categories' in content:
             return result
-        full_result = clean_data(content)['results']['valeurs']
+        full_result = content['categories'][0]['hits']
         for res in full_result:
-            sub_result = dict()
-            sub_result['titre'] = res['titre']
-            for arg in res['url'].split(','):
-                if re.search('[a-z][a-z][0-9][0-9]', arg):
-                    sub_result['ISIN'] = arg.upper()
-                if re.search('x[a-z][a-z][a-z]', arg):
-                    sub_result['mic'] = arg.upper()
-            sub_result['pays'] = res['pays']
+            sub_result = {}
+            sub_result['titre'] = res['fields']['DISPLAY_NAME']['v'].upper()
+            sub_result['ISIN'] = res['fields']['ISIN']['v'].upper()
+            sub_result['mic'] = res['fields']['MIC']['v'].upper()
+            sub_result['pays'] = res['fields']['MARKET']['description'].upper()
             result.append(sub_result)
     return result

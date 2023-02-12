@@ -8,9 +8,15 @@ Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 """
 
 # Standard library imports
+from base64 import b64decode
+from codecs import getencoder
+from datetime import datetime
 from hashlib import sha512
+import json
 import os
+from pathlib import Path
 from random import randint
+import re
 import time
 
 # Third party library imports
@@ -32,15 +38,60 @@ SESSION = Session()
 # TTL = 60 # 1 minute
 TTL = 21600 # 6 hours
 
-def gen_headers():
+def decode_rot(encoded_str):
+    """
+    Returns the ROT-13 of the input string
+    """
+    enc = getencoder('rot-13')
+    return enc(encoded_str)[0]
+
+def gen_user_agent():
     """
     Returns random User-Agent
     """
-    return {'User-Agent': \
-        'Mozilla/5.{a} (Macintosh; Intel Mac OS X 10_15_{a}) '.format(a=randint(1, 100)) +
-        'AppleWebKit/537.{} '.format(randint(1, 100)) +
-        '(KHTML, like Gecko) Chrome/80.{a}.3987.{a} '.format(a=randint(1, 100)) +
-        'Safari/537.{}'.format(randint(1, 100))}
+    return f'Mozilla/5.{randint(1, 100)} (Macintosh; Intel Mac OS X 10_15_{randint(1, 100)}) ' + \
+        f'AppleWebKit/537.{randint(1, 100)} ' + \
+        f'(KHTML, like Gecko) Chrome/80.{randint(1, 100)}.3987.{randint(1, 100)} ' + \
+        f'Safari/537.{randint(1, 100)}'
+
+def get_token():
+    """
+    Returns new token
+    """
+    token_path = Path('/tmp/financial_token.jwt')
+    if token_path.exists():
+        token = token_path.open('r', encoding='utf-8').read()
+        if len(token.split('.')) <= 1:
+            print('Error retrieving token... (jwt invalid). Removing token.')
+            token_path.unlink()
+            return ''
+        try:
+            if datetime.timestamp(datetime.now()) < json.loads(b64decode(token.split('.')[1]+'=='))['exp']:
+                return token
+        except:
+            print('Error retrieving token... (exp not found). Removing token.')
+            token_path.unlink()
+            return ''
+    content = SESSION.get(
+        decode_rot('uggcf://vairfgve.yrfrpubf.se/pbhef/npgvbaf/xrevat-xre-se0000121485-kcne'),
+        headers={'User-Agent': gen_user_agent()})
+    if content.status_code != 200:
+        print('Error retrieving token... (page not found)')
+        return ''
+    result = re.findall('_TOKEN__="[a-zA-Z0-9\.=\-\_]+"', content.text)[0].split('"')
+    if len(result) <= 1 or not result[1].startswith('ey'):
+        print('Error retrieving token... (token not found)')
+        return ''
+    token = result[1]
+    token_path.open('w', encoding='utf-8').write(token)
+    return token
+
+def gen_headers():
+    """
+    Returns headers
+    """
+    return {'Authorization': f'Bearer {get_token()}',
+        'User-Agent': gen_user_agent()}
 
 HEADERS = gen_headers()
 
@@ -105,10 +156,12 @@ def load(url):
         content = get(url, verify=False, disable_cache=True)
     return content
 
-def get(url, verify=True, disable_cache=False):
+def get(url, verify=True, disable_cache=False, token=''):
     """
     Requests the url is not in cache
     """
+    if token:
+        HEADERS['Authorization'] = f'Bearer {token}'
     try:
         enable_cache = settings.ENABLE_CACHE and not disable_cache
     except AttributeError:

@@ -14,7 +14,7 @@ import sys
 from tabulate import tabulate
 
 # Own library
-import lib.reporting as reporting
+from lib import reporting
 try:
     import settings
 except ImportError:
@@ -25,26 +25,26 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '1.2.0'
+VERSION = '3.0.0'
 
 def main():
     """
     Main function
     """
-    listing = list()
+    listing = []
     for isin in settings.ISIN_DASHBOARD:
         market = 'XPAR'
         if ',' in isin:
             market = isin.split(',')[1]
-            isin = isin.split(',')[0]
+            isin = isin.split(',', maxsplit=1)[0]
         isin_data = reporting.get_cours(isin, market, disable_cache=True)
         if not isin_data:
-            listing.append(list())
+            listing.append([])
             continue
         listing.append([
-            isin_data['cotation']['name'],
-            isin_data['cotation']['valorisation'],
-            isin_data['cotation']['variation'],
+            isin_data['DISPLAY_NAME']['v'],
+            isin_data['LVAL_NORM']['v'], # TODO: test in real time
+            isin_data['NC2_PR_NORM']['v'],
         ])
     print(tabulate(listing, [
         'Nom',

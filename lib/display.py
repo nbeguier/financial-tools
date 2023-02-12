@@ -9,157 +9,57 @@ Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 
 # Own library
 # pylint: disable=E0401
-import lib.analysis as analysis
+from lib import analysis
 
 # Debug
 # from pdb import set_trace as st
 
-def display_header(report, verbose):
+def display_header(report):
     """
     Display the header
     """
-    if 'nom' in report:
-        print('Nom: {}'.format(report['nom']))
-    if 'secteur' in report:
-        print('Secteur: {}'.format(report['secteur']))
-    if 'valorisation' in report:
-        print('Valorisation: {} EUR'.format(report['valorisation']))
-        print('Variation 1 an: {} %'.format(report['valorisation_1an']))
-    if 'dividend' in report:
-        print('|| Dividendes: {} %'.format(
-            report['dividend']['average_percent']))
-        if verbose:
-            print('>> [Echos] Dividendes: {} %'.format(
-                report['dividend']['echos']['percent']))
-            print('>> [Boursorama] Dividendes: {} %'.format(
-                report['dividend']['brsrm']['percent']))
-            print('>> [Fortuneo] Dividendes: {} %'.format(
-                report['dividend']['frtn']['percent']))
-        print('|| PER: {} ({})'.format(report['PER'], analysis.per_text(report['PER'])))
-        print('|| PEG: {} ({})'.format(report['PEG'], analysis.peg_text(report['PEG'])))
-        print('|| Détachement: {}'.format(report['Detachement']))
-        print('|| Prochain rdv: {}'.format(report['Prochain rdv']))
-        print('|| Tendance court terme: {}/5'.format(
-            analysis.trend(report)['short term']))
-        print('|| Tendance moyen terme: {}/5'.format(
-            analysis.trend(report)['mid term']))
-        if verbose:
-            print('>> [Boursorama] Potentiel 3 mois: {} EUR, {} %'.format(
-                report['potential']['brsrm']['value'],
-                report['potential']['brsrm']['percentage']))
-            print('>> [Fortuneo] Potentiel: {} EUR, {} %'.format(
-                report['potential']['frtn']['value'],
-                report['potential']['frtn']['percentage']))
-            print('>> [Echos] Tendance court terme: {}'.format(
-                report['trend']['echos']['short term']))
-            print('>> [Echos] Tendance moyen terme: {}'.format(
-                report['trend']['echos']['mid term']))
-            print('>> [Fortuneo] Tendance court terme: {}'.format(
-                report['trend']['frtn']['short term']))
-            print('>> [Fortuneo] Tendance moyen terme: {}'.format(
-                report['trend']['frtn']['mid term']))
-            print('>> [BNP] Tendance court terme: {}'.format(
-                report['trend']['bnp']['short term']))
-            print('>> [BNP] Tendance moyen terme: {}'.format(
-                report['trend']['bnp']['mid term']))
+    print(f"Nom: {report['DISPLAY_NAME']['v']}")
+    print(f"Secteur: {report['SEC']['description']}")
+    print(f"Valorisation: {report['LVAL_NORM']['v']} {report['M_CUR']['v']}")
+    print(f"Variation 1 an: {round(report['52W_PERF_PR']['v'], 2)} %")
 
-def display_body(report, header):
+def display_body(report):
     """
     Display the body
     """
-    if 'dividendes_history' in report:
-        print('[Dividendes History] [{}] Rendement: {} %'.format(
-            report['dividendes_history']['last_year'],
-            report['dividendes_history']['last_rendement']))
-        print('[Dividendes History] [{}] Valorisation: {} EUR'.format(
-            report['dividendes_history']['last_year'],
-            report['dividendes_history']['average_val']))
-        print('[Dividendes History] [{}] Valorisation: {} EUR'.format(
-            report['dividendes_history']['last_detach'],
-            report['dividendes_history']['last_val']))
-        print('[Dividendes History] [{}] Valorisation: {} EUR'.format(
-            report['dividendes_history']['latest_detach'],
-            report['dividendes_history']['latest_val']))
-    if 'per_history' in report:
-        print_per(report['per_history'], header)
-    if 'peg_history' in report:
-        print_peg(report['peg_history'], header)
+    if 'DIVIDEND' in report:
+        print(f"|| Dividendes: {report['DIVIDEND']['v']} {report['M_CUR']['v']}")
+    if 'CUSTOM_DIVIDEND_PERCENT' in report:
+        print(f"||           : {report['CUSTOM_DIVIDEND_PERCENT']} %")
+    if 'CROISSANCE_BNPA_ANNEEN2' in report:
+        print(f"|| Croissance BNPA: {round(report['CROISSANCE_BNPA_ANNEEN2']['v'])} % -> {round(report['CROISSANCE_BNPA_ANNEE_PRECEDENTE']['v'])} % -> {round(report['CROISSANCE_BNPA_ANNEE_COURANTE']['v'])} %")
+    if 'CROISSANCE_CA_ANNEEN2' in report:
+        print(f"|| Croissance CA: {round(report['CROISSANCE_CA_ANNEEN2']['v'])} % -> {round(report['CROISSANCE_CA_ANNEE_PRECEDENTE']['v'])} % -> {round(report['CROISSANCE_CA_ANNEE_COURANTE']['v'])} %")
+    if 'PER_ANNEE_ESTIMEE' in report:
+        print(f"|| PER prévisionel: {round(report['PER_ANNEE_ESTIMEE']['v'], 2)} ({analysis.per_text(report['PER_ANNEE_ESTIMEE']['v'])})")
+    if report['CUSTOM_PEG'] != '-':
+        print(f"|| PEG prévisionel: {report['CUSTOM_PEG']} ({analysis.peg_text(report['CUSTOM_PEG'])})")
+    if report['CUSTOM_PEG_MAISON'] != '-':
+        print(f"|| PEG réaliste: {report['CUSTOM_PEG_MAISON']} ({analysis.peg_text(report['CUSTOM_PEG_MAISON'])})")
+    print('--')
+    if 'DIV_ANNEE_PRECEDENTE' in report:
+        print(f"|| Dividende Année précédente: {report['DIV_ANNEE_PRECEDENTE']['v']} {report['M_CUR']['v']}")
+    if 'CUSTOM_DIVIDEND_ANNEE_PRECEDENTE_PERCENT' in report:
+        print(f"||                           : {report['CUSTOM_DIVIDEND_ANNEE_PRECEDENTE_PERCENT']} %")
+    if 'PER_ANNEE_PRECEDENTE' in report:
+        print(f"|| PER Année précédente: {round(report['PER_ANNEE_PRECEDENTE']['v'], 2)} ({analysis.per_text(report['PER_ANNEE_PRECEDENTE']['v'])})")
+    if report['CUSTOM_PEG_ANNEE_PRECEDENTE'] != '-':
+        print(f"|| PEG Année précédente: {report['CUSTOM_PEG_ANNEE_PRECEDENTE']} ({analysis.peg_text(report['CUSTOM_PEG_ANNEE_PRECEDENTE'])})")
 
-def display_footer(report, mic):
-    """
-    Display the footer
-    """
-    print('==============')
-    if report['url_echos'] is not None:
-        print('Les Echos: {}'.format(report['url_echos']))
-    if report['url_brsrm'] is not None:
-        print('Boursorama: {}'.format(report['url_brsrm']))
-    if report['url_frtn'] is not None:
-        print('Fortuneo: {}'.format(report['url_frtn']))
-    if mic == 'XPAR':
-        print('Recapitulatif dividendes: https://www.bnains.org' +
-              '/archives/action.php?' +
-              'codeISIN={}'.format(report['isin']))
-        print('Palmares CAC40 dividendes: https://www.boursorama.com' +
-              '/bourse/actions/palmares/dividendes/?market=1rPCAC&variation=6')
-
-def print_report(report, mic='XPAR', header=True, footer=True, verbose=False):
+def print_report(report, header=True):
     """
     Prints the report
     """
-    # TITLE
-    print('ISIN: {}'.format(report['isin']))
+    if report is None:
+        print('Nothing found...')
+        return
+    print(f"ISIN: {report['ISIN']['v']}")
     if header:
-        display_header(report, verbose)
-    display_body(report, header)
-    if footer:
-        display_footer(report, mic)
+        display_header(report)
+    display_body(report)
     print('==============')
-
-def print_per(pers, header):
-    """
-    Prints PER informations
-    """
-    for per in pers:
-        if pers[per]['current']:
-            if not header:
-                print('[PER History] PER {} actuel: {} EUR'.format(
-                    round(per, 1),
-                    round(pers[per]['value'], 2)))
-        else:
-            print('[PER History] [{}] PER {} ({}): {} EUR'.format(
-                pers[per]['date'],
-                per,
-                analysis.per_text(per),
-                round(pers[per]['value'], 2)))
-
-def print_peg(pegs, header):
-    """
-    Prints PEG informations
-    """
-    for peg in pegs:
-        if pegs[peg]['current']:
-            if not header:
-                print('[PEG History] PEG {} actuel: {} EUR'.format(
-                    round(peg, 1),
-                    round(pegs[peg]['value'], 2)))
-        else:
-            print('[PEG History] [{}] PEG {} ({}): {} EUR'.format(
-                pegs[peg]['date'],
-                peg,
-                analysis.peg_text(peg),
-                round(pegs[peg]['value'], 2)))
-
-def print_health(report, verbose):
-    """
-    Prints the health status
-    """
-    if 'PER' not in report or 'PEG' not in report:
-        print(False)
-    if analysis.per_text(report['PER']) == 'ration bon' \
-        and (analysis.peg_text(report['PEG']) == 'croissance annoncée ok' \
-            or analysis.peg_text(report['PEG']) == 'croissance annoncée forte'):
-        if verbose:
-            print(analysis.per_text(report['PER']), analysis.peg_text(report['PEG']))
-        return print(True)
-    return print(False)
