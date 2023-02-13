@@ -50,11 +50,16 @@ def save_report(output_dir):
     Save or display the report on disk
     """
     parameters = {}
-    parameters['mic'] = 'XPAR'
 
     for _isin in settings.ISIN_SAVE:
         parameters['isin'] = _isin
+        parameters['mic'] = 'XPAR'
+        if ',' in _isin:
+            parameters['isin'] = _isin.split(',', maxsplit=1)[0]
+            parameters['mic'] = _isin.split(',')[1]
         report = reporting.get_report(parameters)
+        if report is None:
+            report = {}
         report['isin'] = _isin
         if not output_dir:
             print(report)

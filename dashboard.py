@@ -43,7 +43,7 @@ def main():
             continue
         listing.append([
             isin_data['DISPLAY_NAME']['v'],
-            isin_data['LVAL_NORM']['v'], # TODO: test in real time
+            isin_data['LVAL_NORM']['v'],
             isin_data['NC2_PR_NORM']['v'],
         ])
     print(tabulate(listing, [
