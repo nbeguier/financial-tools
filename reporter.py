@@ -26,7 +26,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '3.0.0'
+VERSION = '3.1.0'
 
 def get_sign(value):
     """
@@ -42,8 +42,8 @@ def is_different_and_valid(old_report, new_report, key):
     Returns True if the key is present in both report and valid
     """
     return key in new_report and key in old_report\
-            and old_report[key]['v'] != new_report[key]['v'] \
-            and old_report[key]['v'] is not None and new_report[key]['v'] is not None
+            and old_report[key] != new_report[key] \
+            and old_report[key] is not None and new_report[key] is not None
 
 def save_report(output_dir):
     """
@@ -107,23 +107,23 @@ def report_per(old_report, new_report, html_tag):
     """
     Report the PER
     """
-    if is_different_and_valid(old_report, new_report, 'PER_ANNEE_ESTIMEE'):
-        evo_per = round(float(new_report['PER_ANNEE_ESTIMEE']['v']) - float(old_report['PER_ANNEE_ESTIMEE']['v']), 1)
+    if is_different_and_valid(old_report, new_report, 'CUSTOM_PER'):
+        evo_per = round(float(new_report['CUSTOM_PER']) - float(old_report['CUSTOM_PER']), 1)
         evo_per = f'{html_tag["blue_in"]}{get_sign(evo_per)}{evo_per}{html_tag["blue_out"]}'
         print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PER{html_tag["bold_out"]}: {evo_per}{html_tag["li_out"]}')
-        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PER{html_tag["bold_out"]}: {old_report["PER_ANNEE_ESTIMEE"]["v"]} -> {new_report["PER_ANNEE_ESTIMEE"]["v"]}{html_tag["li_out"]}')
-        if analysis.per_text(old_report['PER_ANNEE_ESTIMEE']['v']) != analysis.per_text(new_report['PER_ANNEE_ESTIMEE']['v']):
-            print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PER{html_tag["bold_out"]}: {analysis.per_text(old_report["PER_ANNEE_ESTIMEE"]["v"])} -> {analysis.per_text(new_report["PER_ANNEE_ESTIMEE"]["v"])}{html_tag["li_out"]}')
+        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PER{html_tag["bold_out"]}: {old_report["CUSTOM_PER"]} -> {new_report["CUSTOM_PER"]}{html_tag["li_out"]}')
+        if analysis.per_text(old_report['CUSTOM_PER']) != analysis.per_text(new_report['CUSTOM_PER']):
+            print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PER{html_tag["bold_out"]}: {analysis.per_text(old_report["CUSTOM_PER"])} -> {analysis.per_text(new_report["CUSTOM_PER"])}{html_tag["li_out"]}')
 
 def report_peg(old_report, new_report, html_tag):
     """
     Report the PEG
     """
-    if is_different_and_valid(old_report, new_report, 'peg'):
-        evo_peg = round(float(new_report['peg']) - float(old_report['peg']), 1)
+    if is_different_and_valid(old_report, new_report, 'CUSTOM_PER'):
+        evo_peg = round(float(new_report['CUSTOM_PEG']) - float(old_report['CUSTOM_PEG']), 1)
         evo_peg = f'{html_tag["blue_in"]}{get_sign(evo_peg)}{evo_peg}{html_tag["blue_out"]}'
         print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PEG{html_tag["bold_out"]}: {evo_peg}{html_tag["li_out"]}')
-        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PEG{html_tag["bold_out"]}: {old_report["peg"]} -> {new_report["peg"]}{html_tag["li_out"]}')
+        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PEG{html_tag["bold_out"]}: {old_report["CUSTOM_PEG"]} -> {new_report["CUSTOM_PEG"]}{html_tag["li_out"]}')
 
 def diff_report(oldest_file, newer_file, isin_compare, is_html):
     """
