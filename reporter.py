@@ -37,13 +37,17 @@ def get_sign(value):
         sign = '+'
     return sign
 
-def is_different_and_valid(old_report, new_report, key):
+def is_different_and_valid(old_report, new_report, key,  digits=0):
     """
     Returns True if the key is present in both report and valid
     """
-    return key in new_report and key in old_report\
-            and old_report[key] != new_report[key] \
-            and old_report[key] is not None and new_report[key] is not None
+    if key not in new_report or key not in old_report:
+        return False
+    # Only compare two floats
+    if not isinstance(old_report[key], float) or not isinstance(new_report[key], float):
+        return False
+    # Round float to avoid to much differencies
+    return round(old_report[key], digits) != round(new_report[key], digits)
 
 def save_report(output_dir):
     """
@@ -92,7 +96,7 @@ def report_valorisation(old_report, new_report, html_tag):
     """
     Report the valorisation
     """
-    if is_different_and_valid(old_report, new_report, 'LVAL_NORM'):
+    if is_different_and_valid(old_report, new_report, 'LVAL_NORM', digits=3):
         evo_valorisation = round(100 * (-1 + \
             float(new_report['LVAL_NORM']['v']) / float(old_report['LVAL_NORM']['v'])), 2)
         sign = get_sign(evo_valorisation)
@@ -119,7 +123,7 @@ def report_peg(old_report, new_report, html_tag):
     """
     Report the PEG
     """
-    if is_different_and_valid(old_report, new_report, 'CUSTOM_PER'):
+    if is_different_and_valid(old_report, new_report, 'CUSTOM_PER', 0):
         evo_peg = round(float(new_report['CUSTOM_PEG']) - float(old_report['CUSTOM_PEG']), 1)
         evo_peg = f'{html_tag["blue_in"]}{get_sign(evo_peg)}{evo_peg}{html_tag["blue_out"]}'
         print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution PEG{html_tag["bold_out"]}: {evo_peg}{html_tag["li_out"]}')

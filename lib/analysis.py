@@ -43,8 +43,9 @@ def compute_peg(report):
     if 'CROISSANCE_BNPA_ANNEE_COURANTE' in report:
         croissance = report['CROISSANCE_BNPA_ANNEE_COURANTE']['v']
         if croissance == 0:
-            croissance = -0.1
-        value_1 = round(report['CUSTOM_PER'] / croissance, 2)
+            value_1 = 0
+        else:
+            value_1 = round(report['CUSTOM_PER'] / croissance, 2)
     return value_1
 
 def per_text(per_value):
