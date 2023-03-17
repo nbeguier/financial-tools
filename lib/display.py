@@ -18,17 +18,26 @@ def display_header(report):
     """
     Display the header
     """
+    currency = ''
+    if 'M_CUR' in report:
+        currency = ' '+report['M_CUR']['v']
+
     print(f"Nom: {report['DISPLAY_NAME']['v']}")
-    print(f"Secteur: {report['SEC']['description']}")
-    print(f"Valorisation: {report['LVAL_NORM']['v']} {report['M_CUR']['v']}")
+    if 'SEC' in report:
+        print(f"Secteur: {report['SEC']['description']}")
+    print(f"Valorisation: {report['LVAL_NORM']['v']}{currency}")
     print(f"Variation 1 an: {round(report['52W_PERF_PR']['v'], 2)} %")
 
 def display_body(report):
     """
     Display the body
     """
+    currency = ''
+    if 'M_CUR' in report:
+        currency = ' '+report['M_CUR']['v']
+
     if 'DIVIDEND' in report:
-        print(f"|| Dividendes: {report['DIVIDEND']['v']} {report['M_CUR']['v']}")
+        print(f"|| Dividendes: {report['DIVIDEND']['v']}{currency}")
     if 'DIVIDEND' in report and 'CUSTOM_DIVIDEND_PERCENT' in report:
         print(f"||           : {report['CUSTOM_DIVIDEND_PERCENT']} %")
     if 'CROISSANCE_BNPA_ANNEEN2' in report:
@@ -43,7 +52,7 @@ def display_body(report):
         print(f"|| PEG réaliste: {report['CUSTOM_PEG_MAISON']} ({analysis.peg_text(report['CUSTOM_PEG_MAISON'])})")
     print('--')
     if 'DIV_ANNEE_PRECEDENTE' in report:
-        print(f"|| Dividende Année précédente: {report['DIV_ANNEE_PRECEDENTE']['v']} {report['M_CUR']['v']}")
+        print(f"|| Dividende Année précédente: {report['DIV_ANNEE_PRECEDENTE']['v']}{currency}")
     if 'DIV_ANNEE_PRECEDENTE' in report and 'CUSTOM_DIVIDEND_ANNEE_PRECEDENTE_PERCENT' in report:
         print(f"||                           : {report['CUSTOM_DIVIDEND_ANNEE_PRECEDENTE_PERCENT']} %")
     if 'PER_ANNEE_PRECEDENTE' in report:

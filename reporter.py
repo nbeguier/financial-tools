@@ -101,7 +101,10 @@ def report_valorisation(old_report, new_report, html_tag):
         else:
             evo_valorisation = f'{html_tag["red_in"]}{sign}{evo_valorisation} %{html_tag["red_out"]}'
         print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution valorisation{html_tag["bold_out"]}: {evo_valorisation}{html_tag["li_out"]}')
-        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution valorisation{html_tag["bold_out"]}: {old_report["LVAL_NORM"]["v"]} -> {new_report["LVAL_NORM"]["v"]} {new_report["M_CUR"]["v"]}{html_tag["li_out"]}')
+        currency = ''
+        if 'M_CUR' in new_report:
+            currency = ' '+new_report['M_CUR']['v']
+        print(f'{html_tag["li_in"]}{html_tag["bold_in"]}Evolution valorisation{html_tag["bold_out"]}: {old_report["LVAL_NORM"]["v"]} -> {new_report["LVAL_NORM"]["v"]}{currency}{html_tag["li_out"]}')
 
 def report_per(old_report, new_report, html_tag):
     """
