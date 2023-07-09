@@ -28,7 +28,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '3.1.0'
+VERSION = '3.1.1'
 
 def get_sign(value):
     """
@@ -259,6 +259,7 @@ def diff3_report(directory, isin_compare, is_html):
 
     # Take only the last 7 files
     report_files = report_files[-7:]
+    last_report = load_report(report_files[-1], display_report=False)
 
     count_negative_isins = {}
     for i in range(len(report_files) - 1):
@@ -280,8 +281,8 @@ def diff3_report(directory, isin_compare, is_html):
         print('<html><body>')
 
     for _isin in count_negative_isins:
-        if count_negative_isins[_isin] >= 2:
-            print(f'{html_tag["h3_in"]}{_isin}: {count_negative_isins[_isin]} days in a row !{html_tag["h3_out"]}')
+        if count_negative_isins[_isin] >= 3:
+            print(f'{html_tag["h3_in"]}{last_report[_isin]["DISPLAY_NAME"]["v"]}: {count_negative_isins[_isin]} days in a row !{html_tag["h3_out"]}')
     if is_html:
         print('</body></html>')
 
