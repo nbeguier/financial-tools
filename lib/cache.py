@@ -2,7 +2,7 @@
 """
 Cache library
 
-Copyright (c) 2020-2023 Nicolas Beguier
+Copyright (c) 2020-2024 Nicolas Beguier
 Licensed under the MIT License
 Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 """
@@ -50,9 +50,9 @@ def gen_user_agent():
     Returns random User-Agent
     """
     return f'Mozilla/5.{randint(1, 100)} (Macintosh; Intel Mac OS X 10_15_{randint(1, 100)}) ' + \
-        f'AppleWebKit/537.{randint(1, 100)} ' + \
-        f'(KHTML, like Gecko) Chrome/80.{randint(1, 100)}.3987.{randint(1, 100)} ' + \
-        f'Safari/537.{randint(1, 100)}'
+        f'AppleWebKit/605.1.{randint(1, 100)} ' + \
+        f'(KHTML, like Gecko) Version/17.{randint(1, 100)} ' + \
+        f'Safari/605.1.{randint(1, 100)}'
 
 def get_token():
     """
@@ -74,7 +74,7 @@ def get_token():
             return ''
     content = SESSION.get(
         decode_rot('uggcf://vairfgve.yrfrpubf.se/pbhef/npgvbaf/xrevat-xre-se0000121485-kcne'),
-        headers={'User-Agent': gen_user_agent()})
+        headers={'User-Agent': gen_user_agent(), 'Sec-Fetch-Dest': 'document', 'Sec-Fetch-Mode': 'navigate'})
     if content.status_code != 200:
         print('Error retrieving token... (page not found)')
         return ''
