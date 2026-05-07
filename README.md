@@ -139,13 +139,15 @@ This function save, display and compare reports of a set of ISIN.
 
 ```
 $ python reporter.py --help
-usage: reporter.py [-h] [--version] {save,load,diff} ...
+usage: reporter.py [-h] [--version] {save,load,diff,streak} ...
 
 positional arguments:
-  {save,load,diff}  commands
+  {save,load,diff,streak}
+                        commands
     save            Save command
     load            Load command
     diff            Diff command
+    streak          Streak command
 
 options:
   -h, --help        show this help message and exit
@@ -235,6 +237,13 @@ Evolution valorisation: 561.600 -> 535.100 EUR
 Tendance court terme: 5.0/5
 Tendance moyen terme: 5.0/5 -> 4.25/5
 ==============
+```
+
+```
+$ python reporter.py streak data/ --html
+<html><body>
+<h3>Air Liquide: 3 days in a row !</h3>
+</body></html>
 ```
 
 ### DASHBOARD

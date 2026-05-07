@@ -240,9 +240,9 @@ def get_negative_values(oldest_file, newer_file, isin_compare):
     return negative_valorisation_isins, equal_valorisation_isins
 
 
-def diff3_report(directory, isin_compare, is_html):
+def streak_report(directory, isin_compare, is_html):
     """
-    Compare two report
+    Report ISINs whose value declined several reports in a row.
     """
     html_tag = {
         'bold_in': '',
@@ -342,12 +342,12 @@ if __name__ == '__main__':
     DIFF_PARSER.add_argument('--html', action='store_true',\
         help='Output in HTML format', default=False)
 
-    # DIFF3 Arguments
-    DIFF3_PARSER = SUBPARSERS.add_parser('diff3',\
-        help='Diff3 command')
-    DIFF3_PARSER.add_argument('directory', action='store',\
+    # STREAK Arguments
+    STREAK_PARSER = SUBPARSERS.add_parser('streak',\
+        help='Streak command')
+    STREAK_PARSER.add_argument('directory', action='store',\
         help='Directory with reports for comparison')
-    DIFF3_PARSER.add_argument('--html', action='store_true',\
+    STREAK_PARSER.add_argument('--html', action='store_true',\
         help='Output in HTML format', default=False)
 
     ARGS = PARSER.parse_args()
@@ -365,7 +365,7 @@ if __name__ == '__main__':
         if ARGS.isin:
             ISIN_COMPARE = [ARGS.isin]
         diff_report(ARGS.oldest_file, ARGS.newer_file, ISIN_COMPARE, ARGS.html)
-    elif sys.argv[1] == 'diff3':
-        diff3_report(ARGS.directory, settings.ISIN_COMPARE, ARGS.html)
+    elif sys.argv[1] == 'streak':
+        streak_report(ARGS.directory, settings.ISIN_COMPARE, ARGS.html)
 
     sys.exit(0)
