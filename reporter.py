@@ -181,13 +181,16 @@ def diff_report(oldest_file, newer_file, isin_compare, is_html):
     else:
         print('==============')
     for _isin in isin_compare:
-        if is_html:
-            print('<div><ul>')
         if _isin not in old_reports or _isin not in new_reports:
             continue
         old_report = old_reports[_isin]
         new_report = new_reports[_isin]
-        print(f'{html_tag["h3_in"]}{new_report["DISPLAY_NAME"]["v"]} ({new_report["isin"]}){html_tag["h3_out"]}')
+        display_name = get_report_value(new_report, 'DISPLAY_NAME')
+        if display_name is None:
+            continue
+        if is_html:
+            print('<div><ul>')
+        print(f'{html_tag["h3_in"]}{display_name} ({new_report.get("isin", _isin)}){html_tag["h3_out"]}')
 
         report_valorisation(old_report, new_report, html_tag)
 
