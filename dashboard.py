@@ -8,6 +8,7 @@ Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 """
 
 # Standard library imports
+from argparse import ArgumentParser
 import sys
 
 # Third party library imports
@@ -27,7 +28,13 @@ except ImportError:
 
 VERSION = '3.0.0'
 
-def main():
+def csv_value(value):
+    """
+    Returns a value formatted for semicolon CSV with decimal comma.
+    """
+    return str(value).replace('.', ',')
+
+def main(is_csv=False):
     """
     Main function
     """
@@ -46,6 +53,9 @@ def main():
             isin_data['LVAL_NORM']['v'],
             isin_data['NC2_PR_NORM']['v'],
         ])
+    if is_csv:
+        print(';'.join(csv_value(item[1]) for item in listing if item)+';')
+        return
     print(tabulate(listing, [
         'Nom',
         'Cours',
@@ -53,4 +63,9 @@ def main():
     ]))
 
 if __name__ == '__main__':
-    main()
+    PARSER = ArgumentParser()
+    PARSER.add_argument('--version', action='version', version=VERSION)
+    PARSER.add_argument('--csv', action='store_true',
+        help='Display only prices as semicolon CSV with decimal commas', default=False)
+    ARGS = PARSER.parse_args()
+    main(is_csv=ARGS.csv)

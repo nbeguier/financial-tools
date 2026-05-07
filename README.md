@@ -264,6 +264,11 @@ CD Projekt                                                               28.71  
 Vinci                                                                   105.08     -0.699301
 ```
 
+```
+$ python dashboard.py --csv
+24,741;14,18;142,32;37,68;559,5;16,892;16,295;28,425;28,71;105,08;
+```
+
 # License
 Licensed under the [MIT License](https://github.com/nbeguier/financial-tools/blob/master/LICENSE).
 
