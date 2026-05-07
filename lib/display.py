@@ -45,11 +45,11 @@ def display_body(report):
     if 'CROISSANCE_CA_ANNEEN2' in report:
         print(f"|| Croissance CA: {round(report['CROISSANCE_CA_ANNEEN2']['v'])} % -> {round(report['CROISSANCE_CA_ANNEE_PRECEDENTE']['v'])} % -> {round(report['CROISSANCE_CA_ANNEE_COURANTE']['v'])} %")
     if 'PER_ANNEE_ESTIMEE' in report:
-        print(f"|| PER prévisionel: {round(report['PER_ANNEE_ESTIMEE']['v'], 2)} ({analysis.per_text(report['PER_ANNEE_ESTIMEE']['v'])})")
+        print(f"|| PER prévisionnel: {round(report['PER_ANNEE_ESTIMEE']['v'], 2)} ({analysis.per_text(report['PER_ANNEE_ESTIMEE']['v'])})")
     if report['CUSTOM_PEG'] != '-':
-        print(f"|| PEG prévisionel: {report['CUSTOM_PEG']} ({analysis.peg_text(report['CUSTOM_PEG'])})")
+        print(f"|| PEG prévisionnel: {report['CUSTOM_PEG']} ({analysis.peg_text(report['CUSTOM_PEG'])})")
     if 'CUSTOM_PEG_MAISON' in report and report['CUSTOM_PEG_MAISON'] != '-':
-        print(f"|| PEG réaliste: {report['CUSTOM_PEG_MAISON']} ({analysis.peg_text(report['CUSTOM_PEG_MAISON'])})")
+        print(f"|| PER / perf. 1 an: {report['CUSTOM_PEG_MAISON']} ({analysis.price_performance_ratio_text(report['CUSTOM_PEG_MAISON'])})")
     print('--')
     if 'DIV_ANNEE_PRECEDENTE' in report:
         print(f"|| Dividende Année précédente: {report['DIV_ANNEE_PRECEDENTE']['v']}{currency}")

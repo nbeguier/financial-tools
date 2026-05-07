@@ -47,6 +47,15 @@ def is_different_and_valid(old_report, new_report, key):
             and old_report[key]['v'] != new_report[key]['v'] \
             and old_report[key]['v'] is not None and new_report[key]['v'] is not None
 
+def get_report_value(report, key):
+    """
+    Returns the report value for key, or None if it is missing.
+    """
+    field = report.get(key)
+    if not isinstance(field, dict) or 'v' not in field:
+        return None
+    return field['v']
+
 def save_report(output_dir):
     """
     Save or display the report on disk
@@ -210,12 +219,20 @@ def get_negative_values(oldest_file, newer_file, isin_compare):
         old_report = old_reports[_isin]
         new_report = new_reports[_isin]
 
-        # Check if 'LVAL_NORM' is in report and if its value is less than 0
-        if 'LVAL_NORM' in new_report and new_report['LVAL_NORM']['v'] is not None:
-            if float(new_report['LVAL_NORM']['v']) - float(old_report['LVAL_NORM']['v']) < 0:
-                negative_valorisation_isins.append(new_report['isin'])
-            if float(new_report['LVAL_NORM']['v']) == float(old_report['LVAL_NORM']['v']):
-                equal_valorisation_isins.append(new_report['isin'])
+        old_value = get_report_value(old_report, 'LVAL_NORM')
+        new_value = get_report_value(new_report, 'LVAL_NORM')
+        if old_value is None or new_value is None:
+            continue
+        try:
+            old_value = float(old_value)
+            new_value = float(new_value)
+        except (TypeError, ValueError):
+            continue
+
+        if new_value - old_value < 0:
+            negative_valorisation_isins.append(new_report['isin'])
+        if new_value == old_value:
+            equal_valorisation_isins.append(new_report['isin'])
 
     return negative_valorisation_isins, equal_valorisation_isins
 
@@ -259,6 +276,8 @@ def diff3_report(directory, isin_compare, is_html):
 
     # Take only the last 7 files
     report_files = report_files[-7:]
+    if not report_files:
+        return
     last_report = load_report(report_files[-1], display_report=False)
 
     count_negative_isins = {}
@@ -282,7 +301,8 @@ def diff3_report(directory, isin_compare, is_html):
 
     for _isin in count_negative_isins:
         if count_negative_isins[_isin] >= 3:
-            print(f'{html_tag["h3_in"]}{last_report[_isin]["DISPLAY_NAME"]["v"]}: {count_negative_isins[_isin]} days in a row !{html_tag["h3_out"]}')
+            display_name = get_report_value(last_report.get(_isin, {}), 'DISPLAY_NAME') or _isin
+            print(f'{html_tag["h3_in"]}{display_name}: {count_negative_isins[_isin]} days in a row !{html_tag["h3_out"]}')
     if is_html:
         print('</body></html>')
 

@@ -14,6 +14,15 @@ from lib import cache, common
 # Debug
 # from pdb import set_trace as st
 
+def round_ratio(value):
+    """
+    Rounds a ratio while avoiding the confusing -0.0 display.
+    """
+    ratio = round(value, 2)
+    if ratio == 0:
+        return 0.0
+    return ratio
+
 def get_cours(isin, mic, disable_cache=False):
     """
     Returns core info from isin
@@ -56,7 +65,7 @@ def get_report(parameters):
         per = report['PER_ANNEE_ESTIMEE']['v']
         report['CUSTOM_PEG'] = 'infini'
         if croissance != 0:
-            report['CUSTOM_PEG'] = round(per/croissance, 1)
+            report['CUSTOM_PEG'] = round_ratio(per/croissance)
 
     report['CUSTOM_PEG_ANNEE_PRECEDENTE'] = '-'
     if 'CROISSANCE_BNPA_ANNEE_PRECEDENTE' in report and 'PER_ANNEE_PRECEDENTE' in report:
@@ -64,7 +73,7 @@ def get_report(parameters):
         per = report['PER_ANNEE_PRECEDENTE']['v']
         report['CUSTOM_PEG_ANNEE_PRECEDENTE'] = 'infini'
         if croissance != 0:
-            report['CUSTOM_PEG_ANNEE_PRECEDENTE'] = round(per/croissance, 1)
+            report['CUSTOM_PEG_ANNEE_PRECEDENTE'] = round_ratio(per/croissance)
 
     report['CUSTOM_PEG_MAISON'] = '-'
     if '52W_PERF_PR' in report and 'PER_ANNEE_ESTIMEE' in report:
@@ -72,6 +81,6 @@ def get_report(parameters):
         per = report['PER_ANNEE_ESTIMEE']['v']
         report['CUSTOM_PEG_MAISON'] = 'infini'
         if croissance != 0:
-            report['CUSTOM_PEG_MAISON'] = round(per/croissance, 1)
+            report['CUSTOM_PEG_MAISON'] = round_ratio(per/croissance)
 
     return report

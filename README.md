@@ -45,14 +45,14 @@ Variation 1 an: 8.96 %
 ||           : 2.0 %
 || Croissance BNPA: 0 % -> 10 % -> 18 %
 || Croissance CA: -7 % -> 14 % -> 28 %
-|| PER prévisionel: 24.99 (croissance annoncée énorme)
-|| PEG prévisionel: 1.4 (action surévaluée)
-|| PEG réaliste: 2.8 (bulle spéculative)
+|| PER prévisionnel: 24.99 (valorisation élevée)
+|| PEG prévisionnel: 1.4 (prime de valorisation vs croissance)
+|| PER / perf. 1 an: 2.8 (indicateur maison, à comparer dans le temps)
 --
 || Dividende Année précédente: 2.9 EUR
 ||                           : 2.0 %
-|| PER Année précédente: 29.36 (croissance annoncée extraordinaire)
-|| PEG Année précédente: 3.0 (bulle spéculative)
+|| PER Année précédente: 29.36 (valorisation très élevée)
+|| PEG Année précédente: 3.0 (valorisation élevée vs croissance)
 ==============
 
 # Affiche les infos de XS2215041513 (3.75 Carraro26Nts-S), HMTF
@@ -77,14 +77,14 @@ Variation 1 an: 8.96 %
 ||           : 2.0 %
 || Croissance BNPA: 0 % -> 10 % -> 18 %
 || Croissance CA: -7 % -> 14 % -> 28 %
-|| PER prévisionel: 24.99 (croissance annoncée énorme)
-|| PEG prévisionel: 1.4 (action surévaluée)
-|| PEG réaliste: 2.8 (bulle spéculative)
+|| PER prévisionnel: 24.99 (valorisation élevée)
+|| PEG prévisionnel: 1.4 (prime de valorisation vs croissance)
+|| PER / perf. 1 an: 2.8 (indicateur maison, à comparer dans le temps)
 --
 || Dividende Année précédente: 2.9 EUR
 ||                           : 2.0 %
-|| PER Année précédente: 29.36 (croissance annoncée extraordinaire)
-|| PEG Année précédente: 3.0 (bulle spéculative)
+|| PER Année précédente: 29.36 (valorisation très élevée)
+|| PEG Année précédente: 3.0 (valorisation élevée vs croissance)
 ==============
 ```
 
@@ -168,10 +168,10 @@ Variation 1 an: -9.73 %
 ||           : 0.8 %
 || Croissance BNPA: -38 % -> 62 % -> 23 %
 || Croissance CA: -18 % -> 35 % -> 16 %
-|| PER prévisionel: 19.05 (croissance annoncée énorme)
+|| PER prévisionnel: 19.05 (valorisation élevée)
 --
 || Dividende Année précédente: 12.0 EUR
-|| PER Année précédente: 23.5 (croissance annoncée énorme)
+|| PER Année précédente: 23.5 (valorisation élevée)
 ==============
 # etc...
 
