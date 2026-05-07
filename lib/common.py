@@ -25,7 +25,7 @@ def clean_data(raw_data, json_load=True):
     """
     # Remove html
     # pylint: disable=W1401
-    cleaned_data = re.sub('<[a-zA-Z0-9\.\\\/\"\'=\ ]+>', '', raw_data)
+    cleaned_data = re.sub(r"""<[a-zA-Z0-9.\\/"'= ]+>""", '', raw_data)
     cleaned_data = cleaned_data.\
                       replace(';', '').\
                       replace('\\n', '').\
@@ -52,17 +52,29 @@ def autocomplete(input_str):
     """
     url = decode_rot('uggcf://yrfrpubfcek.fbyhgvbaf.jrost.pu/zqc-nhgu/yrfrpubf-ncv/dhbgrf/_zhygvfrnepu?d') + \
         f'={input_str}&fields=DISPLAY_NAME,ISIN,MARKET,MIC,MARKET:description&size=5'
-    content = json.loads(cache.get(url))
+    raw_content = cache.get(url)
     result = []
-    if content:
-        if not 'categories' in content:
-            return result
-        full_result = content['categories'][0]['hits']
-        for res in full_result:
-            sub_result = {}
-            sub_result['titre'] = res['fields']['DISPLAY_NAME']['v'].upper()
-            sub_result['ISIN'] = res['fields']['ISIN']['v'].upper()
-            sub_result['mic'] = res['fields']['MIC']['v'].upper()
-            sub_result['pays'] = res['fields']['MARKET']['description'].upper()
-            result.append(sub_result)
+    if not raw_content:
+        return result
+    try:
+        content = json.loads(raw_content)
+    except json.JSONDecodeError:
+        return result
+    categories = content.get('categories', [])
+    if not categories:
+        return result
+    full_result = categories[0].get('hits', [])
+    for res in full_result:
+        fields = res.get('fields', {})
+        display_name = fields.get('DISPLAY_NAME', {}).get('v')
+        isin = fields.get('ISIN', {}).get('v')
+        if not display_name or not isin:
+            continue
+        market = fields.get('MARKET', {})
+        sub_result = {}
+        sub_result['titre'] = str(display_name).upper()
+        sub_result['ISIN'] = str(isin).upper()
+        sub_result['mic'] = str(fields.get('MIC', {}).get('v', '')).upper()
+        sub_result['pays'] = str(market.get('description', '')).upper()
+        result.append(sub_result)
     return result

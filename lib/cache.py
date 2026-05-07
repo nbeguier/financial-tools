@@ -78,7 +78,7 @@ def get_token():
     if content.status_code != 200:
         print('Error retrieving token... (page not found)')
         return ''
-    result = re.findall('_TOKEN__="[a-zA-Z0-9\.=\-\_]+"', content.text)[0].split('"')
+    result = re.findall(r'_TOKEN__="[a-zA-Z0-9.=_-]+"', content.text)[0].split('"')
     if len(result) <= 1 or not result[1].startswith('ey'):
         print('Error retrieving token... (token not found)')
         return ''
