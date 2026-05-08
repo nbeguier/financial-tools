@@ -139,15 +139,16 @@ This function save, display and compare reports of a set of ISIN.
 
 ```
 $ python reporter.py --help
-usage: reporter.py [-h] [--version] {save,load,diff,streak} ...
+usage: reporter.py [-h] [--version] {save,load,diff,streak,buy} ...
 
 positional arguments:
-  {save,load,diff,streak}
+  {save,load,diff,streak,buy}
                         commands
     save            Save command
     load            Load command
     diff            Diff command
     streak          Streak command
+    buy             Buy command
 
 options:
   -h, --help        show this help message and exit
@@ -243,6 +244,13 @@ Tendance moyen terme: 5.0/5 -> 4.25/5
 $ python reporter.py streak data/ --html
 <html><body>
 <h3>Air Liquide: 3 days in a row !</h3>
+</body></html>
+```
+
+```
+$ python reporter.py buy data/ --html
+<html><body>
+<h3>Cie des Alpes: surpondérer (rendement intéressant, PER bas, croissance bénéficiaire attendue)</h3>
 </body></html>
 ```
 

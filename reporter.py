@@ -9,6 +9,7 @@ Written by Nicolas BEGUIER (nicolas_beguier@hotmail.com)
 
 # Standard library imports
 from argparse import ArgumentParser
+from ast import literal_eval
 from datetime import datetime
 import json
 import glob
@@ -73,7 +74,7 @@ def save_report(output_dir):
             report = {}
         report['isin'] = _isin
         if not output_dir:
-            print(report)
+            print(json.dumps(report))
         else:
             if not Path(output_dir).is_dir():
                 print(f'{output_dir} is not a directory...')
@@ -81,6 +82,19 @@ def save_report(output_dir):
             report_path = Path(f'{output_dir}/{datetime.now().strftime("%Y_%m_%d")}.txt')
             with report_path.open('a', encoding ='utf-8') as report_file:
                 report_file.write(json.dumps(report)+'\n')
+
+def parse_report_line(line):
+    """
+    Parse one saved report line.
+    """
+    try:
+        return json.loads(line)
+    except json.JSONDecodeError:
+        pass
+    try:
+        return literal_eval(line)
+    except (SyntaxError, ValueError):
+        return None
 
 def load_report(input_file, display_report=True):
     """
@@ -93,9 +107,11 @@ def load_report(input_file, display_report=True):
         sys.exit(1)
     with report_path.open('r', encoding ='utf-8') as report_file:
         for line in report_file.readlines():
-            sub_report = json.loads(line)
+            sub_report = parse_report_line(line)
+            if not isinstance(sub_report, dict) or 'isin' not in sub_report:
+                continue
             report[sub_report['isin']] = sub_report
-            if display_report:
+            if display_report and 'ISIN' in sub_report:
                 display.print_report(sub_report)
     return report
 
@@ -310,6 +326,32 @@ def streak_report(directory, isin_compare, is_html):
         print('</body></html>')
 
 
+def buy_report(directory, is_html):
+    """
+    Report the latest saved ISINs whose orientation is overweight.
+    """
+    report_files = sorted(glob.glob(os.path.join(directory, '*.txt')))
+    if not report_files:
+        return
+    latest_report = load_report(report_files[-1], display_report=False)
+
+    if is_html:
+        print('<html><body>')
+
+    for _isin, report in latest_report.items():
+        orientation = analysis.global_text(report)
+        if not orientation.startswith('surpondérer'):
+            continue
+        display_name = get_report_value(report, 'DISPLAY_NAME') or _isin
+        if is_html:
+            print(f'<h3>{display_name}: {orientation}</h3>')
+        else:
+            print(f'{display_name}: {orientation}')
+
+    if is_html:
+        print('</body></html>')
+
+
 if __name__ == '__main__':
 
     PARSER = ArgumentParser()
@@ -350,6 +392,14 @@ if __name__ == '__main__':
     STREAK_PARSER.add_argument('--html', action='store_true',\
         help='Output in HTML format', default=False)
 
+    # BUY Arguments
+    BUY_PARSER = SUBPARSERS.add_parser('buy',\
+        help='Buy command')
+    BUY_PARSER.add_argument('directory', action='store',\
+        help='Directory with reports for comparison')
+    BUY_PARSER.add_argument('--html', action='store_true',\
+        help='Output in HTML format', default=False)
+
     ARGS = PARSER.parse_args()
 
     if len(sys.argv) == 1:
@@ -367,5 +417,7 @@ if __name__ == '__main__':
         diff_report(ARGS.oldest_file, ARGS.newer_file, ISIN_COMPARE, ARGS.html)
     elif sys.argv[1] == 'streak':
         streak_report(ARGS.directory, settings.ISIN_COMPARE, ARGS.html)
+    elif sys.argv[1] == 'buy':
+        buy_report(ARGS.directory, ARGS.html)
 
     sys.exit(0)
