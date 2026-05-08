@@ -250,18 +250,18 @@ $ python reporter.py streak data/ --html
 
 ```
 $ python dashboard.py 
-Nom                                                                       Cours    Variation
-----------------------------------------------------------------------  -------  -----------
-Lyxor PEA Eau (MSCI Water) UCITS ETF FCP                                 24.741    -0.241926
-Cie des Alpes                                                            14.18     -0.421348
-Air Liquide                                                             142.32     -1.99697
-FDJ                                                                      37.68     -2.35812
-Kering                                                                  559.5      -3.40124
-Lyxor PEA Asie Pacifique (MSCI AC Asia Pacific Ex Japan) UCITS ETF FCP   16.892    -0.856908
-Carrefour                                                                16.295    -2.22022
-AXA                                                                      28.425    -0.97544
-CD Projekt                                                               28.71     -4.01204
-Vinci                                                                   105.08     -0.699301
+Nom                                                                       Cours    Variation  Orientation
+----------------------------------------------------------------------  -------  -----------  --------------------------------------
+Lyxor PEA Eau (MSCI Water) UCITS ETF FCP                                 24.741    -0.241926  conserver
+Cie des Alpes                                                            14.18     -0.421348  renforcer prudemment
+Air Liquide                                                             142.32     -1.99697   éviter de renforcer
+FDJ                                                                      37.68     -2.35812   surveiller avant achat
+Kering                                                                  559.5      -3.40124   surveiller le retournement
+Lyxor PEA Asie Pacifique (MSCI AC Asia Pacific Ex Japan) UCITS ETF FCP   16.892    -0.856908  conserver
+Carrefour                                                                16.295    -2.22022   conserver
+AXA                                                                      28.425    -0.97544   conserver pour rendement
+CD Projekt                                                               28.71     -4.01204   conserver
+Vinci                                                                   105.08     -0.699301  renforcer prudemment
 ```
 
 ```

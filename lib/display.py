@@ -50,6 +50,9 @@ def display_body(report):
         print(f"|| PEG prévisionnel: {report['CUSTOM_PEG']} ({analysis.peg_text(report['CUSTOM_PEG'])})")
     if 'CUSTOM_PEG_MAISON' in report and report['CUSTOM_PEG_MAISON'] != '-':
         print(f"|| PER / perf. 1 an: {report['CUSTOM_PEG_MAISON']} ({analysis.price_performance_ratio_text(report['CUSTOM_PEG_MAISON'])})")
+    global_analysis = analysis.global_text(report)
+    if global_analysis:
+        print(f"|| Orientation: {global_analysis}")
     print('--')
     if 'DIV_ANNEE_PRECEDENTE' in report:
         print(f"|| Dividende Année précédente: {report['DIV_ANNEE_PRECEDENTE']['v']}{currency}")

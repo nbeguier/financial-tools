@@ -15,6 +15,7 @@ import sys
 from tabulate import tabulate
 
 # Own library
+from lib import analysis
 from lib import reporting
 try:
     import settings
@@ -44,7 +45,7 @@ def main(is_csv=False):
         if ',' in isin:
             market = isin.split(',')[1]
             isin = isin.split(',', maxsplit=1)[0]
-        isin_data = reporting.get_cours(isin, market, disable_cache=True)
+        isin_data = reporting.get_report({'isin': isin, 'mic': market})
         if not isin_data:
             listing.append([])
             continue
@@ -52,6 +53,7 @@ def main(is_csv=False):
             isin_data['DISPLAY_NAME']['v'],
             isin_data['LVAL_NORM']['v'],
             isin_data['NC2_PR_NORM']['v'],
+            analysis.global_text(isin_data),
         ])
     if is_csv:
         print(';'.join(csv_value(item[1]) for item in listing if item)+';')
@@ -60,6 +62,7 @@ def main(is_csv=False):
         'Nom',
         'Cours',
         'Variation',
+        'Orientation',
     ]))
 
 if __name__ == '__main__':
