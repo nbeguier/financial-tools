@@ -27,7 +27,7 @@ except ImportError:
 # Debug
 # from pdb import set_trace as st
 
-VERSION = '3.0.0'
+VERSION = '3.1.0'
 
 def csv_value(value):
     """
