@@ -326,14 +326,26 @@ def streak_report(directory, isin_compare, is_html):
         print('</body></html>')
 
 
-def buy_report(directory, is_html):
+def get_buy_report_file(report_source):
+    """
+    Returns the report file to use for buy signals.
+    """
+    report_path = Path(report_source)
+    if report_path.is_file():
+        return report_path
+    report_files = sorted(glob.glob(os.path.join(report_source, '*.txt')))
+    if not report_files:
+        return None
+    return Path(report_files[-1])
+
+def buy_report(report_source, is_html):
     """
     Report the latest saved ISINs whose orientation is overweight.
     """
-    report_files = sorted(glob.glob(os.path.join(directory, '*.txt')))
-    if not report_files:
+    report_file = get_buy_report_file(report_source)
+    if report_file is None:
         return
-    latest_report = load_report(report_files[-1], display_report=False)
+    latest_report = load_report(report_file, display_report=False)
 
     if is_html:
         print('<html><body>')
@@ -395,8 +407,8 @@ if __name__ == '__main__':
     # BUY Arguments
     BUY_PARSER = SUBPARSERS.add_parser('buy',\
         help='Buy command')
-    BUY_PARSER.add_argument('directory', action='store',\
-        help='Directory with reports for comparison')
+    BUY_PARSER.add_argument('report_source', action='store',\
+        help='Report file, or directory whose latest report should be used')
     BUY_PARSER.add_argument('--html', action='store_true',\
         help='Output in HTML format', default=False)
 
@@ -418,6 +430,6 @@ if __name__ == '__main__':
     elif sys.argv[1] == 'streak':
         streak_report(ARGS.directory, settings.ISIN_COMPARE, ARGS.html)
     elif sys.argv[1] == 'buy':
-        buy_report(ARGS.directory, ARGS.html)
+        buy_report(ARGS.report_source, ARGS.html)
 
     sys.exit(0)

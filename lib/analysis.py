@@ -81,6 +81,71 @@ def price_performance_ratio_text(ratio_value):
         return 'performance 1 an négative, ratio non valorisable'
     return 'indicateur maison, à comparer dans le temps'
 
+def _percent_text(value):
+    """
+    Formats a percent value for compact display.
+    """
+    if value is None:
+        return None
+    return f'{round(value, 1)} %'
+
+def recent_momentum(report):
+    """
+    Returns a recent momentum signal from short-term price action and RSI.
+    """
+    perf_4w = _report_float(report, '4W_PERF_PR')
+    perf_12w = _report_float(report, '12W_PERF_PR')
+    rsi = _report_float(report, 'RSI14')
+    price = _report_float(report, 'LVAL_NORM')
+    mm50 = _report_float(report, 'MM50')
+
+    details = []
+
+    if perf_4w is not None:
+        details.append(f'{_percent_text(perf_4w)} sur 4 sem.')
+    if perf_12w is not None:
+        details.append(f'{_percent_text(perf_12w)} sur 12 sem.')
+    if rsi is not None:
+        details.append(f'RSI {round(rsi)}')
+    if price is not None and mm50 is not None:
+        if price < mm50:
+            details.append('sous MM50')
+        elif price > mm50:
+            details.append('au-dessus MM50')
+
+    if not details:
+        return {
+            'level': 'inconnu',
+            'text': 'inconnu',
+        }
+
+    if perf_4w is not None and perf_4w <= -8:
+        level = 'très négatif'
+    elif perf_12w is not None and perf_12w <= -12:
+        level = 'très négatif'
+    elif rsi is not None and rsi < 30:
+        level = 'très négatif'
+    elif perf_4w is not None and perf_4w < -3:
+        level = 'négatif'
+    elif perf_12w is not None and perf_12w < -5:
+        level = 'négatif'
+    elif rsi is not None and rsi < 40:
+        level = 'négatif'
+    elif price is not None and mm50 is not None and price < mm50:
+        level = 'négatif'
+    elif perf_4w is not None and perf_12w is not None and perf_4w > 0 and perf_12w > 0:
+        if price is None or mm50 is None or price > mm50:
+            level = 'positif'
+        else:
+            level = 'neutre'
+    else:
+        level = 'neutre'
+
+    return {
+        'level': level,
+        'text': f'{level} ({", ".join(details[:3])})' if details else level,
+    }
+
 def global_text(report):
     """
     Returns a portfolio orientation from the available financial signals.
@@ -92,6 +157,8 @@ def global_text(report):
     bnpa_growth = _report_float(report, 'CROISSANCE_BNPA_ANNEE_COURANTE')
     bnpa_previous = _report_float(report, 'CROISSANCE_BNPA_ANNEE_PRECEDENTE')
     revenue_growth = _report_float(report, 'CROISSANCE_CA_ANNEE_COURANTE')
+    momentum = recent_momentum(report)
+    momentum_level = momentum['level']
 
     positives = []
     warnings = []
@@ -171,6 +238,13 @@ def global_text(report):
             score += 1
             positives.append('fort rebond du cours')
 
+    if momentum_level == 'très négatif':
+        warnings.append('momentum récent très négatif')
+    elif momentum_level == 'négatif':
+        warnings.append('momentum récent négatif')
+    elif momentum_level == 'positif':
+        positives.append('momentum récent positif')
+
     if dividend is not None and dividend >= 8 and perf is not None and perf <= -20:
         orientation = 'surveiller avant achat'
     elif dividend is not None and dividend >= 4 and bnpa_growth is not None and bnpa_growth < 0:
@@ -179,6 +253,8 @@ def global_text(report):
         orientation = 'surveiller le retournement'
     elif per is not None and per > 25 and (peg is None or peg > 2):
         orientation = 'éviter de renforcer'
+    elif score >= 4 and momentum_level in ('négatif', 'très négatif'):
+        orientation = 'surpondérer prudemment'
     elif score >= 4 and not warnings:
         orientation = 'surpondérer'
     elif score >= 2:

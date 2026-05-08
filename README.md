@@ -48,7 +48,8 @@ Variation 1 an: -3.29 %
 || PER prévisionnel: 26.75 (valorisation très élevée)
 || PEG prévisionnel: 3.63 (valorisation élevée vs croissance)
 || PER / perf. 1 an: -8.12 (performance 1 an négative, ratio non valorisable)
-|| Orientation: éviter de renforcer (PER très élevé, PEG élevé, croissance bénéficiaire modérée)
+|| Momentum récent: négatif
+|| Orientation: éviter de renforcer (PER très élevé, PEG élevé, momentum récent négatif)
 --
 || Dividende Année précédente: 3.7 EUR
 ||                           : 2.1 %
@@ -81,7 +82,8 @@ Variation 1 an: -3.29 %
 || PER prévisionnel: 26.75 (valorisation très élevée)
 || PEG prévisionnel: 3.63 (valorisation élevée vs croissance)
 || PER / perf. 1 an: -8.12 (performance 1 an négative, ratio non valorisable)
-|| Orientation: éviter de renforcer (PER très élevé, PEG élevé, croissance bénéficiaire modérée)
+|| Momentum récent: négatif
+|| Orientation: éviter de renforcer (PER très élevé, PEG élevé, momentum récent négatif)
 --
 || Dividende Année précédente: 3.7 EUR
 ||                           : 2.1 %
@@ -175,7 +177,8 @@ Variation 1 an: -3.29 %
 || PER prévisionnel: 26.75 (valorisation très élevée)
 || PEG prévisionnel: 3.63 (valorisation élevée vs croissance)
 || PER / perf. 1 an: -8.12 (performance 1 an négative, ratio non valorisable)
-|| Orientation: éviter de renforcer (PER très élevé, PEG élevé, croissance bénéficiaire modérée)
+|| Momentum récent: négatif
+|| Orientation: éviter de renforcer (PER très élevé, PEG élevé, momentum récent négatif)
 --
 || Dividende Année précédente: 3.7 EUR
 ||                           : 2.1 %
@@ -205,8 +208,13 @@ $ python reporter.py streak data/ --html
 ```
 $ python reporter.py buy data/ --html
 <html><body>
-<h3>Cie des Alpes: surpondérer (rendement intéressant, PER bas, croissance bénéficiaire attendue)</h3>
+<h3>Cie des Alpes: surpondérer prudemment (momentum récent très négatif, rendement intéressant, PER bas)</h3>
 </body></html>
+```
+
+```
+$ python reporter.py buy data/2026_05_08.txt
+Cie des Alpes: surpondérer prudemment (momentum récent très négatif, rendement intéressant, PER bas)
 ```
 
 ### DASHBOARD
@@ -216,7 +224,7 @@ $ python dashboard.py
 Nom                                                                       Cours    Variation  Orientation
 ----------------------------------------------------------------------  -------  -----------  --------------------------------------
 Lyxor PEA Eau (MSCI Water) UCITS ETF FCP                                 24.741    -0.241926  conserver
-Cie des Alpes                                                            14.18     -0.421348  renforcer prudemment
+Cie des Alpes                                                            14.18     -0.421348  surpondérer prudemment
 Air Liquide                                                             142.32     -1.99697   éviter de renforcer
 FDJ                                                                      37.68     -2.35812   surveiller avant achat
 Kering                                                                  559.5      -3.40124   surveiller le retournement
