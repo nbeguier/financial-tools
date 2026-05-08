@@ -38,21 +38,22 @@ options:
 $ python isin.py -i FR0000120073
 ISIN: FR0000120073
 Nom: Air Liquide
-Secteur: Chimie
-Valorisation: 142.32 EUR
-Variation 1 an: 8.96 %
-|| Dividendes: 2.9 EUR
-||           : 2.0 %
-|| Croissance BNPA: 0 % -> 10 % -> 18 %
-|| Croissance CA: -7 % -> 14 % -> 28 %
-|| PER prévisionnel: 24.99 (valorisation élevée)
-|| PEG prévisionnel: 1.4 (prime de valorisation vs croissance)
-|| PER / perf. 1 an: 2.8 (indicateur maison, à comparer dans le temps)
+Secteur: Chemicals
+Valorisation: 176.7 EUR
+Variation 1 an: -3.29 %
+|| Dividendes: 3.3 EUR
+||           : 1.9 %
+|| Croissance BNPA: 5 % -> 6 % -> 7 %
+|| Croissance CA: -2 % -> 0 % -> 2 %
+|| PER prévisionnel: 26.75 (valorisation très élevée)
+|| PEG prévisionnel: 3.63 (valorisation élevée vs croissance)
+|| PER / perf. 1 an: -8.12 (performance 1 an négative, ratio non valorisable)
+|| Orientation: éviter de renforcer (PER très élevé, PEG élevé, croissance bénéficiaire modérée)
 --
-|| Dividende Année précédente: 2.9 EUR
-||                           : 2.0 %
-|| PER Année précédente: 29.36 (valorisation très élevée)
-|| PEG Année précédente: 3.0 (valorisation élevée vs croissance)
+|| Dividende Année précédente: 3.7 EUR
+||                           : 2.1 %
+|| PER Année précédente: 28.72 (valorisation très élevée)
+|| PEG Année précédente: 4.78 (valorisation élevée vs croissance)
 ==============
 
 # Affiche les infos de XS2215041513 (3.75 Carraro26Nts-S), HMTF
@@ -70,21 +71,22 @@ Variation 1 an: -1.53 %
 $ python isin.py -n "air liqui"
 ISIN: FR0000120073
 Nom: Air Liquide
-Secteur: Chimie
-Valorisation: 142.32 EUR
-Variation 1 an: 8.96 %
-|| Dividendes: 2.9 EUR
-||           : 2.0 %
-|| Croissance BNPA: 0 % -> 10 % -> 18 %
-|| Croissance CA: -7 % -> 14 % -> 28 %
-|| PER prévisionnel: 24.99 (valorisation élevée)
-|| PEG prévisionnel: 1.4 (prime de valorisation vs croissance)
-|| PER / perf. 1 an: 2.8 (indicateur maison, à comparer dans le temps)
+Secteur: Chemicals
+Valorisation: 176.7 EUR
+Variation 1 an: -3.29 %
+|| Dividendes: 3.3 EUR
+||           : 1.9 %
+|| Croissance BNPA: 5 % -> 6 % -> 7 %
+|| Croissance CA: -2 % -> 0 % -> 2 %
+|| PER prévisionnel: 26.75 (valorisation très élevée)
+|| PEG prévisionnel: 3.63 (valorisation élevée vs croissance)
+|| PER / perf. 1 an: -8.12 (performance 1 an négative, ratio non valorisable)
+|| Orientation: éviter de renforcer (PER très élevé, PEG élevé, croissance bénéficiaire modérée)
 --
-|| Dividende Année précédente: 2.9 EUR
-||                           : 2.0 %
-|| PER Année précédente: 29.36 (valorisation très élevée)
-|| PEG Année précédente: 3.0 (valorisation élevée vs croissance)
+|| Dividende Année précédente: 3.7 EUR
+||                           : 2.1 %
+|| PER Année précédente: 28.72 (valorisation très élevée)
+|| PEG Année précédente: 4.78 (valorisation élevée vs croissance)
 ==============
 ```
 
@@ -101,7 +103,7 @@ $ python autocomplete.py "carr"
 [
     {
         "ISIN": "US14448C1045",
-        "mic": "XNYS",
+        "mic": "",
         "pays": "NYSE US COMPOSITE",
         "titre": "CARRIER"
     },
@@ -113,24 +115,23 @@ $ python autocomplete.py "carr"
     },
     {
         "ISIN": "US14448C1045",
+        "mic": "XNAS",
+        "pays": "NASDAQ BASIC, NYSE LISTED ISSUES",
+        "titre": "CARRIER"
+    },
+    {
+        "ISIN": "US14448C1045",
         "mic": "XADF",
         "pays": "NYSE-CTA FINRA ALTERNATIVE DISPLAY FACILITY (ADF)",
         "titre": "CARRIER"
     },
     {
-        "ISIN": "FR0000120172",
-        "mic": "XPAR",
-        "pays": "EURONEXT - EURONEXT PARIS",
-        "titre": "CARREFOUR"
-    },
-    {
         "ISIN": "US14448C1045",
-        "mic": "XNAS",
+        "mic": "XNIM",
         "pays": "CTA NASDAQ OMX STOCK EXCHANGE",
         "titre": "CARRIER"
     }
 ]
-
 ```
 
 ### REPORTER
@@ -161,83 +162,37 @@ $ python reporter.py save -o data/
 $ python reporter.py save -o data/
 
 
-$ python reporter.py load data/2023_02_12.txt
-ISIN: FR0000121485
-Nom: Kering
-Secteur: Commerce de détail, grands magasins
-Valorisation: 559.5 EUR
-Variation 1 an: -9.73 %
-|| Dividendes: 4.5 EUR
-||           : 0.8 %
-|| Croissance BNPA: -38 % -> 62 % -> 23 %
-|| Croissance CA: -18 % -> 35 % -> 16 %
-|| PER prévisionnel: 19.05 (valorisation élevée)
+$ python reporter.py load data/2026_05_08.txt
+ISIN: FR0000120073
+Nom: Air Liquide
+Secteur: Chemicals
+Valorisation: 176.7 EUR
+Variation 1 an: -3.29 %
+|| Dividendes: 3.3 EUR
+||           : 1.9 %
+|| Croissance BNPA: 5 % -> 6 % -> 7 %
+|| Croissance CA: -2 % -> 0 % -> 2 %
+|| PER prévisionnel: 26.75 (valorisation très élevée)
+|| PEG prévisionnel: 3.63 (valorisation élevée vs croissance)
+|| PER / perf. 1 an: -8.12 (performance 1 an négative, ratio non valorisable)
+|| Orientation: éviter de renforcer (PER très élevé, PEG élevé, croissance bénéficiaire modérée)
 --
-|| Dividende Année précédente: 12.0 EUR
-|| PER Année précédente: 23.5 (valorisation élevée)
-==============
+|| Dividende Année précédente: 3.7 EUR
+||                           : 2.1 %
+|| PER Année précédente: 28.72 (valorisation très élevée)
+|| PEG Année précédente: 4.78 (valorisation élevée vs croissance)
 # etc...
 
 
-$ python reporter.py diff data/2020_02_23.txt data/2020_02_24.txt
+$ python reporter.py diff data/2026_04_08.txt data/2026_05_08.txt
 ==============
-ISIN: FR0000120073
-Nom: AIR LIQUIDE
-Evolution valorisation: -3.95 %
-Evolution valorisation: 139.250 -> 133.750 EUR
-Tendance court terme: 3.0/5 -> 4.0/5
-Tendance moyen terme: 2.25/5 -> 3.0/5
+Air Liquide (FR0000120073)
+Evolution valorisation: -3.67 %
+Evolution valorisation: 183.44 -> 176.7 EUR
+Evolution PER: +0.7
+Evolution PER: 26.049036 -> 26.752854 
 ==============
-ISIN: FR0000120628
-Nom: AXA
-Evolution valorisation: -3.25 %
-Evolution valorisation: 24.130 -> 23.345 EUR
-Tendance court terme: 2.75/5 -> 2.5/5
-Tendance moyen terme: 4.25/5 -> 4.0/5
-==============
-ISIN: FR0000120172
-Nom: CARREFOUR
-Evolution valorisation: -2.54 %
-Evolution valorisation: 16.130 -> 15.720 EUR
-[Reminder] Prochain rdv: 27/02/20
-Tendance court terme: 5.0/5
-Tendance moyen terme: 2.0/5 -> 3.5/5
-==============
-ISIN: FR0000053324
-Nom: COMPAGNIE DES ALPES (CDA)
-Evolution valorisation: -8.95 %
-Evolution valorisation: 29.050 -> 26.450 EUR
-Tendance court terme: 2.0/5
-Tendance moyen terme: 3.5/5
-==============
-ISIN: FR0013451333
-Nom: FDJ
-Evolution valorisation: -3.18 %
-Evolution valorisation: 30.345 -> 29.380 EUR
-Tendance court terme: 3.0/5
-Tendance moyen terme: 1.5/5
-==============
-ISIN: FR0011869312
-Nom: LYXOR UCITS ETF PEA MSCI AC ASIA PACIFIC EX JAPAN C-EUR
-Evolution valorisation: -3.63 %
-Evolution valorisation: 15.941 -> 15.363 EUR
-Tendance court terme: -/5
-Tendance moyen terme: -/5
-==============
-ISIN: FR0011882364
-Nom: LYXOR UCITS ETF PEA WORLD WATER C-EUR
-Evolution valorisation: -3.22 %
-Evolution valorisation: 21.094 -> 20.414 EUR
-Tendance court terme: -/5
-Tendance moyen terme: -/5
-==============
-ISIN: FR0000121485
-Nom: KERING
-Evolution valorisation: -4.72 %
-Evolution valorisation: 561.600 -> 535.100 EUR
-Tendance court terme: 5.0/5
-Tendance moyen terme: 5.0/5 -> 4.25/5
-==============
+# etc...
 ```
 
 ```
@@ -281,4 +236,4 @@ $ python dashboard.py --csv
 Licensed under the [MIT License](https://github.com/nbeguier/financial-tools/blob/master/LICENSE).
 
 # Copyright
-Copyright 2020-2023 Nicolas Beguier; ([nbeguier](https://beguier.eu/nicolas/) - nicolas_beguier[at]hotmail[dot]com)
+Copyright 2020-202§ Nicolas Beguier; ([nbeguier](https://beguier.eu/nicolas/) - nicolas_beguier[at]hotmail[dot]com)
