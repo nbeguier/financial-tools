@@ -20,6 +20,7 @@ import re
 import time
 
 # Third party library imports
+from curl_cffi import requests as cffi_requests
 from requests import exceptions, Session
 import urllib3
 
@@ -72,9 +73,11 @@ def get_token():
             print('Error retrieving token... (exp not found). Removing token.')
             token_path.unlink()
             return ''
-    content = SESSION.get(
+    # Akamai blocks the TLS fingerprint of plain requests/curl: impersonate Chrome
+    # and keep its native User-Agent to stay consistent with the fingerprint
+    content = cffi_requests.get(
         decode_rot('uggcf://vairfgve.yrfrpubf.se/pbhef/npgvbaf/xrevat-xre-se0000121485-kcne'),
-        headers={'User-Agent': gen_user_agent(), 'Sec-Fetch-Dest': 'document', 'Sec-Fetch-Mode': 'navigate'})
+        impersonate='chrome')
     if content.status_code != 200:
         print('Error retrieving token... (page not found)')
         return ''
